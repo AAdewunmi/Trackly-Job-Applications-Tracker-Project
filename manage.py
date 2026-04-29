@@ -1,6 +1,3 @@
-
-## `manage.py`
-
 """Command-line utility for administrative Django tasks."""
 
 import os
