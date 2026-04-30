@@ -63,6 +63,13 @@ jobs:
       - name: Check Black formatting
         run: python -m black . --check
 
+      - name: Check migrations
+        run: >
+          python manage.py makemigrations
+          --check
+          --dry-run
+          --settings=config.settings.test
+
       - name: Run tests
         run: >
           python -m pytest
