@@ -3,6 +3,23 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Operating system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor swap / backup files
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+*.orig
+*~
+
 # C extensions
 *.so
 
@@ -50,6 +67,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+junit.xml
+test-results/
 
 # Translations
 *.mo
@@ -64,6 +83,9 @@ db.sqlite3-journal
 *.sqlite3-journal
 *.db
 *.db-journal
+*.dump
+*.psql
+*.sql.gz
 
 # Flask stuff:
 instance/
@@ -153,6 +175,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -207,6 +231,12 @@ cython_debug/
 # .vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
+
+# Local archives and exported artifacts
+*.tar
+*.tar.gz
+*.tgz
+*.zip
 
 # Ruff stuff:
 .ruff_cache/
