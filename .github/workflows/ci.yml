@@ -2,7 +2,12 @@ name: CI
 
 on:
   pull_request:
+    branches:
+      - main
   push:
+    branches:
+      - main
+      - "**"
   workflow_dispatch:
 
 jobs:
@@ -26,9 +31,9 @@ jobs:
           --health-retries 5
 
     env:
-      DJANGO_SETTINGS_MODULE: config.settings.local
+      DJANGO_SETTINGS_MODULE: config.settings.test
       DJANGO_SECRET_KEY: ci-secret-key
-      DJANGO_DEBUG: "True"
+      DJANGO_DEBUG: "False"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
       DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:8000,http://127.0.0.1:8000
       POSTGRES_DB: trackly
@@ -58,5 +63,31 @@ jobs:
       - name: Check Black formatting
         run: python -m black . --check
 
+      - name: Check migrations
+        run: >
+          python manage.py makemigrations
+          --check
+          --dry-run
+          --settings=config.settings.test
+
+      - name: Check production settings
+        env:
+          DJANGO_SECRET_KEY: ci-production-secret-key-with-enough-length-for-deploy-checks
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: trackly.example.com
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://trackly.example.com
+        run: python manage.py check --deploy --settings=config.settings.production
+
       - name: Run tests
-        run: python -m pytest --ds=config.settings.test
+        run: >
+          python -m pytest
+          --ds=config.settings.test
+          --cov=apps
+          --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
