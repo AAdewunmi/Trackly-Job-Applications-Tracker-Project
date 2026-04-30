@@ -64,4 +64,15 @@ jobs:
         run: python -m black . --check
 
       - name: Run tests
-        run: python -m pytest --ds=config.settings.test
+        run: >
+          python -m pytest
+          --ds=config.settings.test
+          --cov=apps
+          --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
