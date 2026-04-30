@@ -29,6 +29,28 @@ The project uses environment-specific settings:
 
 This split prevents local convenience settings from leaking into deployed environments.
 
+Each environment-specific module imports from `config.settings.base` first, then
+overrides only the behavior that differs for that environment. Secrets, debug
+mode, hosts, CSRF trusted origins, database connection values, and production
+security options are read from environment variables with explicit defaults for
+local or CI usage.
+
+Settings module usage:
+
+- Local Docker: `config.settings.local`
+- Tests: `config.settings.test`
+- GitHub Actions CI: `config.settings.test`
+- ASGI/WSGI deployment entry points: `config.settings.production`
+- Production deploy validation: `config.settings.production`
+
+CI enforces the settings split by running:
+
+- Ruff linting
+- Black formatting checks
+- `makemigrations --check --dry-run` with `config.settings.test`
+- `check --deploy` with `config.settings.production`
+- pytest with `config.settings.test`
+
 ## Database
 
 Trackly uses PostgreSQL from the first sprint. This avoids developing against SQLite assumptions and gives later features realistic persistence behaviour.

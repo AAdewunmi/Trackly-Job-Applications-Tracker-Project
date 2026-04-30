@@ -26,6 +26,21 @@ def env_list(name: str, default: list[str] | None = None) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def env_int(name: str, default: int) -> int:
+    """Return an integer value from an environment variable."""
+    value = os.getenv(name)
+
+    if value is None:
+        return default
+
+    return int(value)
+
+
+def env_str(name: str, default: str) -> str:
+    """Return a string value from an environment variable."""
+    return os.getenv(name, default)
+
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-local-development-key")
 
 DEBUG = env_bool("DJANGO_DEBUG", default=False)
