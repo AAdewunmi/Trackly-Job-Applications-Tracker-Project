@@ -1,10 +1,19 @@
-# Trackly Architecture
+# Trackly: Job Application Tracking and NLP-Based Role Matching Platform
 
 ## Purpose
 
-Trackly is a Django SaaS MVP for job application tracking. The product is structured around authenticated users who own their job application data, review progress in a personal dashboard, and later generate deterministic AI/NLP job-fit insights.
+Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP.
 
-Sprint 1 establishes the foundation rather than the full feature set. The goal is to create a codebase that can grow safely into the job workflow, API layer, AI/NLP layer, CI, and deployment work.
+The product is structured around authenticated users who own their job application data, manage statuses and notes, review progress in a personal dashboard, and generate deterministic role-fit insights from job descriptions and persisted target-role profiles.
+
+The platform has two core product areas:
+
+- Job application tracking for applications, statuses, notes, and progress.
+- NLP-based role matching built around text processing, normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
+
+The platform framing fits the broader architecture: secured API surfaces, dashboards, stored role profiles, persisted insights, and a workflow that extends beyond a simple tracker.
+
+Sprint 1 establishes the foundation rather than the full feature set. The goal is to create a codebase that can grow safely into the job workflow, API layer, NLP role-matching layer, CI, and deployment work.
 
 ## Architectural Style
 
@@ -127,8 +136,7 @@ Sprint 1 deliberately avoids implementing:
 - Dashboard metrics
 - API endpoints
 - JWT authentication
-- AI/NLP insights
-- CI
+- NLP-based role matching
 - Render deployment
 
 Those features are intentionally staged across later sprints.
