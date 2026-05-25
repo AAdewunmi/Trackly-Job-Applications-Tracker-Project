@@ -41,6 +41,10 @@ POSTGRES_PORT=5432
 Set `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD` to local-only values. They do
 not need to match production values.
 
+If `POSTGRES_PASSWORD`, `POSTGRES_USER`, or `POSTGRES_DB` are changed after the
+PostgreSQL volume has already been created, recreate the local database volume
+or restore the values that were used when the volume was initialized.
+
 ## Start Services
 
 Start the web and database services:

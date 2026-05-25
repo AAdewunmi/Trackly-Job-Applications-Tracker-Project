@@ -207,6 +207,8 @@ If the web service cannot connect to the database, verify:
 - `POSTGRES_PORT=5432`
 - `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` match between the
   web and database services
+- `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` match the values used
+  when the local PostgreSQL volume was initialized
 
 If static files or deploy checks fail, run:
 
