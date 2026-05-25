@@ -50,6 +50,26 @@ Sprint 1 delivers:
 - Initial documentation
 - Model and integration tests
 
+## Quick Start
+
+For a repeatable local setup path:
+
+```bash
+cp .env.example .env
+make build
+make up
+make migrate
+make test
+```
+
+Use these docs for the full reviewer path:
+
+- [Local setup](docs/local-setup.md) for environment setup, Docker Compose,
+  migrations, and quality checks.
+- [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
+- [Architecture](docs/architecture.md) for settings modules, app boundaries,
+  database choices, and CI expectations.
+
 ## Environment Settings
 
 Trackly keeps environment behavior isolated through dedicated settings modules:
@@ -118,10 +138,16 @@ compatibility:
 │   ├── asgi.py
 │   └── wsgi.py
 ├── docs/
+│   ├── architecture.md
+│   └── local-setup.md
+├── .env.example
 ├── static/
 ├── templates/
 ├── docker-compose.yml
 ├── Dockerfile
+├── Makefile
 ├── manage.py
 ├── pyproject.toml
+├── RUNBOOK.md
 └── requirements.txt
+```
