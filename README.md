@@ -1,8 +1,8 @@
 # Trackly-Django-App
 
-![CI Pipeline](https://img.shields.io/badge/CI-pending-lightgrey)
+[![CI](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-pytest-blue)
-![Coverage](https://img.shields.io/badge/coverage-pending-lightgrey)
+[![codecov](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project/branch/main/graph/badge.svg)](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project)
 ![Code Style](https://img.shields.io/badge/code%20style-black-000000)
 ![Linting](https://img.shields.io/badge/linting-ruff-purple)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
