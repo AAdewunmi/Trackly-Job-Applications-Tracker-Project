@@ -63,6 +63,47 @@ hosts, CSRF trusted origins, database settings, and production security options
 are configured through environment variables. CI also runs migration checks and
 Django's production deploy check before tests.
 
+Create a local `.env` from the tracked template before running the app:
+
+```bash
+cp .env.example .env
+```
+
+The `.env` file is ignored by git and is the place for real local values.
+Do not commit generated secret keys, database passwords, service credentials,
+or deployment-specific values.
+
+### Required Configuration
+
+| Variable | Local example | Production guidance |
+| --- | --- | --- |
+| `DJANGO_SETTINGS_MODULE` | `config.settings.local` | `config.settings.production` |
+| `DJANGO_SECRET_KEY` | Generated local secret | Required unique secret from the deployment secret store |
+| `DJANGO_DEBUG` | `True` | `False` |
+| `DJANGO_ALLOWED_HOSTS` | `localhost,127.0.0.1,0.0.0.0` | Comma-separated deployed hostnames |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | `http://localhost:8000,http://127.0.0.1:8000` | Comma-separated HTTPS origins, including scheme |
+| `POSTGRES_DB` | `trackly` | Production database name |
+| `POSTGRES_USER` | `trackly_user` | Production database user |
+| `POSTGRES_PASSWORD` | Local-only password | Required database password from the deployment secret store |
+| `POSTGRES_HOST` | `db` | Production database host |
+| `POSTGRES_PORT` | `5432` | Production database port |
+
+Production settings also read these hardening flags. The defaults are secure
+for an HTTPS deployment, but they remain environment-configurable for platform
+compatibility:
+
+| Variable | Default |
+| --- | --- |
+| `DJANGO_SECURE_SSL_REDIRECT` | `True` |
+| `DJANGO_SESSION_COOKIE_SECURE` | `True` |
+| `DJANGO_CSRF_COOKIE_SECURE` | `True` |
+| `DJANGO_SECURE_HSTS_SECONDS` | `31536000` |
+| `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS` | `True` |
+| `DJANGO_SECURE_HSTS_PRELOAD` | `True` |
+| `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF` | `True` |
+| `DJANGO_X_FRAME_OPTIONS` | `DENY` |
+| `DJANGO_REFERRER_POLICY` | `same-origin` |
+
 ## Repository Structure
 
 ```text
