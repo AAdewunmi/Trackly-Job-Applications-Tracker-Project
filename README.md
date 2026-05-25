@@ -1,8 +1,8 @@
-# Trackly-Django-App
+# Trackly: Job Application Tracking and NLP-Based Role Matching Platform
 
-![CI Pipeline](https://img.shields.io/badge/CI-pending-lightgrey)
+[![CI](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-pytest-blue)
-![Coverage](https://img.shields.io/badge/coverage-pending-lightgrey)
+[![codecov](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project/branch/main/graph/badge.svg)](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project)
 ![Code Style](https://img.shields.io/badge/code%20style-black-000000)
 ![Linting](https://img.shields.io/badge/linting-ruff-purple)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
@@ -11,9 +11,13 @@
 ![PostgreSQL](https://img.shields.io/badge/database-postgresql-336791)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-Trackly-Django-App is a production-minded SaaS MVP for job application tracking.
+A Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP.
 
-The product helps users register, manage job applications, track application status, review personal progress, and later generate lightweight AI/NLP insights from job descriptions and target-role profiles.
+GitHub repository: <https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project>
+
+Trackly helps users register, manage job applications, track application status, maintain notes, review personal progress, and generate role-fit insights from job descriptions and stored target-role profiles.
+
+The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The matching workflow is designed around text normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
 
 Sprint 1 establishes the product foundation: Django project structure, PostgreSQL-backed local development, custom email-first users, role support, authentication flows, protected dashboards, Bootstrap templates, and database-backed tests.
 
@@ -27,7 +31,7 @@ Trackly is designed as a credible early SaaS product, not a toy example. The del
 - Testing: pytest, pytest-django, factory_boy
 - Development workflow: Docker and Docker Compose
 - Future API layer: Django REST Framework under `/api/v1/`
-- Future AI/NLP layer: deterministic keyword extraction and explainable job-fit scoring
+- NLP layer: deterministic keyword extraction, target-role profile comparison, and explainable job-fit scoring
 - Deployment target: Render
 
 ## Sprint 1 Capabilities
