@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Trackly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <p class="text-uppercase text-primary fw-semibold small mb-2">Trackly profile</p>
+                <h1 class="h3 mb-3">{{ request.user.display_name }}</h1>
+                <p class="text-muted mb-0">{{ request.user.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
