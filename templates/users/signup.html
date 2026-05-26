@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Create account | Trackly</title>
+  </head>
+  <body>
+    <main>
+      <h1>Create account</h1>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create account</button>
+      </form>
+    </main>
+  </body>
+</html>

@@ -1,14 +1,19 @@
 """User account URL routes."""
 
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from . import views
+from apps.users.views import (
+    ProfileView,
+    SignUpView,
+    TracklyLoginView,
+    TracklyLogoutView,
+)
 
 app_name = "users"
 
 urlpatterns = [
-    path("login/", auth_views.LoginView.as_view(), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path("profile/", views.profile, name="profile"),
+    path("signup/", SignUpView.as_view(), name="signup"),
+    path("login/", TracklyLoginView.as_view(), name="login"),
+    path("logout/", TracklyLogoutView.as_view(), name="logout"),
+    path("profile/", ProfileView.as_view(), name="profile"),
 ]
