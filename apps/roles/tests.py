@@ -43,3 +43,20 @@ def test_role_code_backfill_uses_existing_names() -> None:
 
     role.refresh_from_db()
     assert role.code == "power-user"
+
+
+def test_role_code_backfill_suffixes_duplicate_names() -> None:
+    """The migration keeps generated role codes unique for duplicate names."""
+    migration = importlib.import_module(
+        "apps.roles.migrations.0002_role_code_alter_role_options_and_more"
+    )
+    first_role = Role.objects.create(code="legacy-one", name="Support Lead")
+    second_role = Role.objects.create(code="legacy-two", name="Support Lead")
+
+    migration.populate_role_codes(django_apps, None)
+
+    first_role.refresh_from_db()
+    second_role.refresh_from_db()
+
+    assert first_role.code == "support-lead"
+    assert second_role.code == f"support-lead-{second_role.pk}"
