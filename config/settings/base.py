@@ -1,7 +1,7 @@
 """Base Django settings shared by every Trackly environment."""
 
-import os
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
