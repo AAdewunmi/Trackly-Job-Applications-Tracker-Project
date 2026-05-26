@@ -19,11 +19,10 @@ set -euo pipefail
 #   the local Docker baseline, so it exports known local values before Compose
 #   runs. That prevents production-shaped .env values from changing the test.
 #   Use SPRINT1_DAY2_* variables only if this runbook needs custom values.
-#   It also uses a dedicated Compose project name to avoid reusing an existing
-#   local database volume that may have been initialized with different values.
-#
-# Optional cleanup after verification:
-#   docker compose -p trackly_sprint1_day2 down
+#   The runbook uses the repository's default Docker Compose project so the web
+#   image remains trackly-job-applications-tracker-project-web.
+
+EXPECTED_COMPOSE_PROJECT="trackly-job-applications-tracker-project"
 
 export DJANGO_SECRET_KEY="${SPRINT1_DAY2_DJANGO_SECRET_KEY:-sprint-1-day-2-local-secret-key}"
 export DJANGO_DEBUG="${SPRINT1_DAY2_DJANGO_DEBUG:-True}"
@@ -35,23 +34,9 @@ export POSTGRES_PASSWORD="${SPRINT1_DAY2_POSTGRES_PASSWORD:-trackly_password}"
 export POSTGRES_HOST="${SPRINT1_DAY2_POSTGRES_HOST:-db}"
 export POSTGRES_PORT="${SPRINT1_DAY2_POSTGRES_PORT:-5432}"
 
-COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-trackly_sprint1_day2}"
-COMPOSE_OVERRIDE="$(mktemp -t trackly-sprint1-day2-compose.XXXXXX.yml)"
-trap 'rm -f "${COMPOSE_OVERRIDE}"' EXIT
-
-cat >"${COMPOSE_OVERRIDE}" <<'YAML'
-services:
-  web:
-    ports: !reset []
-  db:
-    ports: !reset []
-YAML
-
 COMPOSE=(
   docker compose
-  -p "${COMPOSE_PROJECT_NAME}"
   -f docker-compose.yml
-  -f "${COMPOSE_OVERRIDE}"
 )
 
 print_step() {
@@ -63,6 +48,23 @@ run() {
   echo
   echo "$ $*"
   "$@"
+}
+
+require_output() {
+  local expected="$1"
+  shift
+
+  local actual
+  actual="$("$@")"
+
+  if [[ "$actual" != "$expected" ]]; then
+    printf "Unexpected output for command: %s\n" "$*" >&2
+    printf "Expected: %s\n" "$expected" >&2
+    printf "Actual: %s\n" "$actual" >&2
+    exit 1
+  fi
+
+  printf "%s\n" "$actual"
 }
 
 print_step "Confirm repository root"
@@ -90,8 +92,9 @@ run grep -n "POSTGRES_PORT" .env.example
 
 print_step "Confirm Docker Compose has PostgreSQL service"
 echo
-echo "$ ${COMPOSE[*]} config | grep -E \"image: postgres|POSTGRES_DB|POSTGRES_USER|POSTGRES_PASSWORD\""
-"${COMPOSE[@]}" config | grep -E "image: postgres|POSTGRES_DB|POSTGRES_USER|POSTGRES_PASSWORD"
+echo "$ ${COMPOSE[*]} config | grep -E \"^(name:|  db:|  web:|    image: postgres:16-alpine)|POSTGRES_DB|POSTGRES_USER|POSTGRES_PASSWORD\""
+"${COMPOSE[@]}" config | grep -E "^(name:|  db:|  web:|    image: postgres:16-alpine)|POSTGRES_DB|POSTGRES_USER|POSTGRES_PASSWORD"
+require_output "name: ${EXPECTED_COMPOSE_PROJECT}" sh -c "${COMPOSE[*]} config | sed -n '1p'"
 
 print_step "Start database and web services"
 run "${COMPOSE[@]}" up -d db web
