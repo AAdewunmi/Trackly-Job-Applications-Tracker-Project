@@ -1,4 +1,4 @@
-"""User account URL routes."""
+"""URL routes for Trackly user account workflows."""
 
 from django.urls import path
 
