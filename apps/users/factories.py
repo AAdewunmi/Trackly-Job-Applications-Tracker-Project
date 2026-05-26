@@ -30,7 +30,12 @@ class UserFactory(factory.django.DjangoModelFactory):
             self.save(update_fields=["password"])
 
     @factory.post_generation
-    def roles(self, create: bool, extracted: list[object] | None, **kwargs: object) -> None:
+    def roles(
+        self,
+        create: bool,
+        extracted: list[object] | None,
+        **kwargs: object,
+    ) -> None:
         """Attach supplied roles to the generated user."""
         if not create:
             return
@@ -44,7 +49,12 @@ class MemberUserFactory(UserFactory):
     """Create a Trackly user with the member role."""
 
     @factory.post_generation
-    def roles(self, create: bool, extracted: list[object] | None, **kwargs: object) -> None:
+    def roles(
+        self,
+        create: bool,
+        extracted: list[object] | None,
+        **kwargs: object,
+    ) -> None:
         """Attach the member role unless specific roles are supplied."""
         if not create:
             return
