@@ -6,7 +6,7 @@ from apps.roles.models import Role
 
 
 class RoleFactory(factory.django.DjangoModelFactory):
-    """Create a Trackly product role for tests."""
+    """Create a standard member role for tests."""
 
     class Meta:
         """Factory metadata for RoleFactory."""
@@ -16,5 +16,13 @@ class RoleFactory(factory.django.DjangoModelFactory):
 
     code = Role.Codes.MEMBER
     name = "Member"
-    description = "Default member access."
+    description = "Standard Trackly product user role."
     is_active = True
+
+
+class AdminRoleFactory(RoleFactory):
+    """Create an admin role for tests."""
+
+    code = Role.Codes.ADMIN
+    name = "Admin"
+    description = "Trackly product administrator role."
