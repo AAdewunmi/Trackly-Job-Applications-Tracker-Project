@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Trackly | Job application tracker{% endblock %}
+
+{% block content %}
+<section class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="mb-4">
+            <p class="text-uppercase text-primary fw-semibold small mb-2">Trackly</p>
+            <h1 class="display-6 fw-semibold mb-3">Keep your job search organized.</h1>
+            <p class="lead text-muted mb-0">
+                Track applications, structure follow-ups, and keep your account ready for future dashboard insights.
+            </p>
+        </div>
+
+        {% if request.user.is_authenticated %}
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a class="btn btn-primary" href="{% url 'dashboard:user' %}">Go to dashboard</a>
+                <a class="btn btn-outline-secondary" href="{% url 'users:profile' %}">View profile</a>
+            </div>
+        {% else %}
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a class="btn btn-primary" href="{% url 'users:signup' %}">Create account</a>
+                <a class="btn btn-outline-secondary" href="{% url 'users:login' %}">Sign in</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
