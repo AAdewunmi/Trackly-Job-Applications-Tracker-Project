@@ -3,13 +3,43 @@
 {% block title %}Profile | Trackly{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-7 col-xl-6">
+<div class="row">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <p class="text-uppercase text-primary fw-semibold small mb-2">Account</p>
+            <h1 class="h2 mb-2">Your profile</h1>
+            <p class="text-muted mb-0">
+                This is the account identity Trackly uses for dashboard access, job application ownership, and future insight history.
+            </p>
+        </div>
+
         <div class="card shadow-sm border-0">
-            <div class="card-body p-4 p-md-5">
-                <p class="text-uppercase text-primary fw-semibold small mb-2">Trackly profile</p>
-                <h1 class="h3 mb-3">{{ request.user.display_name }}</h1>
-                <p class="text-muted mb-0">{{ request.user.email }}</p>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">{{ request.user.display_name }}</dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">{{ request.user.email }}</dd>
+
+                    <dt class="col-sm-3">Account status</dt>
+                    <dd class="col-sm-9">
+                        {% if request.user.is_active %}
+                            <span class="badge text-bg-success">Active</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Inactive</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-3">Staff access</dt>
+                    <dd class="col-sm-9">
+                        {% if request.user.is_staff %}
+                            <span class="badge text-bg-primary">Enabled</span>
+                        {% else %}
+                            <span class="badge text-bg-light text-dark border">Not enabled</span>
+                        {% endif %}
+                    </dd>
+                </dl>
             </div>
         </div>
     </div>
