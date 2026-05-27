@@ -47,6 +47,7 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
 
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
+    assert response.context["total_users"] == 1
 
 
 @pytest.mark.django_db
@@ -61,6 +62,7 @@ def test_user_with_admin_role_can_access_admin_dashboard(client) -> None:
 
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
+    assert response.context["total_roles"] == 1
 
 
 @pytest.mark.django_db
