@@ -1,15 +1,16 @@
 :root {
-  --tl-bg: #f6f7f3;
-  --tl-bg-warm: #fbfaf5;
+  --tl-bg: #c8d2df;
+  --tl-bg-warm: #e3e8ee;
   --tl-surface: #ffffff;
   --tl-surface-soft: #f1f6ef;
   --tl-text: #172033;
   --tl-muted: #667085;
   --tl-border: #dfe6dc;
-  --tl-primary: #246bfe;
-  --tl-primary-dark: #174fd0;
-  --tl-accent: #18a058;
-  --tl-accent-soft: #e6f6ec;
+  --tl-border-strong: #c8d5c4;
+  --tl-primary: #18a058;
+  --tl-primary-dark: #0f7f44;
+  --tl-accent: #7c5cff;
+  --tl-accent-soft: rgba(124, 92, 255, 0.12);
   --tl-warning: #c47b13;
   --tl-danger: #d92d20;
   --tl-radius: 20px;
@@ -31,9 +32,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(36, 107, 254, 0.1), transparent 30rem),
-    radial-gradient(circle at top right, rgba(24, 160, 88, 0.09), transparent 26rem),
-    linear-gradient(180deg, var(--tl-bg-warm) 0%, var(--tl-bg) 54%);
+    radial-gradient(circle at top left, rgba(124, 92, 255, 0.12), transparent 30rem),
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.08), transparent 26rem),
+    linear-gradient(180deg, var(--tl-bg-warm) 0%, var(--tl-bg) 62%);
   color: var(--tl-text);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -1105,6 +1106,89 @@ textarea:focus {
 .tl-feature-copy {
   margin: 0;
   color: var(--tl-muted);
+}
+
+/* Prentus-inspired accents without dark-mode drift. */
+.tl-hero-title {
+  font-size: clamp(3.2rem, 7.5vw, 6.2rem);
+  font-weight: 880;
+  letter-spacing: -0.045em;
+}
+
+.tl-section-heading h2,
+.tl-split-section h2,
+.tl-final-cta h2 {
+  font-weight: 840;
+  letter-spacing: -0.04em;
+}
+
+.tl-brand-mark,
+.tl-button-primary,
+.tl-billing-option-active {
+  background: linear-gradient(135deg, var(--tl-primary), #37d99e);
+}
+
+.tl-brand-mark {
+  box-shadow: 0 14px 28px rgba(24, 160, 88, 0.24);
+}
+
+.tl-button-primary {
+  border-color: var(--tl-primary);
+  box-shadow: 0 16px 30px rgba(24, 160, 88, 0.2);
+}
+
+.tl-button-primary:hover,
+.tl-button-primary:focus {
+  border-color: var(--tl-primary-dark);
+  background: var(--tl-primary-dark);
+}
+
+.tl-feature-card,
+.tl-job-card,
+.tl-price-card,
+.tl-card,
+.tl-panel {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.tl-feature-card:hover,
+.tl-job-card:hover,
+.tl-price-card:hover,
+.tl-card:hover,
+.tl-panel:hover {
+  border-color: var(--tl-border-strong);
+  box-shadow: 0 18px 42px rgba(23, 32, 51, 0.11);
+  transform: translateY(-3px);
+}
+
+.tl-pill,
+.tl-badge-primary {
+  border-color: rgba(124, 92, 255, 0.2);
+  background: rgba(124, 92, 255, 0.1);
+  color: #4b32b5;
+}
+
+.tl-badge-success {
+  border-color: rgba(24, 160, 88, 0.2);
+  background: rgba(24, 160, 88, 0.11);
+  color: #0f7f44;
+}
+
+.tl-product-shot,
+.tl-pricing-shell,
+.tl-final-cta {
+  background:
+    linear-gradient(135deg, rgba(124, 92, 255, 0.08), transparent 34%),
+    linear-gradient(225deg, rgba(24, 160, 88, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.76);
+}
+
+.tl-price-card-featured {
+  border-color: var(--tl-primary);
+  box-shadow: 0 24px 50px rgba(24, 160, 88, 0.16);
 }
 
 @media (max-width: 760px) {

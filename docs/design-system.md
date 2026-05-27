@@ -111,31 +111,37 @@ remaining original to Trackly.
 ## Premium SaaS Visual Direction
 
 Trackly's structure remains its own, but the visual language should move towards
-a more premium, data-dense SaaS feel inspired by Prentus.
+a more premium, data-dense SaaS feel inspired by Prentus's colour confidence and
+typography. Trackly must remain a light, approachable job-application tracking
+product, not a dark software-engineering dashboard.
 
 ### Colour Direction
 
-Use a darker, higher-contrast palette for product-heavy sections, dashboard
-previews, pricing, and future application-tracking surfaces.
+Use a visible Cool Mist page background with crisp white surfaces, green primary
+actions, and violet support accents. Product-heavy sections, dashboard previews,
+pricing, and future application-tracking surfaces should look structured and
+data-rich without switching the whole product to dark mode.
 
 Recommended tokens:
 
-- Deep background: `#050712`
-- Dark section background: `#0b1020`
-- Raised card surface: `#101827`
-- Elevated card surface: `#151f32`
-- Soft border: `rgba(255, 255, 255, 0.12)`
-- Strong border: `rgba(255, 255, 255, 0.22)`
-- Primary text on dark: `#ffffff`
-- Soft text on dark: `rgba(255, 255, 255, 0.76)`
-- Muted text on dark: `rgba(255, 255, 255, 0.56)`
-- Accent violet: `#7c5cff`
-- Accent violet hover: `#9b7cff`
-- Success green: `#37d99e`
+- Page background: `#c8d2df`
+- Background top wash: `#e3e8ee`
+- Surface/card background: `#ffffff`
+- Soft surface: `#f1f6ef`
+- Primary text: `#172033`
+- Muted text: `#667085`
+- Soft border: `#dfe6dc`
+- Strong border: `#c8d5c4`
+- Primary green: `#18a058`
+- Primary green hover: `#0f7f44`
+- Support violet: `#7c5cff`
+- Support violet wash: `rgba(124, 92, 255, 0.12)`
+- Success green highlight: `#37d99e`
 
-Light sections may still use Trackly's existing warm neutral background, but dark
-sections should be preferred where the page needs product depth, metrics,
-screenshots, or dashboard-style content.
+The page background should be visibly Cool Mist, approximately 30% darker than a
+near-white mist, so the landing page is distinct from earlier warm/off-white
+projects. Use green for primary actions and success states; use violet for
+premium emphasis, badges, and subtle radial accents.
 
 ### Typography Direction
 
@@ -160,34 +166,36 @@ Only use negative letter spacing on large headings.
 
 ### Cards And Product Surfaces
 
-Cards should feel like compact product UI, not decorative marketing blocks.
+Cards should feel like compact product UI, not decorative marketing blocks, while
+remaining light and readable.
 
 Use:
 
-- Dark raised surfaces.
-- Thin translucent borders.
+- White or near-white raised surfaces.
+- Soft but visible borders.
 - Subtle inner gradients.
 - Compact metrics.
 - Status badges.
-- Hover lift and brighter borders.
+- Hover lift, clearer border, and a slightly stronger shadow.
 
 Suggested card treatment:
 
 ```css
 background:
-  linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
-  #101827;
-border: 1px solid rgba(255,255,255,0.12);
+  linear-gradient(135deg, rgba(124, 92, 255, 0.08), transparent 34%),
+  linear-gradient(225deg, rgba(24, 160, 88, 0.1), transparent 42%),
+  rgba(255, 255, 255, 0.76);
+border: 1px solid #dfe6dc;
 border-radius: 1.25rem;
-box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+box-shadow: 0 20px 45px rgba(23, 32, 51, 0.09);
 ```
 
 Hover:
 
 ```css
 transform: translateY(-3px);
-border-color: rgba(255,255,255,0.22);
-background-color: #151f32;
+border-color: #c8d5c4;
+box-shadow: 0 18px 42px rgba(23, 32, 51, 0.11);
 ```
 
 ### Badges And Labels
@@ -208,8 +216,8 @@ Examples:
 Badge style:
 
 - Rounded pill.
-- Dark translucent background.
-- Soft white border.
+- Light translucent background.
+- Soft border.
 - Small bold text.
 - Accent variants for success, warning, and active states.
 
@@ -219,8 +227,8 @@ Primary CTAs should feel confident and high contrast.
 
 Use:
 
-- Primary button: white on dark, or violet accent.
-- Secondary button: transparent with soft border.
+- Primary button: green gradient.
+- Secondary button: white or translucent with soft border.
 - Rounded pill shape.
 - Strong hover states.
 
