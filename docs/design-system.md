@@ -101,6 +101,9 @@ remaining original to Trackly.
   documents, metrics, and account identity.
 - Include a search/map visualization when discussing location, remote, hybrid,
   or opportunity discovery.
+- Include pricing when the landing page needs commercial framing. Prices should
+  use pound sterling (`£`) and plan cards should clearly distinguish free and
+  paid options.
 - Repeat the primary CTA near the bottom of the page.
 - End with a footer that exposes product and account navigation.
 - Do not copy competitor text, screenshots, logos, or brand assets.

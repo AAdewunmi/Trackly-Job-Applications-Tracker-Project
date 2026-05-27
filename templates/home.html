@@ -200,6 +200,79 @@
     </div>
 </section>
 
+<section id="pricing" class="tl-pricing-section">
+    <div class="tl-pricing-shell">
+        <div class="tl-section-heading">
+            <p class="tl-eyebrow">Pricing</p>
+            <h2>Choose the plan that fits your search.</h2>
+            <p class="tl-muted">
+                Start free while you build your job-search habit, then upgrade when you want richer tracking and AI-ready workflow support.
+            </p>
+        </div>
+
+        <div class="tl-billing-toggle" aria-label="Billing period">
+            <span class="tl-billing-option tl-billing-option-active">Monthly</span>
+            <span class="tl-billing-option">Quarterly</span>
+            <span class="tl-billing-option">Annually</span>
+        </div>
+
+        <div class="tl-pricing-grid">
+            <article class="tl-price-card">
+                <div>
+                    <p class="tl-price-plan">Free</p>
+                    <p class="tl-muted">Build a structured application tracker and keep your core job-search activity in one place.</p>
+                </div>
+
+                <div class="tl-price">
+                    <span>£0</span>
+                    <strong>/month</strong>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <a class="tl-button tl-button-secondary tl-button-full" href="{% url 'dashboard:user' %}">Open dashboard</a>
+                {% else %}
+                    <a class="tl-button tl-button-secondary tl-button-full" href="{% url 'users:signup' %}">Start for free</a>
+                {% endif %}
+
+                <div class="tl-price-features">
+                    <strong>Included</strong>
+                    <span>Application pipeline tracking</span>
+                    <span>Profile and account foundation</span>
+                    <span>Dashboard snapshot access</span>
+                    <span>Manual follow-up planning</span>
+                </div>
+            </article>
+
+            <article class="tl-price-card tl-price-card-featured">
+                <div>
+                    <p class="tl-price-plan">Pro</p>
+                    <p class="tl-muted">For an active search with deeper tracking, smarter preparation, and future AI-supported insights.</p>
+                </div>
+
+                <div class="tl-price">
+                    <span>£12</span>
+                    <strong>/month</strong>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'dashboard:user' %}">Go to dashboard</a>
+                {% else %}
+                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'users:signup' %}">Create account</a>
+                {% endif %}
+
+                <div class="tl-price-features">
+                    <strong>Everything in Free, plus</strong>
+                    <span>Advanced application metrics</span>
+                    <span>Interview preparation workspace</span>
+                    <span>Contact and document organisation</span>
+                    <span>AI-ready job-search insights</span>
+                    <span>Priority workflow improvements</span>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
 <section class="tl-final-cta">
     <p class="tl-eyebrow">Start with the account journey</p>
     <h2>Build the job-search workspace one step at a time.</h2>

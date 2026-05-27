@@ -39,7 +39,7 @@ The project uses environment-specific settings:
 This split prevents local convenience settings from leaking into deployed environments.
 
 Each environment-specific module imports from `config.settings.base` first, then
-overrides only the behavior that differs for that environment. Secrets, debug
+overrides only the behaviour that differs for that environment. Secrets, debug
 mode, hosts, CSRF trusted origins, database connection values, and production
 security options are read from environment variables with explicit defaults for
 local or CI usage.

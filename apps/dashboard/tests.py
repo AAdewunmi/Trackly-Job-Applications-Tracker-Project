@@ -14,7 +14,7 @@ def test_root_renders_landing_page_for_anonymous_users(client: Client) -> None:
     response = client.get("/")
 
     assert response.status_code == 200
-    assert b"Keep your job search organized." in response.content
+    assert b"Keep your job search organised." in response.content
     assert b"Create account" in response.content
     assert b"Sign in" in response.content
 

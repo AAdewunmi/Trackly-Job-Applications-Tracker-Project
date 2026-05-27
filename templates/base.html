@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Trackly{% endblock %}</title>
-    <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+    <link href="{% static 'css/theme.css' %}?v=20260527-pricing" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
   </head>
   <body>
@@ -22,6 +22,7 @@
             <a href="{% url 'home' %}#dashboard-preview">Preview</a>
             <a href="{% url 'home' %}#features">Features</a>
             <a href="{% url 'home' %}#job-map">Map</a>
+            <a href="{% url 'home' %}#pricing">Pricing</a>
           </div>
 
           <div class="tl-nav-actions">
@@ -71,6 +72,7 @@
                 <a href="{% url 'home' %}#dashboard-preview">Dashboard preview</a>
                 <a href="{% url 'home' %}#features">Features</a>
                 <a href="{% url 'home' %}#job-map">Map view</a>
+                <a href="{% url 'home' %}#pricing">Pricing</a>
               </div>
             </div>
             <div>
