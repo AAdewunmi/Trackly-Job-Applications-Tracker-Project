@@ -357,11 +357,17 @@ textarea {
 
 .tl-auth-shell {
   display: grid;
-  justify-content: center;
+  width: 100%;
+  min-height: calc(100vh - 18rem);
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: clamp(1rem, 4vw, 3rem) 0;
 }
 
 .tl-auth-card {
   width: min(100%, 34rem);
+  justify-self: center;
 }
 
 .tl-product-shot {
