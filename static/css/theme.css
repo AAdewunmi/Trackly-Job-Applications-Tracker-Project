@@ -701,6 +701,34 @@ textarea:focus {
   margin-top: 2rem;
 }
 
+.tl-admin-metric-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tl-admin-metric-value {
+  display: block;
+  margin: 0 0 0.55rem;
+  color: var(--tl-text);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.tl-admin-readiness {
+  margin-top: 1.5rem;
+}
+
+.tl-admin-readiness h2 {
+  margin: 0 0 0.75rem;
+}
+
+.tl-admin-readiness p {
+  margin: 0;
+}
+
 .tl-dashboard-page {
   display: grid;
   align-items: stretch;
@@ -1575,6 +1603,7 @@ textarea:focus {
   .tl-shot-layout,
   .tl-kanban-preview,
   .tl-metric-strip,
+  .tl-admin-metric-grid,
   .tl-dashboard-layout,
   .tl-dashboard-metrics,
   .tl-dashboard-board,

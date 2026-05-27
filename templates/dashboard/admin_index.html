@@ -1,24 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page_title }} | Trackly{% endblock %}
+{% block title %}Admin Dashboard | Trackly{% endblock %}
 
 {% block content %}
 <section class="tl-section">
     <div class="tl-section-heading">
-        <p class="tl-eyebrow">Admin</p>
-        <h1>{{ page_title }}</h1>
-        <p class="tl-muted">Trackly account and role totals for the current product foundation.</p>
+        <p class="tl-eyebrow">Admin surface</p>
+        <h1>Trackly admin dashboard</h1>
+        <p class="tl-muted">
+            This protected surface is reserved for platform oversight, support workflows, and future SaaS-level metrics.
+        </p>
     </div>
 
-    <div class="tl-metric-strip">
-        <div>
-            <strong>{{ total_users }}</strong>
-            <span>Total users</span>
-        </div>
-        <div>
-            <strong>{{ total_roles }}</strong>
-            <span>Total roles</span>
-        </div>
+    <div class="tl-admin-metric-grid">
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Users</p>
+                <strong class="tl-admin-metric-value">{{ total_users }}</strong>
+                <p class="tl-muted">Registered accounts in this environment.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Roles</p>
+                <strong class="tl-admin-metric-value">{{ total_roles }}</strong>
+                <p class="tl-muted">Configured product roles for access control.</p>
+            </div>
+        </article>
     </div>
+
+    <section class="tl-panel tl-admin-readiness">
+        <div class="tl-panel-body">
+            <h2>Admin readiness</h2>
+            <p class="tl-muted">
+                Trackly keeps the admin dashboard separate from the standard user dashboard and protects it with explicit access rules.
+            </p>
+        </div>
+    </section>
 </section>
 {% endblock %}
