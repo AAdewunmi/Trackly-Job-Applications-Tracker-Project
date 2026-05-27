@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-section">
+    <div class="tl-section-heading">
+        <p class="tl-eyebrow">Workspace</p>
+        <h1>{{ page_title }}</h1>
+        <p class="tl-muted">Your job-search dashboard is ready for upcoming application tracking features.</p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Start building your pipeline</h2>
+            <p class="tl-muted">
+                Saved roles, applications, interviews, contacts, documents, and follow-ups will appear here as Trackly's product surfaces expand.
+            </p>
+            <div class="tl-actions">
+                <a class="tl-button tl-button-primary" href="{% url 'users:profile' %}">View profile</a>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}
