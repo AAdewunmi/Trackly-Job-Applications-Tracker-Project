@@ -43,7 +43,7 @@ not need to match production values.
 
 If `POSTGRES_PASSWORD`, `POSTGRES_USER`, or `POSTGRES_DB` are changed after the
 PostgreSQL volume has already been created, recreate the local database volume
-or restore the values that were used when the volume was initialized.
+or restore the values that were used when the volume was initialised.
 
 ## Start Services
 

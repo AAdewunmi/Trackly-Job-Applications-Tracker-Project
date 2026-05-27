@@ -251,8 +251,8 @@ composition.
 
 ## Colour
 
-Trackly uses a clean light theme with crisp blue primary actions, green success
-states, and warm neutral surfaces.
+Trackly uses a clean light theme with a visible Cool Mist page background, green
+primary actions, violet support accents, and crisp white surfaces.
 
 - Primary: `--tl-primary`
 - Primary dark: `--tl-primary-dark`
