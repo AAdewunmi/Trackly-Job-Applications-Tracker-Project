@@ -382,6 +382,13 @@ textarea {
   padding: clamp(0.75rem, 2vw, 1.15rem);
 }
 
+.tl-product-shot-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.35rem;
+}
+
 .tl-shot-window {
   overflow: hidden;
   border: 1px solid var(--tl-border);
