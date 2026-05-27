@@ -3,27 +3,292 @@
 {% block title %}Trackly | Job application tracker{% endblock %}
 
 {% block content %}
-<section class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="mb-4">
-            <p class="text-uppercase text-primary fw-semibold small mb-2">Trackly</p>
-            <h1 class="display-6 fw-semibold mb-3">Keep your job search organized.</h1>
-            <p class="lead text-muted mb-0">
-                Track applications, structure follow-ups, and keep your account ready for future dashboard insights.
-            </p>
-        </div>
+<section class="tl-landing-hero">
+    <div class="tl-hero-copy-block">
+        <p class="tl-pill">Job tracker for focused applicants</p>
+        <h1 class="tl-hero-title">Keep your job search organised.</h1>
+        <p class="tl-hero-copy">
+            Track roles, applications, interviews, contacts, notes, and follow-ups from one clean workspace built around your next move.
+        </p>
 
         {% if request.user.is_authenticated %}
-            <div class="d-flex flex-column flex-sm-row gap-2">
-                <a class="btn btn-primary" href="{% url 'dashboard:user' %}">Go to dashboard</a>
-                <a class="btn btn-outline-secondary" href="{% url 'users:profile' %}">View profile</a>
+            <div class="tl-actions tl-actions-center">
+                <a class="tl-button tl-button-primary" href="{% url 'dashboard:user' %}">Go to dashboard</a>
+                <a class="tl-button tl-button-secondary" href="{% url 'users:profile' %}">View profile</a>
             </div>
         {% else %}
-            <div class="d-flex flex-column flex-sm-row gap-2">
-                <a class="btn btn-primary" href="{% url 'users:signup' %}">Create account</a>
-                <a class="btn btn-outline-secondary" href="{% url 'users:login' %}">Sign in</a>
+            <div class="tl-actions tl-actions-center">
+                <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Create account</a>
+                <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
             </div>
         {% endif %}
     </div>
+
+    <div id="dashboard-preview" class="tl-product-shot" aria-label="Trackly dashboard preview">
+        <div class="tl-shot-window">
+            <div class="tl-shot-toolbar">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="tl-shot-layout">
+                <aside class="tl-shot-sidebar">
+                    <strong>Trackly</strong>
+                    <span class="tl-sidebar-item tl-sidebar-item-active">Pipeline</span>
+                    <span class="tl-sidebar-item">Interviews</span>
+                    <span class="tl-sidebar-item">Contacts</span>
+                    <span class="tl-sidebar-item">Documents</span>
+                </aside>
+
+                <div class="tl-shot-main">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">Dashboard snapshot</p>
+                            <h2>Application pipeline</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-success">8 active roles</span>
+                    </div>
+
+                    <div class="tl-metric-strip">
+                        <div>
+                            <strong>24</strong>
+                            <span>Saved jobs</span>
+                        </div>
+                        <div>
+                            <strong>7</strong>
+                            <span>Follow-ups</span>
+                        </div>
+                        <div>
+                            <strong>3</strong>
+                            <span>Interviews</span>
+                        </div>
+                    </div>
+
+                    <div class="tl-kanban-preview">
+                        <section class="tl-kanban-column">
+                            <h3>Saved</h3>
+                            <article class="tl-job-card">
+                                <strong>Product Analyst</strong>
+                                <span>Remote · Salary noted</span>
+                            </article>
+                            <article class="tl-job-card">
+                                <strong>Data Associate</strong>
+                                <span>London · CV ready</span>
+                            </article>
+                        </section>
+                        <section class="tl-kanban-column">
+                            <h3>Applied</h3>
+                            <article class="tl-job-card tl-job-card-blue">
+                                <strong>Operations Analyst</strong>
+                                <span>Follow up tomorrow</span>
+                            </article>
+                        </section>
+                        <section class="tl-kanban-column">
+                            <h3>Interview</h3>
+                            <article class="tl-job-card tl-job-card-green">
+                                <strong>Growth Analyst</strong>
+                                <span>Panel prep in progress</span>
+                            </article>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="tl-section tl-section-spacious">
+    <div class="tl-section-heading">
+        <p class="tl-eyebrow">Everything in one workflow</p>
+        <h2>Bring structure to every application stage.</h2>
+        <p class="tl-muted">
+            Trackly keeps the important pieces of a job search visible without forcing you into a spreadsheet.
+        </p>
+    </div>
+
+    <div class="tl-feature-grid">
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">01</span>
+            <h3>Pipeline tracking</h3>
+            <p>Move opportunities through saved, applied, interview, offer, and closed stages.</p>
+        </article>
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">02</span>
+            <h3>Follow-up rhythm</h3>
+            <p>Keep reminders, notes, and next actions attached to the role they belong to.</p>
+        </article>
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">03</span>
+            <h3>Contact memory</h3>
+            <p>Record recruiters, hiring managers, and referral context before details get lost.</p>
+        </article>
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">04</span>
+            <h3>Document readiness</h3>
+            <p>Know which CV, cover letter, and notes are prepared for each opportunity.</p>
+        </article>
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">05</span>
+            <h3>Dashboard signals</h3>
+            <p>Turn job-search activity into visible metrics for momentum and decision-making.</p>
+        </article>
+        <article class="tl-feature-card">
+            <span class="tl-feature-icon">06</span>
+            <h3>Account foundation</h3>
+            <p>Keep ownership, profile details, and future AI insight history tied to your identity.</p>
+        </article>
+    </div>
+</section>
+
+<section class="tl-split-section">
+    <div>
+        <p class="tl-eyebrow">Search with context</p>
+        <h2>See where your search is concentrated.</h2>
+        <p class="tl-muted">
+            The future Trackly map view will help you compare remote, hybrid, and local opportunities so your search feels less scattered.
+        </p>
+        <div class="tl-check-list">
+            <span>Location-aware opportunity planning</span>
+            <span>Remote and hybrid role visibility</span>
+            <span>Pipeline counts by search area</span>
+        </div>
+    </div>
+
+    <div id="job-map" class="tl-map-preview" aria-label="Search map preview">
+        <div class="tl-map-grid"></div>
+        <span class="tl-map-pin tl-map-pin-primary"></span>
+        <span class="tl-map-pin tl-map-pin-secondary"></span>
+        <span class="tl-map-pin tl-map-pin-tertiary"></span>
+        <div class="tl-map-card">
+            <strong>London search</strong>
+            <span>14 roles · 5 active applications</span>
+        </div>
+        <div class="tl-map-search">
+            <span>Search roles by city, company, or work style</span>
+        </div>
+    </div>
+</section>
+
+<section class="tl-section tl-section-spacious">
+    <div class="tl-section-heading">
+        <p class="tl-eyebrow">Designed for momentum</p>
+        <h2>Know what happened, what matters, and what to do next.</h2>
+    </div>
+
+    <div class="tl-timeline-panel">
+        <div class="tl-timeline-item">
+            <span></span>
+            <div>
+                <strong>Application saved</strong>
+                <p>Trackly records the company, role, source, and deadline.</p>
+            </div>
+        </div>
+        <div class="tl-timeline-item">
+            <span></span>
+            <div>
+                <strong>Interview scheduled</strong>
+                <p>Preparation notes and contact details stay attached to the opportunity.</p>
+            </div>
+        </div>
+        <div class="tl-timeline-item">
+            <span></span>
+            <div>
+                <strong>Follow-up ready</strong>
+                <p>The next action is visible before the opportunity goes quiet.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing" class="tl-pricing-section">
+    <div class="tl-pricing-shell">
+        <div class="tl-section-heading">
+            <p class="tl-eyebrow">Pricing</p>
+            <h2>Choose the plan that fits your search.</h2>
+            <p class="tl-muted">
+                Start free while you build your job-search habit, then upgrade when you want richer tracking and AI-ready workflow support.
+            </p>
+        </div>
+
+        <div class="tl-billing-toggle" aria-label="Billing period">
+            <span class="tl-billing-option tl-billing-option-active">Monthly</span>
+            <span class="tl-billing-option">Quarterly</span>
+            <span class="tl-billing-option">Annually</span>
+        </div>
+
+        <div class="tl-pricing-grid">
+            <article class="tl-price-card">
+                <div>
+                    <p class="tl-price-plan">Free</p>
+                    <p class="tl-muted">Build a structured application tracker and keep your core job-search activity in one place.</p>
+                </div>
+
+                <div class="tl-price">
+                    <span>£0</span>
+                    <strong>/month</strong>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <a class="tl-button tl-button-secondary tl-button-full" href="{% url 'dashboard:user' %}">Open dashboard</a>
+                {% else %}
+                    <a class="tl-button tl-button-secondary tl-button-full" href="{% url 'users:signup' %}">Start for free</a>
+                {% endif %}
+
+                <div class="tl-price-features">
+                    <strong>Included</strong>
+                    <span>Application pipeline tracking</span>
+                    <span>Profile and account foundation</span>
+                    <span>Dashboard snapshot access</span>
+                    <span>Manual follow-up planning</span>
+                </div>
+            </article>
+
+            <article class="tl-price-card tl-price-card-featured">
+                <div>
+                    <p class="tl-price-plan">Pro</p>
+                    <p class="tl-muted">For an active search with deeper tracking, smarter preparation, and future AI-supported insights.</p>
+                </div>
+
+                <div class="tl-price">
+                    <span>£12</span>
+                    <strong>/month</strong>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'dashboard:user' %}">Go to dashboard</a>
+                {% else %}
+                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'users:signup' %}">Create account</a>
+                {% endif %}
+
+                <div class="tl-price-features">
+                    <strong>Everything in Free, plus</strong>
+                    <span>Advanced application metrics</span>
+                    <span>Interview preparation workspace</span>
+                    <span>Contact and document organisation</span>
+                    <span>AI-ready job-search insights</span>
+                    <span>Priority workflow improvements</span>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="tl-final-cta">
+    <p class="tl-eyebrow">Start with the account journey</p>
+    <h2>Build the job-search workspace one step at a time.</h2>
+    <p class="tl-muted">
+        Create your Trackly account now, then use the dashboard and profile surfaces as the foundation for the application tracker.
+    </p>
+    {% if request.user.is_authenticated %}
+        <div class="tl-actions tl-actions-center">
+            <a class="tl-button tl-button-primary" href="{% url 'dashboard:user' %}">Go to dashboard</a>
+            <a class="tl-button tl-button-secondary" href="{% url 'users:profile' %}">View profile</a>
+        </div>
+    {% else %}
+        <div class="tl-actions tl-actions-center">
+            <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Create account</a>
+            <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

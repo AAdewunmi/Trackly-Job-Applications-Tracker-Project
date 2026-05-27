@@ -72,13 +72,13 @@ Use these docs for the full reviewer path:
 
 ## Environment Settings
 
-Trackly keeps environment behavior isolated through dedicated settings modules:
+Trackly keeps environment behaviour isolated through dedicated settings modules:
 
 - Local Docker development uses `config.settings.local`
 - Tests and GitHub Actions CI use `config.settings.test`
 - ASGI/WSGI deployment uses `config.settings.production`
 
-Shared behavior lives in `config.settings.base`. Secrets, debug mode, allowed
+Shared behaviour lives in `config.settings.base`. Secrets, debug mode, allowed
 hosts, CSRF trusted origins, database settings, and production security options
 are configured through environment variables. CI also runs migration checks and
 Django's production deploy check before tests.

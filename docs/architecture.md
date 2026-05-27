@@ -39,7 +39,7 @@ The project uses environment-specific settings:
 This split prevents local convenience settings from leaking into deployed environments.
 
 Each environment-specific module imports from `config.settings.base` first, then
-overrides only the behavior that differs for that environment. Secrets, debug
+overrides only the behaviour that differs for that environment. Secrets, debug
 mode, hosts, CSRF trusted origins, database connection values, and production
 security options are read from environment variables with explicit defaults for
 local or CI usage.
@@ -85,25 +85,26 @@ The roles foundation supports:
 - `member`
 - `admin`
 
-The admin dashboard accepts either:
-
-- Django staff users
-- Users with the active Trackly admin role
-
-This keeps the MVP practical while still creating a product-specific access-control path.
+The custom user model has a many-to-many relationship with roles. This creates a
+product-specific access-control foundation before protected role-gated workflows
+are implemented.
 
 ## UI Surface
 
-Sprint 1 uses server-rendered Django templates with Bootstrap. The product shell includes:
+Sprint 1 uses server-rendered Django templates with HTMX available for
+progressive interactions and custom Trackly CSS for styling. The product shell
+includes:
 
 - Shared base template
 - Navigation
 - Flash messages
+- Public landing page
+- Landing-page product preview, feature, map, pricing, and CTA sections
 - Signup page
 - Login page
 - Profile page
-- User dashboard
-- Admin dashboard
+- User dashboard placeholder
+- Admin dashboard placeholder
 
 This gives the project a usable product surface before core job application workflow begins.
 
@@ -125,7 +126,7 @@ Tests cover:
 - Authentication flows
 - Profile access
 - Dashboard access
-- Admin dashboard restrictions
+- Landing-page routing and account-aware actions
 
 ## Later Sprint Boundaries
 
@@ -138,5 +139,6 @@ Sprint 1 deliberately avoids implementing:
 - JWT authentication
 - NLP-based role matching
 - Render deployment
+- Role-gated dashboard restrictions
 
 Those features are intentionally staged across later sprints.
