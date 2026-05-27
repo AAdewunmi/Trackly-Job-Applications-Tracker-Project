@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Trackly | Job application tracker{% endblock %}
 
@@ -25,75 +26,11 @@
     </div>
 
     <div id="dashboard-preview" class="tl-product-shot" aria-label="Trackly dashboard preview">
-        <div class="tl-shot-window">
-            <div class="tl-shot-toolbar">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="tl-shot-layout">
-                <aside class="tl-shot-sidebar">
-                    <strong>Trackly</strong>
-                    <span class="tl-sidebar-item tl-sidebar-item-active">Pipeline</span>
-                    <span class="tl-sidebar-item">Interviews</span>
-                    <span class="tl-sidebar-item">Contacts</span>
-                    <span class="tl-sidebar-item">Documents</span>
-                </aside>
-
-                <div class="tl-shot-main">
-                    <div class="tl-shot-header">
-                        <div>
-                            <p class="tl-eyebrow">Dashboard snapshot</p>
-                            <h2>Application pipeline</h2>
-                        </div>
-                        <span class="tl-badge tl-badge-success">8 active roles</span>
-                    </div>
-
-                    <div class="tl-metric-strip">
-                        <div>
-                            <strong>24</strong>
-                            <span>Saved jobs</span>
-                        </div>
-                        <div>
-                            <strong>7</strong>
-                            <span>Follow-ups</span>
-                        </div>
-                        <div>
-                            <strong>3</strong>
-                            <span>Interviews</span>
-                        </div>
-                    </div>
-
-                    <div class="tl-kanban-preview">
-                        <section class="tl-kanban-column">
-                            <h3>Saved</h3>
-                            <article class="tl-job-card">
-                                <strong>Product Analyst</strong>
-                                <span>Remote · Salary noted</span>
-                            </article>
-                            <article class="tl-job-card">
-                                <strong>Data Associate</strong>
-                                <span>London · CV ready</span>
-                            </article>
-                        </section>
-                        <section class="tl-kanban-column">
-                            <h3>Applied</h3>
-                            <article class="tl-job-card tl-job-card-blue">
-                                <strong>Operations Analyst</strong>
-                                <span>Follow up tomorrow</span>
-                            </article>
-                        </section>
-                        <section class="tl-kanban-column">
-                            <h3>Interview</h3>
-                            <article class="tl-job-card tl-job-card-green">
-                                <strong>Growth Analyst</strong>
-                                <span>Panel prep in progress</span>
-                            </article>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <img
+            class="tl-product-shot-image"
+            src="{% static 'img/user-dashboard-preview.png' %}"
+            alt="Trackly user dashboard showing navigation, application cards, progress metrics, and pipeline columns"
+        >
     </div>
 </section>
 

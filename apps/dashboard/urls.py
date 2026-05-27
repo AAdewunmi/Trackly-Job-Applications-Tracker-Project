@@ -1,12 +1,15 @@
-"""Dashboard URL routes."""
+"""URL routes for Trackly dashboards."""
 
 from django.urls import path
 
-from . import views
+from apps.dashboard.views import (
+    AdminDashboardView,
+    UserDashboardView,
+)
 
 app_name = "dashboard"
 
 urlpatterns = [
-    path("", views.user_dashboard, name="user"),
-    path("admin/", views.admin_dashboard, name="admin"),
+    path("", UserDashboardView.as_view(), name="user"),
+    path("admin/", AdminDashboardView.as_view(), name="admin"),
 ]

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-section">
+    <div class="tl-section-heading">
+        <p class="tl-eyebrow">Admin</p>
+        <h1>{{ page_title }}</h1>
+        <p class="tl-muted">Trackly account and role totals for the current product foundation.</p>
+    </div>
+
+    <div class="tl-metric-strip">
+        <div>
+            <strong>{{ total_users }}</strong>
+            <span>Total users</span>
+        </div>
+        <div>
+            <strong>{{ total_roles }}</strong>
+            <span>Total roles</span>
+        </div>
+    </div>
+</section>
+{% endblock %}
