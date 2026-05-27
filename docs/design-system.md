@@ -108,6 +108,139 @@ remaining original to Trackly.
 - End with a footer that exposes product and account navigation.
 - Do not copy competitor text, screenshots, logos, or brand assets.
 
+## Premium SaaS Visual Direction
+
+Trackly's structure remains its own, but the visual language should move towards
+a more premium, data-dense SaaS feel inspired by Prentus.
+
+### Colour Direction
+
+Use a darker, higher-contrast palette for product-heavy sections, dashboard
+previews, pricing, and future application-tracking surfaces.
+
+Recommended tokens:
+
+- Deep background: `#050712`
+- Dark section background: `#0b1020`
+- Raised card surface: `#101827`
+- Elevated card surface: `#151f32`
+- Soft border: `rgba(255, 255, 255, 0.12)`
+- Strong border: `rgba(255, 255, 255, 0.22)`
+- Primary text on dark: `#ffffff`
+- Soft text on dark: `rgba(255, 255, 255, 0.76)`
+- Muted text on dark: `rgba(255, 255, 255, 0.56)`
+- Accent violet: `#7c5cff`
+- Accent violet hover: `#9b7cff`
+- Success green: `#37d99e`
+
+Light sections may still use Trackly's existing warm neutral background, but dark
+sections should be preferred where the page needs product depth, metrics,
+screenshots, or dashboard-style content.
+
+### Typography Direction
+
+Use bold, tight, modern headings with clean scannable body text.
+
+- Hero headings: very large, heavy, tight line-height.
+- Section headings: large, confident, slightly compressed.
+- Card headings: smaller but still bold.
+- Body copy: readable, muted, and practical.
+- Eyebrows: uppercase, small, letter-spaced, muted.
+
+Suggested scale:
+
+- Hero title: `clamp(3.5rem, 8vw, 6.75rem)`, weight `850`, line-height `0.92`
+- Section title: `clamp(2.25rem, 5vw, 4.25rem)`, weight `820`, line-height
+  `0.98`
+- Card title: `1.2rem`, weight `760`
+- Body: `1rem`, line-height `1.65`
+- Eyebrow: `0.78rem`, uppercase, letter-spacing `0.08em`
+
+Only use negative letter spacing on large headings.
+
+### Cards And Product Surfaces
+
+Cards should feel like compact product UI, not decorative marketing blocks.
+
+Use:
+
+- Dark raised surfaces.
+- Thin translucent borders.
+- Subtle inner gradients.
+- Compact metrics.
+- Status badges.
+- Hover lift and brighter borders.
+
+Suggested card treatment:
+
+```css
+background:
+  linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+  #101827;
+border: 1px solid rgba(255,255,255,0.12);
+border-radius: 1.25rem;
+box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+```
+
+Hover:
+
+```css
+transform: translateY(-3px);
+border-color: rgba(255,255,255,0.22);
+background-color: #151f32;
+```
+
+### Badges And Labels
+
+Use pill badges to make product states scannable.
+
+Examples:
+
+- `AI-ready`
+- `Pipeline`
+- `Interview prep`
+- `Free`
+- `Pro`
+- `Follow-up due`
+- `Remote`
+- `Hybrid`
+
+Badge style:
+
+- Rounded pill.
+- Dark translucent background.
+- Soft white border.
+- Small bold text.
+- Accent variants for success, warning, and active states.
+
+### Buttons
+
+Primary CTAs should feel confident and high contrast.
+
+Use:
+
+- Primary button: white on dark, or violet accent.
+- Secondary button: transparent with soft border.
+- Rounded pill shape.
+- Strong hover states.
+
+### Layout Density
+
+Keep Trackly's current landing-page structure, but make future sections more
+data-rich:
+
+- Dashboard previews should include metrics, rows, statuses, and mini cards.
+- Feature sections should avoid vague marketing copy.
+- Case-study or proof sections should use numbers prominently.
+- FAQ sections should use clean accordion rows with subtle dividers.
+- Footer should stay structured and multi-column.
+
+### Design Boundary
+
+Trackly may borrow Prentus's premium SaaS principles, but must not copy Prentus's
+exact layout, wording, brand assets, screenshots, logos, or component
+composition.
+
 ## Colour
 
 Trackly uses a clean light theme with crisp blue primary actions, green success
