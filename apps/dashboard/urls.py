@@ -2,7 +2,10 @@
 
 from django.urls import path
 
-from apps.dashboard.views import AdminDashboardView, UserDashboardView
+from apps.dashboard.views import (
+    AdminDashboardView,
+    UserDashboardView,
+)
 
 app_name = "dashboard"
 

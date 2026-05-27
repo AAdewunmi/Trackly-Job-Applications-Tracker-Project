@@ -288,6 +288,19 @@ colour for action, status, and emphasis.
 - Use `.tl-panel` for future dashboard/account sections.
 - Cards should use `--tl-radius`, `--tl-border`, and `--tl-shadow`.
 
+### Dashboard Navigation
+
+- User dashboards should use `.tl-dashboard-page` for the two-column shell.
+- Use `.tl-dashboard-side-nav` for in-page dashboard navigation.
+- Sidebar links use `.tl-dashboard-side-link`; the current section uses
+  `.tl-dashboard-side-link-active`.
+- Place the page heading above `.tl-dashboard-page`; the sidebar should align
+  with the dashboard cards and stretch to the end of the dashboard content.
+- Keep sidebar destinations focused on frequent user workflows such as pipeline,
+  applications, metrics, insights, empty state, and profile.
+- On mobile, dashboard side navigation should stack above content and use compact
+  grid links rather than hiding navigation.
+
 ### Forms
 
 - Forms should use `novalidate` and render field-level errors.

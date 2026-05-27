@@ -1,25 +1,129 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page_title }} | Trackly{% endblock %}
+{% block title %}Dashboard | Trackly{% endblock %}
 
 {% block content %}
-<section class="tl-section">
+<section class="tl-section tl-dashboard-shell">
     <div class="tl-section-heading">
-        <p class="tl-eyebrow">Workspace</p>
-        <h1>{{ page_title }}</h1>
-        <p class="tl-muted">Your job-search dashboard is ready for upcoming application tracking features.</p>
+        <p class="tl-eyebrow">Personal dashboard</p>
+        <h1>Your job search command centre</h1>
+        <p class="tl-muted">
+            Trackly will help you organise applications, monitor progress, capture notes, and review job-fit insights from one authenticated workspace.
+        </p>
     </div>
 
-    <section class="tl-panel">
-        <div class="tl-panel-body tl-stack">
-            <h2>Start building your pipeline</h2>
-            <p class="tl-muted">
-                Saved roles, applications, interviews, contacts, documents, and follow-ups will appear here as Trackly's product surfaces expand.
-            </p>
-            <div class="tl-actions">
-                <a class="tl-button tl-button-primary" href="{% url 'users:profile' %}">View profile</a>
+    <div class="tl-dashboard-page">
+        <aside class="tl-dashboard-side-nav" aria-label="Dashboard navigation">
+            <strong>Trackly</strong>
+            <nav>
+                <a class="tl-dashboard-side-link tl-dashboard-side-link-active" href="#pipeline">Pipeline</a>
+                <a class="tl-dashboard-side-link" href="#applications">Applications</a>
+                <a class="tl-dashboard-side-link" href="#metrics">Progress metrics</a>
+                <a class="tl-dashboard-side-link" href="#insights">AI insights</a>
+                <a class="tl-dashboard-side-link" href="#empty-state">Empty state</a>
+                <a class="tl-dashboard-side-link" href="{% url 'users:profile' %}">Profile</a>
+            </nav>
+        </aside>
+
+        <div class="tl-dashboard-content">
+            <div class="tl-feature-grid">
+                <article id="applications" class="tl-card">
+                    <div class="tl-card-body">
+                        <h2>Applications</h2>
+                        <p class="tl-muted">
+                            Manage each opportunity from first save through application, interview, offer, and final decision.
+                        </p>
+                    </div>
+                </article>
+
+                <article id="metrics" class="tl-card">
+                    <div class="tl-card-body">
+                        <h2>Progress metrics</h2>
+                        <p class="tl-muted">
+                            Pipeline metrics will surface active applications, interviews, offers, rejections, and recent activity.
+                        </p>
+                    </div>
+                </article>
+
+                <article id="insights" class="tl-card">
+                    <div class="tl-card-body">
+                        <h2>AI job insights</h2>
+                        <p class="tl-muted">
+                            Review structured keyword signals and explainable fit indicators as your application data grows.
+                        </p>
+                    </div>
+                </article>
             </div>
+
+            <section id="pipeline" class="tl-panel tl-dashboard-empty-state" aria-labelledby="pipeline-heading">
+                <div class="tl-panel-body tl-stack">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">Dashboard snapshot</p>
+                            <h2 id="pipeline-heading">Application pipeline</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-success">8 active roles</span>
+                    </div>
+
+                    <div class="tl-metric-strip" aria-label="Pipeline metrics">
+                        <div>
+                            <strong>24</strong>
+                            <span>Saved jobs</span>
+                        </div>
+                        <div>
+                            <strong>7</strong>
+                            <span>Follow-ups</span>
+                        </div>
+                        <div>
+                            <strong>3</strong>
+                            <span>Interviews</span>
+                        </div>
+                    </div>
+
+                    <div class="tl-kanban-preview">
+                        <section class="tl-kanban-column" aria-labelledby="saved-heading">
+                            <h3 id="saved-heading">Saved</h3>
+                            <article class="tl-job-card">
+                                <strong>Product Analyst</strong>
+                                <span>Remote · Salary noted</span>
+                            </article>
+                            <article class="tl-job-card">
+                                <strong>Data Associate</strong>
+                                <span>London · CV ready</span>
+                            </article>
+                        </section>
+
+                        <section class="tl-kanban-column" aria-labelledby="applied-heading">
+                            <h3 id="applied-heading">Applied</h3>
+                            <article class="tl-job-card tl-job-card-blue">
+                                <strong>Operations Analyst</strong>
+                                <span>Follow up tomorrow</span>
+                            </article>
+                        </section>
+
+                        <section class="tl-kanban-column" aria-labelledby="interview-heading">
+                            <h3 id="interview-heading">Interview</h3>
+                            <article class="tl-job-card tl-job-card-green">
+                                <strong>Growth Analyst</strong>
+                                <span>Panel prep in progress</span>
+                            </article>
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+            <section id="empty-state" class="tl-panel tl-dashboard-empty-state">
+                <div class="tl-panel-body tl-stack">
+                    <h2>Empty state</h2>
+                    <p class="tl-muted">
+                        Your dashboard is ready. Application records will appear here as you add opportunities to your signed-in workspace.
+                    </p>
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-secondary" href="{% url 'users:profile' %}">Review profile</a>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
+    </div>
 </section>
 {% endblock %}
