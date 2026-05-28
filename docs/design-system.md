@@ -63,8 +63,9 @@ Use the same product-quality principles while keeping Trackly visually distinct.
    tracking features back to the job search.
 
 3. Prefer calm operational UI.
-   Trackly is a productivity product. Use readable forms, structured cards, and
-   predictable navigation.
+   Trackly is a Django SaaS MVP for tracking job applications and matching job
+   descriptions against target-role profiles using explainable NLP. Use readable
+   forms, structured cards, and predictable navigation.
 
 4. Use consistent surfaces.
    Forms, profile details, job cards, metrics, and future dashboard panels should

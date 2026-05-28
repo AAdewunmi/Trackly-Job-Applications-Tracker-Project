@@ -1,6 +1,6 @@
 # Trackly Domain Model
 
-Trackly is a Django SaaS MVP for job application tracking. Sprint 2 introduces the core workflow domain: user-owned job applications, application notes, and user-scoped dashboard metrics.
+Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP. The current jobs app establishes the core workflow domain: user-owned job applications and application notes. Sprint 2 will build on this foundation with full CRUD workflows, selectors, services, and user-scoped dashboard metrics.
 
 ## Core Entity: JobApplication
 
@@ -66,13 +66,15 @@ A note body cannot be blank.
 
 ## Ownership Contract
 
-All application and note access is scoped to the authenticated user.
+All application and note access must be scoped to the authenticated user.
 
-The application list, detail, update, delete, and note creation flows query through user-scoped selectors. A user attempting to access another user's application receives a 404 response. This is deliberate because the object should behave as though it does not exist for that user.
+The implemented application detail flow is scoped to the authenticated user. A user attempting to access another user's application receives a 404 response. This is deliberate because the object should behave as though it does not exist for that user.
 
-## Selectors
+Planned list, create, update, delete, and note creation flows should follow the same ownership contract.
 
-Sprint 2 introduces selectors for reusable read queries:
+## Planned Selectors
+
+Sprint 2 should introduce selectors for reusable read queries:
 
 - `application_queryset_for_user(user)`
 - `get_user_application_or_404(user, pk)`
@@ -80,21 +82,21 @@ Sprint 2 introduces selectors for reusable read queries:
 - `notes_queryset_for_user(user)`
 - `get_note_count_for_user(user)`
 
-Selectors keep ownership filtering out of templates and reduce duplicated query behaviour across views and services.
+Selectors should keep ownership filtering out of templates and reduce duplicated query behaviour across views and services.
 
-## Services
+## Planned Services
 
-Sprint 2 introduces service-layer metric helpers:
+Sprint 2 should introduce service-layer metric helpers:
 
 - `get_application_status_counts(user)`
 - `get_user_pipeline_metrics(user)`
 - `get_user_dashboard_context(user)`
 
-Dashboard metrics are calculated from database state and scoped to the logged-in user.
+Dashboard metrics should be calculated from database state and scoped to the logged-in user.
 
-## Dashboard Metrics
+## Planned Dashboard Metrics
 
-The user dashboard reports:
+The current dashboard is still mostly static preview content. Sprint 2 should replace those placeholders with user-scoped metrics:
 
 | Metric | Definition |
 | --- | --- |
@@ -105,9 +107,9 @@ The user dashboard reports:
 | Rejections | Applications with `rejected` status. |
 | Notes | Notes attached to the current user's applications. |
 
-## Sprint 2 Completion Criteria
+## Planned Sprint 2 Completion Criteria
 
-Sprint 2 is complete when:
+Sprint 2 should be considered complete when:
 
 1. Users can create job applications.
 2. Users can list only their own applications.
