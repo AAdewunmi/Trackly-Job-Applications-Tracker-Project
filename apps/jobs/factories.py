@@ -5,8 +5,7 @@ from datetime import timedelta
 import factory
 from django.utils import timezone
 
-from apps.jobs.models import ApplicationNote
-from apps.jobs.models import JobApplication
+from apps.jobs.models import ApplicationNote, JobApplication
 from apps.users.factories import UserFactory
 
 
@@ -22,9 +21,7 @@ class JobApplicationFactory(factory.django.DjangoModelFactory):
     title = factory.Sequence(lambda number: f"Backend Engineer {number}")
     company = factory.Sequence(lambda number: f"Company {number}")
     status = JobApplication.Status.SAVED
-    job_link = factory.Sequence(
-        lambda number: f"https://example.com/jobs/{number}"
-    )
+    job_link = factory.Sequence(lambda number: f"https://example.com/jobs/{number}")
     applied_date = factory.LazyFunction(
         lambda: timezone.localdate() - timedelta(days=1)
     )
