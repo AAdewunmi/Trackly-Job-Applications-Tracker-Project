@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ application.title }} | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Job application</p>
+        <h1>{{ application.title }}</h1>
+        <p class="tl-muted">{{ application.company }}</p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <dl class="tl-definition-list">
+                <div class="tl-definition-row">
+                    <dt>Status</dt>
+                    <dd><span class="tl-badge tl-badge-primary">{{ application.get_status_display }}</span></dd>
+                </div>
+
+                <div class="tl-definition-row">
+                    <dt>Applied date</dt>
+                    <dd>{{ application.applied_date|default:"Not recorded" }}</dd>
+                </div>
+
+                <div class="tl-definition-row">
+                    <dt>Job link</dt>
+                    <dd>
+                        {% if application.job_link %}
+                            <a href="{{ application.job_link }}">{{ application.job_link }}</a>
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </dd>
+                </div>
+
+                <div class="tl-definition-row">
+                    <dt>Updated</dt>
+                    <dd>{{ application.updated_at }}</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+</section>
+{% endblock %}
