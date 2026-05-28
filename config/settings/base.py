@@ -1,4 +1,9 @@
-"""Base Django settings shared by every Trackly environment."""
+"""Base Django settings for the Trackly SaaS application.
+
+This module contains settings shared across local, test, and production
+environments. Environment-specific modules should import from this file and
+override only the values that genuinely differ by runtime context.
+"""
 
 import os
 from pathlib import Path
@@ -7,23 +12,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 def env_bool(name: str, default: bool = False) -> bool:
-    """Return a boolean value from an environment variable."""
-    value = os.getenv(name)
+    """Return a boolean setting parsed from an environment variable."""
+    raw_value = os.getenv(name)
 
-    if value is None:
+    if raw_value is None:
         return default
 
-    return value.strip().lower() in {"1", "true", "yes", "on"}
+    return raw_value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def env_list(name: str, default: list[str] | None = None) -> list[str]:
-    """Return a comma-separated environment variable as a list of strings."""
-    value = os.getenv(name)
+def env_list(name: str, default: str | list[str] = "") -> list[str]:
+    """Return a comma-separated environment variable as a clean list."""
+    raw_value = os.getenv(name)
 
-    if not value:
-        return default or []
+    if raw_value is None:
+        if isinstance(default, str):
+            raw_value = default
+        else:
+            return default
 
-    return [item.strip() for item in value.split(",") if item.strip()]
+    return [item.strip() for item in raw_value.split(",") if item.strip()]
 
 
 def env_int(name: str, default: int) -> int:
@@ -41,27 +49,31 @@ def env_str(name: str, default: str) -> str:
     return os.getenv(name, default)
 
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-local-development-key")
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "trackly-development-secret-key-change-before-production",
+)
 
 DEBUG = env_bool("DJANGO_DEBUG", default=False)
 
 ALLOWED_HOSTS = env_list(
     "DJANGO_ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1"],
+    default="localhost,127.0.0.1,0.0.0.0",
 )
 
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 
 INSTALLED_APPS = [
-    "apps.roles",
-    "apps.users",
-    "apps.dashboard",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "apps.roles",
+    "apps.users",
+    "apps.dashboard",
+    "apps.jobs",
 ]
 
 MIDDLEWARE = [
@@ -99,7 +111,10 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.getenv(
+            "POSTGRES_ENGINE",
+            "django.db.backends.postgresql",
+        ),
         "NAME": os.getenv("POSTGRES_DB", "trackly"),
         "USER": os.getenv("POSTGRES_USER", "trackly_user"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "trackly_password"),
@@ -146,6 +161,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "users:login"
 LOGIN_REDIRECT_URL = "dashboard:user"
 LOGOUT_REDIRECT_URL = "users:login"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
