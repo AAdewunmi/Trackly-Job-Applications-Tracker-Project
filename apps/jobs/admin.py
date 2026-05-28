@@ -2,8 +2,7 @@
 
 from django.contrib import admin
 
-from apps.jobs.models import ApplicationNote
-from apps.jobs.models import JobApplication
+from apps.jobs.models import ApplicationNote, JobApplication
 
 
 @admin.register(JobApplication)

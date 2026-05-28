@@ -55,6 +55,15 @@ class JobApplication(models.Model):
         """Return a readable label for admin, logs, and tests."""
         return f"{self.title} at {self.company}"
 
+    def save(self, *args: object, **kwargs: object) -> None:
+        """Persist the application after running model validation."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:
+        """Return the canonical detail URL for this job application."""
+        return reverse("jobs:application_detail", kwargs={"pk": self.pk})
+
     def clean(self) -> None:
         """Validate domain constraints before persistence."""
         super().clean()
@@ -72,15 +81,6 @@ class JobApplication(models.Model):
             raise ValidationError(
                 {"applied_date": "Applied date cannot be in the future."}
             )
-
-    def save(self, *args: object, **kwargs: object) -> None:
-        """Persist the application after running model validation."""
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    def get_absolute_url(self) -> str:
-        """Return the canonical detail URL for this job application."""
-        return reverse("jobs:application_detail", kwargs={"pk": self.pk})
 
 
 class ApplicationNote(models.Model):
@@ -104,6 +104,11 @@ class ApplicationNote(models.Model):
         """Return a readable note label."""
         return f"Note for {self.application}"
 
+    def save(self, *args: object, **kwargs: object) -> None:
+        """Persist the note after running model validation."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     @property
     def owner(self):
         """Return the note owner through the parent application."""
@@ -115,8 +120,3 @@ class ApplicationNote(models.Model):
 
         if not self.body or not self.body.strip():
             raise ValidationError({"body": "Note body is required."})
-
-    def save(self, *args: object, **kwargs: object) -> None:
-        """Persist the note after running model validation."""
-        self.full_clean()
-        super().save(*args, **kwargs)
