@@ -5,41 +5,69 @@
 {% block content %}
 <section class="tl-account-layout">
     <div>
-        <p class="tl-eyebrow">Job applications</p>
-        <h1>Your application pipeline</h1>
+        <p class="tl-eyebrow">Job pipeline</p>
+        <h1>Your job applications</h1>
         <p class="tl-muted">
-            Review saved roles, track active applications, and keep the next action visible.
+            Track roles, statuses, application notes, and progress in one place.
         </p>
         <div class="tl-actions">
             <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
         </div>
     </div>
 
-    <section class="tl-panel">
-        <div class="tl-panel-body">
-            {% if applications %}
-                <div class="tl-stack">
-                    {% for application in applications %}
-                        <article class="tl-job-card">
-                            <strong>
-                                <a href="{{ application.get_absolute_url }}">{{ application.title }}</a>
-                            </strong>
-                            <span>{{ application.company }} · {{ application.get_status_display }}</span>
-                        </article>
-                    {% endfor %}
+    {% if applications %}
+        <section class="tl-panel">
+            <div class="tl-table-wrap">
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Role</th>
+                            <th scope="col">Company</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Applied</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>
+                                    <a class="tl-table-link" href="{{ application.get_absolute_url }}">
+                                        {{ application.title }}
+                                    </a>
+                                </td>
+                                <td>{{ application.company }}</td>
+                                <td>
+                                    <span class="tl-badge tl-badge-primary">{{ application.get_status_display }}</span>
+                                </td>
+                                <td>
+                                    {% if application.applied_date %}
+                                        {{ application.applied_date }}
+                                    {% else %}
+                                        <span class="tl-muted">Not recorded</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="tl-button tl-button-secondary tl-button-small" href="{{ application.get_absolute_url }}">View</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% else %}
+        <section class="tl-panel">
+            <div class="tl-panel-body tl-stack">
+                <h2>No job applications yet</h2>
+                <p class="tl-muted">
+                    Start by recording a role you want to track. Trackly will build your job search history from there.
+                </p>
+                <div class="tl-actions">
+                    <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add your first application</a>
                 </div>
-            {% else %}
-                <div class="tl-stack">
-                    <h2>No applications yet</h2>
-                    <p class="tl-muted">
-                        Add your first opportunity to start building your Trackly workspace.
-                    </p>
-                    <div class="tl-actions">
-                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    </section>
+            </div>
+        </section>
+    {% endif %}
 </section>
 {% endblock %}

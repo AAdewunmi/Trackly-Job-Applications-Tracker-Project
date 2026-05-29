@@ -100,7 +100,24 @@ def test_application_list_shows_only_owned_applications(client) -> None:
     assert response.status_code == 200
     assert list(response.context["applications"]) == [owned_application]
     assert b"Product Analyst" in response.content
+    assert b"Example Co" in response.content
+    assert b"Saved" in response.content
+    assert b"Not recorded" in response.content
+    assert b"View" in response.content
     assert b"Hidden Analyst" not in response.content
+
+
+@pytest.mark.django_db
+def test_application_list_renders_empty_state(client) -> None:
+    """The application list should show an empty state without applications."""
+    owner = UserFactory()
+    client.force_login(owner)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 200
+    assert b"No job applications yet" in response.content
+    assert b"Add your first application" in response.content
 
 
 @pytest.mark.django_db
