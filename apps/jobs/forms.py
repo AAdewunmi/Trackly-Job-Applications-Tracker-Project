@@ -8,6 +8,16 @@ from apps.jobs.models import ApplicationNote, JobApplication
 class JobApplicationForm(forms.ModelForm):
     """Form for creating and updating user-owned job applications."""
 
+    job_link = forms.URLField(
+        assume_scheme="https",
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "placeholder": "https://company.example/jobs/123",
+            }
+        ),
+    )
+
     class Meta:
         """Form metadata for editable job application fields."""
 
@@ -33,11 +43,6 @@ class JobApplicationForm(forms.ModelForm):
                 }
             ),
             "status": forms.Select(),
-            "job_link": forms.URLInput(
-                attrs={
-                    "placeholder": "https://company.example/jobs/123",
-                }
-            ),
             "applied_date": forms.DateInput(
                 attrs={
                     "type": "date",
