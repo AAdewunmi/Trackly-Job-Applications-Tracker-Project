@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Applications | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Job applications</p>
+        <h1>Your application pipeline</h1>
+        <p class="tl-muted">
+            Review saved roles, track active applications, and keep the next action visible.
+        </p>
+        <div class="tl-actions">
+            <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
+        </div>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            {% if applications %}
+                <div class="tl-stack">
+                    {% for application in applications %}
+                        <article class="tl-job-card">
+                            <strong>
+                                <a href="{{ application.get_absolute_url }}">{{ application.title }}</a>
+                            </strong>
+                            <span>{{ application.company }} · {{ application.get_status_display }}</span>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="tl-stack">
+                    <h2>No applications yet</h2>
+                    <p class="tl-muted">
+                        Add your first opportunity to start building your Trackly workspace.
+                    </p>
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</section>
+{% endblock %}

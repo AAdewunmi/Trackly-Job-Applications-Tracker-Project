@@ -84,7 +84,7 @@
                     {% if application %}
                         <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
                     {% else %}
-                        <a class="tl-button tl-button-secondary" href="{% url 'dashboard:user' %}">Cancel</a>
+                        <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">Cancel</a>
                     {% endif %}
                 </div>
             </form>

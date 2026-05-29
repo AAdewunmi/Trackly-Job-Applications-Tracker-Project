@@ -70,6 +70,40 @@ def test_application_detail_hides_other_users_applications(client) -> None:
 
 
 @pytest.mark.django_db
+def test_application_list_requires_login(client) -> None:
+    """Anonymous users should be redirected before viewing the application list."""
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 302
+    assert reverse("users:login") in response.url
+
+
+@pytest.mark.django_db
+def test_application_list_shows_only_owned_applications(client) -> None:
+    """The application list should be scoped to the current user."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    owned_application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    JobApplication.objects.create(
+        owner=other_user,
+        title="Hidden Analyst",
+        company="Other Co",
+    )
+    client.force_login(owner)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 200
+    assert list(response.context["applications"]) == [owned_application]
+    assert b"Product Analyst" in response.content
+    assert b"Hidden Analyst" not in response.content
+
+
+@pytest.mark.django_db
 def test_application_detail_adds_note_for_owner(client) -> None:
     """Application owners should be able to add inline notes."""
     owner = UserFactory()
@@ -180,3 +214,119 @@ def test_application_create_redisplays_invalid_form() -> None:
     assert response.status_code == 200
     assert b"Please correct the errors below." in response.content
     assert JobApplication.objects.filter(owner=user).count() == 0
+
+
+@pytest.mark.django_db
+def test_application_update_loads_for_owner(client) -> None:
+    """Application owners should be able to load the edit form."""
+    owner = UserFactory()
+    application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    client.force_login(owner)
+
+    response = client.get(
+        reverse("jobs:application_update", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert response.context["application"] == application
+    assert b"Edit job application" in response.content
+
+
+@pytest.mark.django_db
+def test_application_update_saves_changes_for_owner(client) -> None:
+    """Valid update submissions should persist changes."""
+    owner = UserFactory()
+    application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    client.force_login(owner)
+
+    response = client.post(
+        reverse("jobs:application_update", kwargs={"pk": application.pk}),
+        {
+            "title": "Senior Product Analyst",
+            "company": "Example Co",
+            "status": JobApplication.Status.INTERVIEWING,
+            "job_link": "",
+            "applied_date": "",
+            "job_description": "Analyse product data.",
+            "notes": "Panel interview booked.",
+        },
+    )
+
+    application.refresh_from_db()
+    assert response.status_code == 302
+    assert response["Location"] == application.get_absolute_url()
+    assert application.title == "Senior Product Analyst"
+    assert application.status == JobApplication.Status.INTERVIEWING
+
+
+@pytest.mark.django_db
+def test_application_update_redisplays_invalid_form(client) -> None:
+    """Invalid update submissions should redisplay errors."""
+    owner = UserFactory()
+    application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    client.force_login(owner)
+
+    response = client.post(
+        reverse("jobs:application_update", kwargs={"pk": application.pk}),
+        {
+            "title": "",
+            "company": "",
+            "status": JobApplication.Status.SAVED,
+        },
+    )
+
+    application.refresh_from_db()
+    assert response.status_code == 200
+    assert b"Please correct the errors below." in response.content
+    assert application.title == "Product Analyst"
+
+
+@pytest.mark.django_db
+def test_application_delete_loads_confirmation_for_owner(client) -> None:
+    """Application owners should be able to load the delete confirmation."""
+    owner = UserFactory()
+    application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    client.force_login(owner)
+
+    response = client.get(
+        reverse("jobs:application_delete", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert b"Delete Product Analyst?" in response.content
+
+
+@pytest.mark.django_db
+def test_application_delete_removes_owned_application(client) -> None:
+    """POSTing the confirmation should delete the owned application."""
+    owner = UserFactory()
+    application = JobApplication.objects.create(
+        owner=owner,
+        title="Product Analyst",
+        company="Example Co",
+    )
+    client.force_login(owner)
+
+    response = client.post(
+        reverse("jobs:application_delete", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("jobs:application_list")
+    assert JobApplication.objects.filter(pk=application.pk).count() == 0

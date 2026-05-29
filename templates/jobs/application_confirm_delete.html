@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ application.title }} | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Delete application</p>
+        <h1>Delete {{ application.title }}?</h1>
+        <p class="tl-muted">
+            This removes the application record and its notes from your Trackly workspace.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post">
+                {% csrf_token %}
+                <p class="tl-muted">
+                    {{ application.title }} at {{ application.company }} will no longer appear in your pipeline.
+                </p>
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">Delete application</button>
+                    <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+{% endblock %}
