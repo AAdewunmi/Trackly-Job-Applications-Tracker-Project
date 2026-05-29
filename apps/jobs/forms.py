@@ -2,8 +2,7 @@
 
 from django import forms
 
-from apps.jobs.models import ApplicationNote
-from apps.jobs.models import JobApplication
+from apps.jobs.models import ApplicationNote, JobApplication
 
 
 class JobApplicationForm(forms.ModelForm):
@@ -25,39 +24,33 @@ class JobApplicationForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(
                 attrs={
-                    "class": "form-control",
                     "placeholder": "Backend Engineer",
                 }
             ),
             "company": forms.TextInput(
                 attrs={
-                    "class": "form-control",
                     "placeholder": "Acme Ltd",
                 }
             ),
-            "status": forms.Select(attrs={"class": "form-select"}),
+            "status": forms.Select(),
             "job_link": forms.URLInput(
                 attrs={
-                    "class": "form-control",
                     "placeholder": "https://company.example/jobs/123",
                 }
             ),
             "applied_date": forms.DateInput(
                 attrs={
-                    "class": "form-control",
                     "type": "date",
                 }
             ),
             "job_description": forms.Textarea(
                 attrs={
-                    "class": "form-control",
                     "rows": 7,
                     "placeholder": "Paste the job description or role summary.",
                 }
             ),
             "notes": forms.Textarea(
                 attrs={
-                    "class": "form-control",
                     "rows": 4,
                     "placeholder": "Initial notes about the role.",
                 }
@@ -84,9 +77,10 @@ class ApplicationNoteForm(forms.ModelForm):
         widgets = {
             "body": forms.Textarea(
                 attrs={
-                    "class": "form-control",
                     "rows": 4,
-                    "placeholder": "Add a recruiter update, interview note, or follow-up.",
+                    "placeholder": (
+                        "Add a recruiter update, interview note, or follow-up."
+                    ),
                 }
             )
         }

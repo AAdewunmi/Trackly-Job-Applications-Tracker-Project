@@ -23,20 +23,6 @@ def get_user_application_or_404(user, pk: int) -> JobApplication:
 
 
 @login_required
-def application_list(request: HttpRequest) -> HttpResponse:
-    """Render the authenticated user's job application list."""
-    applications = application_queryset_for_user(request.user)
-
-    return render(
-        request,
-        "jobs/application_list.html",
-        {
-            "applications": applications,
-        },
-    )
-
-
-@login_required
 def application_create(request: HttpRequest) -> HttpResponse:
     """Create a new job application owned by the authenticated user."""
     if request.method == "POST":
@@ -96,56 +82,6 @@ def application_detail(request: HttpRequest, pk: int) -> HttpResponse:
             "application": application,
             "note_form": note_form,
             "notes": application.application_notes.all(),
-        },
-    )
-
-
-@login_required
-def application_update(request: HttpRequest, pk: int) -> HttpResponse:
-    """Update an existing user-owned job application."""
-    application = get_user_application_or_404(request.user, pk=pk)
-
-    if request.method == "POST":
-        form = JobApplicationForm(request.POST, instance=application)
-
-        if form.is_valid():
-            updated_application = form.save()
-
-            messages.success(request, "Application updated successfully.")
-            return redirect(updated_application.get_absolute_url())
-
-        messages.error(request, "Please correct the errors below.")
-    else:
-        form = JobApplicationForm(instance=application)
-
-    return render(
-        request,
-        "jobs/application_form.html",
-        {
-            "form": form,
-            "application": application,
-            "form_title": "Edit job application",
-            "submit_label": "Save changes",
-        },
-    )
-
-
-@login_required
-def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
-    """Delete a user-owned job application after confirmation."""
-    application = get_user_application_or_404(request.user, pk=pk)
-
-    if request.method == "POST":
-        application.delete()
-
-        messages.success(request, "Application deleted successfully.")
-        return redirect("jobs:application_list")
-
-    return render(
-        request,
-        "jobs/application_confirm_delete.html",
-        {
-            "application": application,
         },
     )
 
