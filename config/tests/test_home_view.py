@@ -29,3 +29,10 @@ def test_root_renders_authenticated_actions(client) -> None:
     assert reverse("dashboard:user").encode() in response.content
     assert reverse("jobs:application_list").encode() in response.content
     assert reverse("users:profile").encode() in response.content
+
+
+def test_root_url_mounts_project_surfaces() -> None:
+    """Root URL configuration should keep stable public and app mounts."""
+    assert reverse("home") == "/"
+    assert reverse("dashboard:user") == "/dashboard/"
+    assert reverse("jobs:application_list") == "/applications/"
