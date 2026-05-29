@@ -154,7 +154,7 @@ def test_application_detail_redisplays_invalid_note_form(client) -> None:
 def test_application_create_renders_empty_form_for_authenticated_user() -> None:
     """The create view should render the job application form."""
     user = UserFactory()
-    request = RequestFactory().get("/jobs/applications/new/")
+    request = RequestFactory().get("/jobs/new/")
     request.user = user
 
     response = application_create(request)
@@ -170,7 +170,7 @@ def test_application_create_saves_application_for_current_user() -> None:
     """Valid create submissions should create an application owned by the user."""
     user = UserFactory()
     request = RequestFactory().post(
-        "/jobs/applications/new/",
+        "/jobs/new/",
         {
             "title": "Backend Engineer",
             "company": "Example Co",
@@ -199,7 +199,7 @@ def test_application_create_redisplays_invalid_form() -> None:
     """Invalid create submissions should redisplay the form with errors."""
     user = UserFactory()
     request = RequestFactory().post(
-        "/jobs/applications/new/",
+        "/jobs/new/",
         {
             "title": " ",
             "company": "",
