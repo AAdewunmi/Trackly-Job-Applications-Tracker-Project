@@ -3,7 +3,6 @@
 import pytest
 from django.urls import reverse
 
-from apps.jobs.models import JobApplication
 from apps.roles.factories import AdminRoleFactory
 from apps.users.factories import StaffUserFactory, UserFactory
 
@@ -27,22 +26,18 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
 
     assert response.status_code == 200
     assert b"Your job search command centre" in response.content
-    assert b"Add job application" in response.content
-    assert response.context["application_form"].initial["status"] == (
-        JobApplication.Status.SAVED
-    )
+    assert reverse("jobs:application_create").encode() in response.content
+    assert reverse("jobs:application_list").encode() in response.content
 
 
 @pytest.mark.django_db
 def test_user_dashboard_preview_loads_without_authentication(client) -> None:
-    """The temporary preview route should expose the application form."""
+    """The temporary preview route should link into the application workflow."""
     response = client.get(reverse("dashboard:user_preview"))
 
     assert response.status_code == 200
-    assert b"Add job application" in response.content
-    assert response.context["application_form"].initial["status"] == (
-        JobApplication.Status.SAVED
-    )
+    assert reverse("jobs:application_create").encode() in response.content
+    assert reverse("jobs:application_list").encode() in response.content
 
 
 @pytest.mark.django_db

@@ -31,53 +31,19 @@
                     <div class="tl-shot-header">
                         <div>
                             <p class="tl-eyebrow">Application tracker</p>
-                            <h2 id="applications-heading">Add job application</h2>
+                            <h2 id="applications-heading">Start tracking applications</h2>
                         </div>
                         <span class="tl-badge tl-badge-primary">Saved</span>
                     </div>
 
-                    <form class="tl-form" method="post" novalidate>
-                        {% csrf_token %}
+                    <p class="tl-muted">
+                        Add your first role in the application tracker, then return here to review pipeline momentum, follow-ups, and job-fit signals.
+                    </p>
 
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.title.id_for_label }}">Role title</label>
-                            {{ application_form.title }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.company.id_for_label }}">Company</label>
-                            {{ application_form.company }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.status.id_for_label }}">Status</label>
-                            {{ application_form.status }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.applied_date.id_for_label }}">Applied date</label>
-                            {{ application_form.applied_date }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.job_link.id_for_label }}">Job link</label>
-                            {{ application_form.job_link }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.job_description.id_for_label }}">Job description</label>
-                            {{ application_form.job_description }}
-                        </div>
-
-                        <div class="tl-field">
-                            <label class="tl-label" for="{{ application_form.notes.id_for_label }}">Internal notes</label>
-                            {{ application_form.notes }}
-                        </div>
-
-                        <div class="tl-actions">
-                            <button class="tl-button tl-button-primary" type="submit" disabled>Create application</button>
-                        </div>
-                    </form>
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
+                        <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">View applications</a>
+                    </div>
                 </div>
             </section>
 

@@ -310,6 +310,16 @@ colour for action, status, and emphasis.
 - Errors should use `.tl-field-error`.
 - Submit buttons can use `.tl-button-full` on account forms.
 
+### Tables and Lists
+
+- Data-dense list pages should use `.tl-panel` with `.tl-table-wrap` and
+  `.tl-table` when users need to compare multiple records.
+- Table links should use `.tl-table-link`; row actions should use existing
+  `.tl-button` variants.
+- Keep empty states useful: explain what is missing, why it matters, and provide
+  one primary action such as adding the first application.
+- Use badges for scannable status values rather than plain status text.
+
 ### Badges
 
 - Use `.tl-badge` with status modifiers such as `.tl-badge-success`,
