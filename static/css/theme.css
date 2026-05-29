@@ -785,8 +785,10 @@ textarea:focus {
 .tl-dashboard-side-nav {
   display: grid;
   align-content: start;
-  align-self: stretch;
+  align-self: start;
   gap: 1.15rem;
+  position: sticky;
+  top: 1.25rem;
   border: 1px solid var(--tl-border);
   border-radius: var(--tl-radius);
   background: rgba(247, 249, 242, 0.88);

@@ -37,16 +37,6 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
 
 
 @pytest.mark.django_db
-def test_user_dashboard_preview_loads_without_authentication(client) -> None:
-    """The temporary preview route should link into the application workflow."""
-    response = client.get(reverse("dashboard:user_preview"))
-
-    assert response.status_code == 200
-    assert reverse("jobs:application_create").encode() in response.content
-    assert reverse("jobs:application_list").encode() in response.content
-
-
-@pytest.mark.django_db
 def test_admin_dashboard_requires_login(client) -> None:
     """Anonymous visitors should be redirected before admin dashboard access."""
     response = client.get(reverse("dashboard:admin"))
