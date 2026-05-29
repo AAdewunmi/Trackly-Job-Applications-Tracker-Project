@@ -21,52 +21,11 @@
                 <a class="tl-dashboard-side-link" href="#metrics">Progress metrics</a>
                 <a class="tl-dashboard-side-link" href="#insights">AI insights</a>
                 <a class="tl-dashboard-side-link" href="#empty-state">Empty state</a>
-                <a class="tl-dashboard-side-link" href="{% url 'users:profile' %}">Profile</a>
+                <a class="tl-dashboard-side-link" href="#profile">Profile</a>
             </nav>
         </aside>
 
         <div class="tl-dashboard-content">
-            <section id="applications" class="tl-panel" aria-labelledby="applications-heading">
-                <div class="tl-panel-body">
-                    <div class="tl-shot-header">
-                        <div>
-                            <p class="tl-eyebrow">Application tracker</p>
-                            <h2 id="applications-heading">Start tracking applications</h2>
-                        </div>
-                        <span class="tl-badge tl-badge-primary">Saved</span>
-                    </div>
-
-                    <p class="tl-muted">
-                        Add your first role in the application tracker, then return here to review pipeline momentum, follow-ups, and job-fit signals.
-                    </p>
-
-                    <div class="tl-actions">
-                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
-                        <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">View applications</a>
-                    </div>
-                </div>
-            </section>
-
-            <div class="tl-feature-grid">
-                <article id="metrics" class="tl-card">
-                    <div class="tl-card-body">
-                        <h2>Progress metrics</h2>
-                        <p class="tl-muted">
-                            Pipeline metrics will surface active applications, interviews, offers, rejections, and recent activity.
-                        </p>
-                    </div>
-                </article>
-
-                <article id="insights" class="tl-card">
-                    <div class="tl-card-body">
-                        <h2>AI job insights</h2>
-                        <p class="tl-muted">
-                            Review structured keyword signals and explainable fit indicators as your application data grows.
-                        </p>
-                    </div>
-                </article>
-            </div>
-
             <section id="pipeline" class="tl-panel tl-dashboard-empty-state" aria-labelledby="pipeline-heading">
                 <div class="tl-panel-body tl-stack">
                     <div class="tl-shot-header">
@@ -124,6 +83,59 @@
                 </div>
             </section>
 
+            <section id="applications" class="tl-panel" aria-labelledby="applications-heading">
+                <div class="tl-panel-body">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">Application tracker</p>
+                            <h2 id="applications-heading">Start tracking applications</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-primary">Saved</span>
+                    </div>
+
+                    <p class="tl-muted">
+                        Add your first role in the application tracker, then return here to review pipeline momentum, follow-ups, and job-fit signals.
+                    </p>
+
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
+                        <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">View applications</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="metrics" class="tl-panel" aria-labelledby="metrics-heading">
+                <div class="tl-panel-body">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">Progress metrics</p>
+                            <h2 id="metrics-heading">Measure job search momentum</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-muted">Coming soon</span>
+                    </div>
+
+                    <p class="tl-muted">
+                        Pipeline metrics will surface active applications, interviews, offers, rejections, follow-ups, and recent activity.
+                    </p>
+                </div>
+            </section>
+
+            <section id="insights" class="tl-panel" aria-labelledby="insights-heading">
+                <div class="tl-panel-body">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">AI insights</p>
+                            <h2 id="insights-heading">Review job-fit signals</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-muted">Planned</span>
+                    </div>
+
+                    <p class="tl-muted">
+                        Review structured keyword signals and explainable fit indicators as your application data grows.
+                    </p>
+                </div>
+            </section>
+
             <section id="empty-state" class="tl-panel tl-dashboard-empty-state">
                 <div class="tl-panel-body tl-stack">
                     <h2>Empty state</h2>
@@ -132,6 +144,26 @@
                     </p>
                     <div class="tl-actions">
                         <a class="tl-button tl-button-secondary" href="{% url 'users:profile' %}">Review profile</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="profile" class="tl-panel" aria-labelledby="profile-heading">
+                <div class="tl-panel-body">
+                    <div class="tl-shot-header">
+                        <div>
+                            <p class="tl-eyebrow">Profile</p>
+                            <h2 id="profile-heading">Keep your account details current</h2>
+                        </div>
+                        <span class="tl-badge tl-badge-primary">Account</span>
+                    </div>
+
+                    <p class="tl-muted">
+                        Review the account identity Trackly uses for application ownership, dashboard access, and future job-fit history.
+                    </p>
+
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-secondary" href="{% url 'users:profile' %}">Open profile</a>
                     </div>
                 </div>
             </section>

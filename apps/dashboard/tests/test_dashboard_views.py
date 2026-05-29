@@ -28,6 +28,12 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
     assert b"Your job search command centre" in response.content
     assert reverse("jobs:application_create").encode() in response.content
     assert reverse("jobs:application_list").encode() in response.content
+    content = response.content.decode()
+    assert content.index('id="pipeline"') < content.index('id="applications"')
+    assert content.index('id="applications"') < content.index('id="metrics"')
+    assert content.index('id="metrics"') < content.index('id="insights"')
+    assert content.index('id="insights"') < content.index('id="empty-state"')
+    assert content.index('id="empty-state"') < content.index('id="profile"')
 
 
 @pytest.mark.django_db
