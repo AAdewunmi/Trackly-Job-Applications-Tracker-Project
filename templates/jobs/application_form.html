@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }} | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Job application</p>
+        <h1>{{ form_title }}</h1>
+        <p class="tl-muted">
+            Capture the role details, current stage, source link, and notes that keep your search organised inside Trackly.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="tl-alert tl-alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.title.id_for_label }}">Role title</label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.company.id_for_label }}">Company</label>
+                    {{ form.company }}
+                    {% for error in form.company.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.status.id_for_label }}">Status</label>
+                    {{ form.status }}
+                    {% for error in form.status.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.applied_date.id_for_label }}">Applied date</label>
+                    {{ form.applied_date }}
+                    {% for error in form.applied_date.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.job_link.id_for_label }}">Job link</label>
+                    {{ form.job_link }}
+                    {% for error in form.job_link.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.job_description.id_for_label }}">Job description</label>
+                    {{ form.job_description }}
+                    {% for error in form.job_description.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.notes.id_for_label }}">Internal notes</label>
+                    {{ form.notes }}
+                    {% for error in form.notes.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">{{ submit_label }}</button>
+                    {% if application %}
+                        <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
+                    {% else %}
+                        <a class="tl-button tl-button-secondary" href="{% url 'dashboard:user' %}">Cancel</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+{% endblock %}
