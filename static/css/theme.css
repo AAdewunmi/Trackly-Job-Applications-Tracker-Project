@@ -698,6 +698,41 @@ textarea:focus {
   color: var(--tl-muted);
 }
 
+.tl-table-wrap {
+  overflow-x: auto;
+}
+
+.tl-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 44rem;
+}
+
+.tl-table th,
+.tl-table td {
+  border-bottom: 1px solid var(--tl-border);
+  padding: 1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tl-table th {
+  color: var(--tl-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tl-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tl-table-link {
+  color: var(--tl-text);
+  font-weight: 850;
+}
+
 .tl-feature-list {
   display: grid;
   gap: 1rem;
