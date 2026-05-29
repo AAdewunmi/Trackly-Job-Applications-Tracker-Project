@@ -1,4 +1,4 @@
-"""Selector tests for Trackly job application workflows."""
+"""Selector tests for user-scoped job application queries."""
 
 from datetime import timedelta
 
@@ -31,8 +31,8 @@ def set_note_created_at(note, created_at) -> None:
 
 
 @pytest.mark.django_db
-def test_application_queryset_for_user_returns_owned_applications() -> None:
-    """Application querysets should be scoped to the provided user."""
+def test_application_queryset_returns_only_current_user_records() -> None:
+    """The application selector should isolate records by owner."""
     owner = UserFactory(email="owner@example.com")
     other_user = UserFactory(email="other@example.com")
     first_application = JobApplicationFactory(owner=owner)
@@ -58,6 +58,19 @@ def test_application_queryset_for_user_returns_none_for_anonymous_user() -> None
 
 
 @pytest.mark.django_db
+def test_application_queryset_returns_empty_for_unsaved_user(
+    django_user_model,
+) -> None:
+    """Unsaved user-like objects should not leak application records."""
+    JobApplicationFactory()
+    unsaved_user = django_user_model()
+
+    applications = application_queryset_for_user(unsaved_user)
+
+    assert applications.count() == 0
+
+
+@pytest.mark.django_db
 def test_get_user_application_or_404_returns_owned_application() -> None:
     """Owned application lookups should return the matching object."""
     owner = UserFactory()
@@ -78,8 +91,8 @@ def test_get_user_application_or_404_hides_other_users_application() -> None:
 
 
 @pytest.mark.django_db
-def test_get_recent_applications_for_user_limits_owned_applications() -> None:
-    """Recent application lookups should return the requested number of records."""
+def test_recent_applications_respects_limit() -> None:
+    """Recent application selector should return the requested number."""
     owner = UserFactory()
     first_application = JobApplicationFactory(owner=owner)
     second_application = JobApplicationFactory(owner=owner)
@@ -125,8 +138,8 @@ def test_notes_queryset_for_user_returns_none_for_anonymous_user() -> None:
 
 
 @pytest.mark.django_db
-def test_get_note_count_for_user_counts_owned_notes() -> None:
-    """Note counts should include only notes for the supplied user's applications."""
+def test_note_count_is_scoped_to_current_user() -> None:
+    """Note counts should only include notes on the user's applications."""
     owner = UserFactory(email="owner@example.com")
     other_user = UserFactory(email="other@example.com")
     owner_application = JobApplicationFactory(owner=owner)

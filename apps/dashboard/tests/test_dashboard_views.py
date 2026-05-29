@@ -3,7 +3,6 @@
 import pytest
 from django.urls import reverse
 
-from apps.jobs.models import JobApplication
 from apps.roles.factories import AdminRoleFactory
 from apps.users.factories import StaffUserFactory, UserFactory
 
@@ -27,22 +26,14 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
 
     assert response.status_code == 200
     assert b"Your job search command centre" in response.content
-    assert b"Add job application" in response.content
-    assert response.context["application_form"].initial["status"] == (
-        JobApplication.Status.SAVED
-    )
-
-
-@pytest.mark.django_db
-def test_user_dashboard_preview_loads_without_authentication(client) -> None:
-    """The temporary preview route should expose the application form."""
-    response = client.get(reverse("dashboard:user_preview"))
-
-    assert response.status_code == 200
-    assert b"Add job application" in response.content
-    assert response.context["application_form"].initial["status"] == (
-        JobApplication.Status.SAVED
-    )
+    assert reverse("jobs:application_create").encode() in response.content
+    assert reverse("jobs:application_list").encode() in response.content
+    content = response.content.decode()
+    assert content.index('id="pipeline"') < content.index('id="applications"')
+    assert content.index('id="applications"') < content.index('id="metrics"')
+    assert content.index('id="metrics"') < content.index('id="insights"')
+    assert content.index('id="insights"') < content.index('id="empty-state"')
+    assert content.index('id="empty-state"') < content.index('id="profile"')
 
 
 @pytest.mark.django_db
@@ -64,6 +55,7 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
 
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
+    assert reverse("dashboard:admin").encode() in response.content
     assert response.context["total_users"] == 1
 
 

@@ -9,7 +9,11 @@ from apps.jobs.models import ApplicationNote, JobApplication
 
 def application_queryset_for_user(user) -> QuerySet[JobApplication]:
     """Return job applications owned by the supplied authenticated user."""
-    if isinstance(user, AnonymousUser) or not user.is_authenticated:
+    if (
+        isinstance(user, AnonymousUser)
+        or not user.is_authenticated
+        or not getattr(user, "pk", None)
+    ):
         return JobApplication.objects.none()
 
     return JobApplication.objects.filter(owner=user).order_by(
@@ -33,7 +37,11 @@ def get_recent_applications_for_user(
 
 def notes_queryset_for_user(user) -> QuerySet[ApplicationNote]:
     """Return notes attached to the supplied user's applications."""
-    if isinstance(user, AnonymousUser) or not user.is_authenticated:
+    if (
+        isinstance(user, AnonymousUser)
+        or not user.is_authenticated
+        or not getattr(user, "pk", None)
+    ):
         return ApplicationNote.objects.none()
 
     return ApplicationNote.objects.filter(application__owner=user).order_by(

@@ -6,8 +6,6 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 
-from apps.jobs.forms import JobApplicationForm
-from apps.jobs.models import JobApplication
 from apps.roles.models import Role
 from apps.roles.permissions import is_trackly_admin
 
@@ -20,29 +18,7 @@ class UserDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs: object) -> dict[str, object]:
         """Add Sprint 1 empty-state dashboard context."""
         context = super().get_context_data(**kwargs)
-        context["application_form"] = JobApplicationForm(
-            initial={
-                "status": JobApplication.Status.SAVED,
-            }
-        )
         context["page_title"] = "Dashboard"
-        return context
-
-
-class TemporaryUserDashboardPreviewView(TemplateView):
-    """Temporarily display the user dashboard without authentication."""
-
-    template_name = "dashboard/user_index.html"
-
-    def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Add the standard dashboard context for temporary preview access."""
-        context = super().get_context_data(**kwargs)
-        context["application_form"] = JobApplicationForm(
-            initial={
-                "status": JobApplication.Status.SAVED,
-            }
-        )
-        context["page_title"] = "Dashboard Preview"
         return context
 
 
