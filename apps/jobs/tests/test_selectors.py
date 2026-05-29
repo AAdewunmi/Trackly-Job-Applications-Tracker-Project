@@ -1,14 +1,33 @@
 """Selector tests for Trackly job application workflows."""
 
-import pytest
-from django.http import Http404
+from datetime import timedelta
 
-from apps.jobs.factories import JobApplicationFactory
+import pytest
+from django.contrib.auth.models import AnonymousUser
+from django.http import Http404
+from django.utils import timezone
+
+from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.selectors import (
     application_queryset_for_user,
+    get_note_count_for_user,
+    get_recent_applications_for_user,
     get_user_application_or_404,
+    notes_queryset_for_user,
 )
 from apps.users.factories import UserFactory
+
+
+def set_application_updated_at(application, updated_at) -> None:
+    """Set an application timestamp after factory save hooks run."""
+    type(application).objects.filter(pk=application.pk).update(updated_at=updated_at)
+    application.refresh_from_db()
+
+
+def set_note_created_at(note, created_at) -> None:
+    """Set a note timestamp after factory save hooks run."""
+    type(note).objects.filter(pk=note.pk).update(created_at=created_at)
+    note.refresh_from_db()
 
 
 @pytest.mark.django_db
@@ -16,12 +35,26 @@ def test_application_queryset_for_user_returns_owned_applications() -> None:
     """Application querysets should be scoped to the provided user."""
     owner = UserFactory(email="owner@example.com")
     other_user = UserFactory(email="other@example.com")
-    owned_application = JobApplicationFactory(owner=owner)
+    first_application = JobApplicationFactory(owner=owner)
+    second_application = JobApplicationFactory(owner=owner)
     JobApplicationFactory(owner=other_user)
+    now = timezone.now()
+    set_application_updated_at(first_application, now - timedelta(days=1))
+    set_application_updated_at(second_application, now)
 
     applications = application_queryset_for_user(owner)
 
-    assert list(applications) == [owned_application]
+    assert list(applications) == [second_application, first_application]
+
+
+@pytest.mark.django_db
+def test_application_queryset_for_user_returns_none_for_anonymous_user() -> None:
+    """Anonymous users should not receive any applications."""
+    JobApplicationFactory()
+
+    applications = application_queryset_for_user(AnonymousUser())
+
+    assert list(applications) == []
 
 
 @pytest.mark.django_db
@@ -42,3 +75,64 @@ def test_get_user_application_or_404_hides_other_users_application() -> None:
 
     with pytest.raises(Http404):
         get_user_application_or_404(other_user, pk=application.pk)
+
+
+@pytest.mark.django_db
+def test_get_recent_applications_for_user_limits_owned_applications() -> None:
+    """Recent application lookups should return the requested number of records."""
+    owner = UserFactory()
+    first_application = JobApplicationFactory(owner=owner)
+    second_application = JobApplicationFactory(owner=owner)
+    third_application = JobApplicationFactory(owner=owner)
+    now = timezone.now()
+    set_application_updated_at(first_application, now - timedelta(days=2))
+    set_application_updated_at(second_application, now - timedelta(days=1))
+    set_application_updated_at(third_application, now)
+
+    applications = get_recent_applications_for_user(owner, limit=2)
+
+    assert list(applications) == [third_application, second_application]
+    assert first_application not in applications
+
+
+@pytest.mark.django_db
+def test_notes_queryset_for_user_returns_owned_notes() -> None:
+    """Note querysets should be scoped through application ownership."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    owner_application = JobApplicationFactory(owner=owner)
+    other_application = JobApplicationFactory(owner=other_user)
+    first_note = ApplicationNoteFactory(application=owner_application)
+    second_note = ApplicationNoteFactory(application=owner_application)
+    ApplicationNoteFactory(application=other_application)
+    now = timezone.now()
+    set_note_created_at(first_note, now - timedelta(days=1))
+    set_note_created_at(second_note, now)
+
+    notes = notes_queryset_for_user(owner)
+
+    assert list(notes) == [second_note, first_note]
+
+
+@pytest.mark.django_db
+def test_notes_queryset_for_user_returns_none_for_anonymous_user() -> None:
+    """Anonymous users should not receive any application notes."""
+    ApplicationNoteFactory()
+
+    notes = notes_queryset_for_user(AnonymousUser())
+
+    assert list(notes) == []
+
+
+@pytest.mark.django_db
+def test_get_note_count_for_user_counts_owned_notes() -> None:
+    """Note counts should include only notes for the supplied user's applications."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    owner_application = JobApplicationFactory(owner=owner)
+    other_application = JobApplicationFactory(owner=other_user)
+    ApplicationNoteFactory(application=owner_application)
+    ApplicationNoteFactory(application=owner_application)
+    ApplicationNoteFactory(application=other_application)
+
+    assert get_note_count_for_user(owner) == 2
