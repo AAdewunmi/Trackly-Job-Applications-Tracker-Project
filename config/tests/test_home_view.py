@@ -27,4 +27,5 @@ def test_root_renders_authenticated_actions(client) -> None:
 
     assert response.status_code == 200
     assert reverse("dashboard:user").encode() in response.content
+    assert reverse("jobs:application_list").encode() in response.content
     assert reverse("users:profile").encode() in response.content
