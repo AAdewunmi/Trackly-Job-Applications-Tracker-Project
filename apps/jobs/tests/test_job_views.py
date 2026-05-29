@@ -121,3 +121,85 @@ def test_application_create_sets_owner_from_request_user(client) -> None:
 
     application = JobApplication.objects.get()
     assert application.owner == user
+
+
+@pytest.mark.django_db
+def test_application_detail_hides_other_users_records(client) -> None:
+    """Users should receive a 404 for another user's application detail."""
+    user = UserFactory()
+    other_user = UserFactory()
+    other_application = JobApplicationFactory(owner=other_user)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": other_application.pk})
+    )
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_application_update_hides_other_users_records(client) -> None:
+    """Users should not be able to load another user's edit form."""
+    user = UserFactory()
+    other_user = UserFactory()
+    other_application = JobApplicationFactory(owner=other_user)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_update", kwargs={"pk": other_application.pk})
+    )
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_application_update_post_hides_other_users_records(client) -> None:
+    """Users should not be able to update another user's application."""
+    user = UserFactory()
+    other_user = UserFactory()
+    other_application = JobApplicationFactory(
+        owner=other_user,
+        title="Original Role",
+    )
+    client.force_login(user)
+
+    response = client.post(
+        reverse("jobs:application_update", kwargs={"pk": other_application.pk}),
+        data=valid_application_data(title="Changed Role"),
+    )
+
+    other_application.refresh_from_db()
+    assert response.status_code == 404
+    assert other_application.title == "Original Role"
+
+
+@pytest.mark.django_db
+def test_application_delete_hides_other_users_records(client) -> None:
+    """Users should not be able to load another user's delete confirmation."""
+    user = UserFactory()
+    other_user = UserFactory()
+    other_application = JobApplicationFactory(owner=other_user)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_delete", kwargs={"pk": other_application.pk})
+    )
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_application_delete_post_hides_other_users_records(client) -> None:
+    """Users should not be able to delete another user's application."""
+    user = UserFactory()
+    other_user = UserFactory()
+    other_application = JobApplicationFactory(owner=other_user)
+    client.force_login(user)
+
+    response = client.post(
+        reverse("jobs:application_delete", kwargs={"pk": other_application.pk})
+    )
+
+    assert response.status_code == 404
+    assert JobApplication.objects.filter(pk=other_application.pk).exists()
