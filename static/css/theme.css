@@ -652,6 +652,10 @@ textarea:focus {
   grid-template-columns: minmax(0, 48rem);
 }
 
+.tl-account-layout-wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .tl-definition-list {
   display: grid;
   gap: 1rem;

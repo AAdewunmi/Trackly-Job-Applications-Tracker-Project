@@ -70,12 +70,12 @@ def test_application_detail_hides_other_users_applications(client) -> None:
 
 
 @pytest.mark.django_db
-def test_application_list_requires_login(client) -> None:
-    """Anonymous users should be redirected before viewing the application list."""
+def test_application_list_loads_empty_preview_for_anonymous_user(client) -> None:
+    """Anonymous users should see an empty application-list preview."""
     response = client.get(reverse("jobs:application_list"))
 
-    assert response.status_code == 302
-    assert reverse("users:login") in response.url
+    assert response.status_code == 200
+    assert b"No job applications yet" in response.content
 
 
 @pytest.mark.django_db

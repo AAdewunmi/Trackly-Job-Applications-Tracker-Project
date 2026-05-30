@@ -10,8 +10,8 @@ from apps.roles.models import Role
 from apps.roles.permissions import is_trackly_admin
 
 
-class UserDashboardView(LoginRequiredMixin, TemplateView):
-    """Display the authenticated user's Trackly dashboard shell."""
+class UserDashboardView(TemplateView):
+    """Display the temporarily public Trackly user dashboard shell."""
 
     template_name = "dashboard/user_index.html"
 

@@ -27,11 +27,12 @@ def valid_application_data(**overrides: object) -> dict[str, object]:
 
 
 @pytest.mark.django_db
-def test_application_list_requires_authentication(client) -> None:
-    """Anonymous users should be redirected away from the list page."""
+def test_application_list_loads_empty_preview_for_anonymous_user(client) -> None:
+    """Anonymous users should see an empty application-list preview."""
     response = client.get(reverse("jobs:application_list"))
 
-    assert response.status_code == 302
+    assert response.status_code == 200
+    assert b"No job applications yet" in response.content
 
 
 @pytest.mark.django_db
@@ -63,11 +64,25 @@ def test_application_list_shows_only_current_user_records(client) -> None:
 
 
 @pytest.mark.django_db
-def test_application_create_requires_authentication(client) -> None:
-    """Anonymous users should be redirected away from the create page."""
+def test_application_create_form_loads_for_anonymous_user(client) -> None:
+    """Anonymous users should temporarily be able to preview the create form."""
     response = client.get(reverse("jobs:application_create"))
 
+    assert response.status_code == 200
+    assert b"Add job application" in response.content
+
+
+@pytest.mark.django_db
+def test_application_create_post_requires_authentication(client) -> None:
+    """Anonymous users should not be able to create ownerless applications."""
+    response = client.post(
+        reverse("jobs:application_create"),
+        data=valid_application_data(),
+    )
+
     assert response.status_code == 302
+    assert reverse("users:login") in response.url
+    assert JobApplication.objects.count() == 0
 
 
 @pytest.mark.django_db
