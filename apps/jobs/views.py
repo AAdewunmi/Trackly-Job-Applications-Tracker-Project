@@ -2,10 +2,9 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-from django.views import View
 
 from apps.jobs.forms import ApplicationNoteForm, JobApplicationForm
 from apps.jobs.models import JobApplication
@@ -15,9 +14,8 @@ from apps.jobs.selectors import (
 )
 
 
-@login_required
 def application_list(request: HttpRequest) -> HttpResponse:
-    """Render the authenticated user's job application list."""
+    """Render a user-scoped list or an empty anonymous preview."""
     applications = application_queryset_for_user(request.user)
 
     return render(
@@ -29,10 +27,12 @@ def application_list(request: HttpRequest) -> HttpResponse:
     )
 
 
-@login_required
 def application_create(request: HttpRequest) -> HttpResponse:
-    """Create a new job application owned by the authenticated user."""
+    """Preview creation anonymously or create an authenticated user's record."""
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path())
+
         form = JobApplicationForm(request.POST)
 
         if form.is_valid():
@@ -141,15 +141,3 @@ def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
             "application": application,
         },
     )
-
-
-class JobApplicationDetailView(LoginRequiredMixin, View):
-    """Compatibility wrapper for the existing detail URLconf."""
-
-    def get(self, request: HttpRequest, pk: int) -> HttpResponse:
-        """Render the detail view for GET requests."""
-        return application_detail(request, pk=pk)
-
-    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
-        """Handle inline note creation for POST requests."""
-        return application_detail(request, pk=pk)
