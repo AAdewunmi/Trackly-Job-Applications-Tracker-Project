@@ -32,7 +32,7 @@
                     <dt>Job link</dt>
                     <dd>
                         {% if application.job_link %}
-                            <a href="{{ application.job_link }}">{{ application.job_link }}</a>
+                            <a href="{{ application.job_link }}" target="_blank" rel="noreferrer">{{ application.job_link }}</a>
                         {% else %}
                             Not recorded
                         {% endif %}
@@ -40,10 +40,75 @@
                 </div>
 
                 <div class="tl-definition-row">
+                    <dt>Created</dt>
+                    <dd>{{ application.created_at }}</dd>
+                </div>
+
+                <div class="tl-definition-row">
                     <dt>Updated</dt>
                     <dd>{{ application.updated_at }}</dd>
                 </div>
             </dl>
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Job description</h2>
+            {% if application.job_description %}
+                <p>{{ application.job_description|linebreaksbr }}</p>
+            {% else %}
+                <p class="tl-muted">No job description recorded yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Internal notes</h2>
+            {% if application.notes %}
+                <p>{{ application.notes|linebreaksbr }}</p>
+            {% else %}
+                <p class="tl-muted">No internal notes recorded yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ note_form.body.id_for_label }}">{{ note_form.body.label }}</label>
+                    {{ note_form.body }}
+                    {% for error in note_form.body.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">Add note</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Application notes</h2>
+            {% if notes %}
+                {% for note in notes %}
+                    <article class="tl-card">
+                        <div class="tl-card-body tl-stack">
+                            <p>{{ note.body|linebreaksbr }}</p>
+                            <p class="tl-muted">{{ note.created_at }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="tl-muted">No notes added yet.</p>
+            {% endif %}
         </div>
     </section>
 </section>
