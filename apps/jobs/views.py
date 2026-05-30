@@ -2,10 +2,8 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-from django.views import View
 
 from apps.jobs.forms import ApplicationNoteForm, JobApplicationForm
 from apps.jobs.models import JobApplication
@@ -141,15 +139,3 @@ def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
             "application": application,
         },
     )
-
-
-class JobApplicationDetailView(LoginRequiredMixin, View):
-    """Compatibility wrapper for the existing detail URLconf."""
-
-    def get(self, request: HttpRequest, pk: int) -> HttpResponse:
-        """Render the detail view for GET requests."""
-        return application_detail(request, pk=pk)
-
-    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
-        """Handle inline note creation for POST requests."""
-        return application_detail(request, pk=pk)
