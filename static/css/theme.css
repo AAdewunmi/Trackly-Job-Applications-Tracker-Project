@@ -568,6 +568,16 @@ textarea {
   gap: 1rem;
 }
 
+.tl-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tl-field-full {
+  grid-column: 1 / -1;
+}
+
 .tl-field {
   display: grid;
   gap: 0.4rem;
@@ -654,6 +664,12 @@ textarea:focus {
 
 .tl-account-layout-wide {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.tl-back-link {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
 }
 
 .tl-definition-list {
@@ -1730,6 +1746,10 @@ textarea:focus {
   }
 
   .tl-definition-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tl-form-grid {
     grid-template-columns: 1fr;
   }
 }
