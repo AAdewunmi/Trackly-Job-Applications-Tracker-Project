@@ -337,6 +337,19 @@ textarea {
   color: #ffffff;
 }
 
+.tl-button-danger {
+  border-color: var(--tl-danger);
+  background: var(--tl-danger);
+  color: #ffffff;
+}
+
+.tl-button-danger:hover,
+.tl-button-danger:focus {
+  border-color: #b42318;
+  background: #b42318;
+  color: #ffffff;
+}
+
 .tl-button-small {
   min-height: 2.25rem;
   padding: 0.52rem 0.9rem;
@@ -664,6 +677,10 @@ textarea:focus {
 
 .tl-account-layout-wide {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.tl-panel-danger {
+  border-color: rgba(217, 45, 32, 0.35);
 }
 
 .tl-back-link {
