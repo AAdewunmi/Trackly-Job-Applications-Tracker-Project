@@ -337,6 +337,19 @@ textarea {
   color: #ffffff;
 }
 
+.tl-button-danger {
+  border-color: var(--tl-danger);
+  background: var(--tl-danger);
+  color: #ffffff;
+}
+
+.tl-button-danger:hover,
+.tl-button-danger:focus {
+  border-color: #b42318;
+  background: #b42318;
+  color: #ffffff;
+}
+
 .tl-button-small {
   min-height: 2.25rem;
   padding: 0.52rem 0.9rem;
@@ -568,6 +581,16 @@ textarea {
   gap: 1rem;
 }
 
+.tl-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tl-field-full {
+  grid-column: 1 / -1;
+}
+
 .tl-field {
   display: grid;
   gap: 0.4rem;
@@ -654,6 +677,16 @@ textarea:focus {
 
 .tl-account-layout-wide {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.tl-panel-danger {
+  border-color: rgba(217, 45, 32, 0.35);
+}
+
+.tl-back-link {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
 }
 
 .tl-definition-list {
@@ -1730,6 +1763,10 @@ textarea:focus {
   }
 
   .tl-definition-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tl-form-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -8,12 +8,12 @@ from apps.users.factories import StaffUserFactory, UserFactory
 
 
 @pytest.mark.django_db
-def test_user_dashboard_loads_for_anonymous_user(client) -> None:
-    """Anonymous users should temporarily be able to preview the dashboard."""
+def test_user_dashboard_requires_login(client) -> None:
+    """Anonymous users should be redirected before viewing the dashboard."""
     response = client.get(reverse("dashboard:user"))
 
-    assert response.status_code == 200
-    assert b"Your job search command centre" in response.content
+    assert response.status_code == 302
+    assert reverse("users:login") in response.url
 
 
 @pytest.mark.django_db

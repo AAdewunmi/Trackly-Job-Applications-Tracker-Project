@@ -5,23 +5,24 @@
 {% block content %}
 <section class="tl-account-layout">
     <div>
+        <a class="tl-back-link" href="{{ application.get_absolute_url }}">&larr; Back to application</a>
         <p class="tl-eyebrow">Delete application</p>
         <h1>Delete {{ application.title }}?</h1>
         <p class="tl-muted">
-            This removes the application record and its notes from your Trackly workspace.
+            This permanently removes the application record and its notes from your Trackly workspace.
         </p>
     </div>
 
-    <section class="tl-panel">
+    <section class="tl-panel tl-panel-danger">
         <div class="tl-panel-body">
             <form class="tl-form" method="post">
                 {% csrf_token %}
                 <p class="tl-muted">
-                    {{ application.title }} at {{ application.company }} will no longer appear in your pipeline.
+                    <strong>{{ application.title }}</strong> at <strong>{{ application.company }}</strong> will no longer appear in your pipeline.
                 </p>
                 <div class="tl-actions">
-                    <button class="tl-button tl-button-primary" type="submit">Delete application</button>
                     <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
+                    <button class="tl-button tl-button-danger" type="submit">Delete application</button>
                 </div>
             </form>
         </div>

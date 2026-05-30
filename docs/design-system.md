@@ -82,9 +82,12 @@ Use the same product-quality principles while keeping Trackly visually distinct.
 - Use `.tl-container`, `.tl-page`, `.tl-section`, `.tl-grid`, `.tl-panel`, and
   `.tl-actions` before adding new layout classes.
 - Use `.tl-auth-shell` for signup and login pages.
-- Use `.tl-account-layout` for account/profile pages.
-- Use cards only for contained UI: forms, account details, repeated items,
-  future dashboard panels.
+- Use `.tl-account-layout` for account, profile, and focused workflow pages.
+- Use `.tl-account-layout-wide` when a data-dense list or empty state should
+  span the available content width.
+- Use `.tl-card` for compact contained UI such as authentication forms and
+  repeated items. Use `.tl-panel` for workflow forms, account details,
+  confirmations, lists, and dashboard sections.
 - Do not nest cards inside cards.
 
 ## Landing Pages
@@ -230,6 +233,7 @@ Use:
 
 - Primary button: green gradient.
 - Secondary button: white or translucent with soft border.
+- Danger button: red high-contrast treatment for irreversible actions only.
 - Rounded pill shape.
 - Strong hover states.
 
@@ -281,13 +285,22 @@ colour for action, status, and emphasis.
 
 - Primary actions use `.tl-button.tl-button-primary`.
 - Secondary actions use `.tl-button.tl-button-secondary`.
+- Irreversible actions use `.tl-button.tl-button-danger`.
 - Button groups use `.tl-actions`.
+- Place a secondary Cancel action before a destructive submit action on
+  confirmation pages.
 
 ### Cards and Panels
 
-- Use `.tl-card` for forms and contained surfaces.
-- Use `.tl-panel` for future dashboard/account sections.
-- Cards should use `--tl-radius`, `--tl-border`, and `--tl-shadow`.
+- Use `.tl-card` for compact contained surfaces such as authentication forms
+  and repeated note items.
+- Use `.tl-panel` for workflow forms, profile details, confirmations, lists,
+  and dashboard sections.
+- Use `.tl-panel-danger` to add a danger border to irreversible confirmation
+  surfaces.
+- Cards and panels should use `--tl-radius`, `--tl-border`, and `--tl-shadow`.
+- Do not nest `.tl-panel` or `.tl-card` surfaces unless the inner card is a
+  repeated item inside a larger workflow section.
 
 ### Dashboard Navigation
 
@@ -309,6 +322,18 @@ colour for action, status, and emphasis.
 - Help text should use `.tl-help-text`.
 - Errors should use `.tl-field-error`.
 - Submit buttons can use `.tl-button-full` on account forms.
+- Use `.tl-form-grid` for responsive two-column workflow forms.
+- Use `.tl-field-full` for fields that should span the complete form width,
+  such as URLs, descriptions, and long-form notes.
+
+### Workflow Navigation
+
+- Use `.tl-back-link` for contextual return links above focused workflow
+  headings, such as returning to an application or the application list.
+- Keep Cancel links valid without JavaScript and return users to the nearest
+  useful page.
+- Confirmation pages should state the irreversible effect clearly before the
+  destructive action.
 
 ### Tables and Lists
 
@@ -338,7 +363,9 @@ colour for action, status, and emphasis.
 - Avoid inline styles.
 - Avoid Bootstrap utility classes and framework-specific component classes.
 - Prefer existing Trackly classes before adding new CSS.
-- New interactive templates should state the intended HTMX target and fallback.
+- Keep links and forms functional as server-rendered HTML fallbacks.
+- When HTMX is added to an interaction, document its stable target and preserve
+  the standard HTML fallback.
 
 ## Canonical Files
 
