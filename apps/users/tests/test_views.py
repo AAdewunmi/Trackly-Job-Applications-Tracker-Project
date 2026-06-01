@@ -68,6 +68,17 @@ def test_logout_redirects_to_login_and_adds_message(client) -> None:
 
 
 @pytest.mark.django_db
+def test_anonymous_logout_redirects_to_login_without_message(client) -> None:
+    """Anonymous logout requests should redirect without a signed-out message."""
+    response = client.post(reverse("users:logout"))
+    messages = [str(message) for message in get_messages(response.wsgi_request)]
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("users:login")
+    assert "You have signed out." not in messages
+
+
+@pytest.mark.django_db
 def test_profile_requires_login(client) -> None:
     """Anonymous users are redirected away from the profile page."""
     response = client.get(reverse("users:profile"))
