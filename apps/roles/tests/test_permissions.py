@@ -1,5 +1,7 @@
 """Tests for role-aware permission helpers."""
 
+from types import SimpleNamespace
+
 import pytest
 from django.contrib.auth.models import AnonymousUser
 
@@ -18,6 +20,13 @@ def test_user_has_role_returns_false_for_anonymous_user() -> None:
 def test_user_has_role_returns_false_for_object_without_roles() -> None:
     """Non-Trackly user-like objects should be handled safely."""
     user = object()
+
+    assert user_has_role(user, Role.Codes.ADMIN) is False
+
+
+def test_user_has_role_returns_false_for_authenticated_object_without_roles() -> None:
+    """Authenticated non-Trackly user-like objects should be handled safely."""
+    user = SimpleNamespace(is_authenticated=True)
 
     assert user_has_role(user, Role.Codes.ADMIN) is False
 
@@ -42,6 +51,18 @@ def test_is_trackly_admin_allows_staff_user() -> None:
     user = StaffUserFactory()
 
     assert is_trackly_admin(user) is True
+
+
+def test_is_trackly_admin_returns_false_for_anonymous_user() -> None:
+    """Anonymous users should not access Trackly admin surfaces."""
+    assert is_trackly_admin(AnonymousUser()) is False
+
+
+def test_is_trackly_admin_returns_false_for_unauthenticated_object() -> None:
+    """Unauthenticated user-like objects should not receive admin access."""
+    user = SimpleNamespace(is_authenticated=False)
+
+    assert is_trackly_admin(user) is False
 
 
 def test_is_trackly_admin_allows_active_admin_role() -> None:
