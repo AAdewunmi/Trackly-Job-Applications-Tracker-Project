@@ -5,6 +5,7 @@
 {% block content %}
 <section class="tl-account-layout">
     <div>
+        <a class="tl-back-link" href="{% url 'jobs:application_list' %}">&larr; Back to applications</a>
         <p class="tl-eyebrow">Job application</p>
         <h1>{{ application.title }}</h1>
         <p class="tl-muted">{{ application.company }}</p>
@@ -75,7 +76,8 @@
     </section>
 
     <section class="tl-panel">
-        <div class="tl-panel-body">
+        <div class="tl-panel-body tl-stack">
+            <h2>Add note</h2>
             <form class="tl-form" method="post" novalidate>
                 {% csrf_token %}
 
