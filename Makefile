@@ -77,7 +77,12 @@ migrations-check:
 	$(MANAGE_T) makemigrations --check --dry-run --settings=config.settings.test
 
 deploy-check:
-	$(MANAGE_T) check --deploy --settings=config.settings.production
+	$(COMPOSE) exec -T \
+		-e DJANGO_SECRET_KEY=local-production-secret-key-with-enough-length-for-deploy-checks \
+		-e DJANGO_DEBUG=False \
+		-e DJANGO_ALLOWED_HOSTS=trackly.example.com \
+		-e DJANGO_CSRF_TRUSTED_ORIGINS=https://trackly.example.com \
+		web python manage.py check --deploy --settings=config.settings.production
 
 check: lint format-check migrations-check deploy-check test
 
