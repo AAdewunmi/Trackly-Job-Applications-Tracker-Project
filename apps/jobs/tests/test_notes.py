@@ -4,8 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from apps.jobs.factories import ApplicationNoteFactory
-from apps.jobs.factories import JobApplicationFactory
+from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.models import ApplicationNote
 from apps.users.factories import UserFactory
 
