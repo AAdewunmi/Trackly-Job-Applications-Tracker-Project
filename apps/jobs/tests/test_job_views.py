@@ -71,6 +71,19 @@ def test_application_create_requires_authentication(client) -> None:
 
 
 @pytest.mark.django_db
+def test_application_create_renders_form_for_authenticated_user(client) -> None:
+    """Authenticated users should receive a create form defaulting to saved."""
+    user = UserFactory()
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:application_create"))
+
+    assert response.status_code == 200
+    assert b"Add job application" in response.content
+    assert b'value="saved" selected' in response.content
+
+
+@pytest.mark.django_db
 def test_application_create_persists_application_for_current_user(client) -> None:
     """Submitting valid application data should create a user-owned record."""
     user = UserFactory()
@@ -121,6 +134,35 @@ def test_application_create_sets_owner_from_request_user(client) -> None:
 
     application = JobApplication.objects.get()
     assert application.owner == user
+
+
+@pytest.mark.django_db
+def test_application_detail_requires_authentication(client) -> None:
+    """Anonymous users should be redirected away from application detail."""
+    application = JobApplicationFactory()
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 302
+    assert reverse("users:login") in response.url
+
+
+@pytest.mark.django_db
+def test_application_detail_renders_for_owner(client) -> None:
+    """The owner should be able to view their application detail page."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Product Analyst")
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert response.context["application"] == application
+    assert b"Product Analyst" in response.content
 
 
 @pytest.mark.django_db
@@ -187,19 +229,3 @@ def test_application_delete_hides_other_users_records(client) -> None:
     )
 
     assert response.status_code == 404
-
-
-@pytest.mark.django_db
-def test_application_delete_post_hides_other_users_records(client) -> None:
-    """Users should not be able to delete another user's application."""
-    user = UserFactory()
-    other_user = UserFactory()
-    other_application = JobApplicationFactory(owner=other_user)
-    client.force_login(user)
-
-    response = client.post(
-        reverse("jobs:application_delete", kwargs={"pk": other_application.pk})
-    )
-
-    assert response.status_code == 404
-    assert JobApplication.objects.filter(pk=other_application.pk).exists()

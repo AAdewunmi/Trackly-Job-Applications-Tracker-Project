@@ -9,6 +9,15 @@ from apps.users.factories import UserFactory
 
 
 @pytest.mark.django_db
+def test_signup_page_loads(client) -> None:
+    """The signup page should be reachable by anonymous visitors."""
+    response = client.get(reverse("users:signup"))
+
+    assert response.status_code == 200
+    assert b"Create your Trackly account" in response.content
+
+
+@pytest.mark.django_db
 def test_signup_creates_user_and_signs_them_in(client) -> None:
     """Signup creates a user account and authenticates the session."""
     response = client.post(
@@ -29,6 +38,26 @@ def test_signup_creates_user_and_signs_them_in(client) -> None:
     assert response["Location"] == reverse("dashboard:user")
     assert int(client.session["_auth_user_id"]) == user.pk
     assert "Your Trackly account has been created." in messages
+
+
+@pytest.mark.django_db
+def test_signup_rejects_duplicate_email(client) -> None:
+    """The signup page should reject an email already registered to a user."""
+    UserFactory(email="taken@example.com")
+
+    response = client.post(
+        reverse("users:signup"),
+        {
+            "email": "taken@example.com",
+            "first_name": "Taken",
+            "last_name": "User",
+            "password1": "StrongPass12345!",
+            "password2": "StrongPass12345!",
+        },
+    )
+
+    assert response.status_code == 200
+    assert b"A user with this email already exists." in response.content
 
 
 @pytest.mark.django_db
@@ -97,3 +126,4 @@ def test_profile_renders_authenticated_user(client) -> None:
 
     assert response.status_code == 200
     assert b"Ada Lovelace" in response.content
+    assert user.email.encode() in response.content

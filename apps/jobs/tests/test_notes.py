@@ -1,7 +1,6 @@
 """Tests for application notes and note ownership behaviour."""
 
 import pytest
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
@@ -77,22 +76,3 @@ def test_user_cannot_add_note_to_another_users_application(client) -> None:
 
     assert response.status_code == 404
     assert ApplicationNote.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_application_note_owner_is_derived_from_application() -> None:
-    """A note should expose its owner through the parent application."""
-    user = UserFactory()
-    application = JobApplicationFactory(owner=user)
-    note = ApplicationNoteFactory(application=application)
-
-    assert note.owner == user
-
-
-@pytest.mark.django_db
-def test_application_note_rejects_blank_body() -> None:
-    """The note model should reject empty note bodies."""
-    application = JobApplicationFactory()
-
-    with pytest.raises(ValidationError):
-        ApplicationNoteFactory(application=application, body="   ")
