@@ -13,6 +13,7 @@ class JobApplicationForm(forms.ModelForm):
         required=False,
         widget=forms.URLInput(
             attrs={
+                "class": "form-control",
                 "placeholder": "https://company.example/jobs/123",
             }
         ),
@@ -34,28 +35,33 @@ class JobApplicationForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(
                 attrs={
+                    "class": "form-control",
                     "placeholder": "Backend Engineer",
                 }
             ),
             "company": forms.TextInput(
                 attrs={
+                    "class": "form-control",
                     "placeholder": "Acme Ltd",
                 }
             ),
-            "status": forms.Select(),
+            "status": forms.Select(attrs={"class": "form-select"}),
             "applied_date": forms.DateInput(
                 attrs={
+                    "class": "form-control",
                     "type": "date",
                 }
             ),
             "job_description": forms.Textarea(
                 attrs={
+                    "class": "form-control",
                     "rows": 7,
                     "placeholder": "Paste the job description or role summary.",
                 }
             ),
             "notes": forms.Textarea(
                 attrs={
+                    "class": "form-control",
                     "rows": 4,
                     "placeholder": "Initial notes about the role.",
                 }
@@ -82,6 +88,7 @@ class ApplicationNoteForm(forms.ModelForm):
         widgets = {
             "body": forms.Textarea(
                 attrs={
+                    "class": "form-control",
                     "rows": 4,
                     "placeholder": (
                         "Add a recruiter update, interview note, or follow-up."
