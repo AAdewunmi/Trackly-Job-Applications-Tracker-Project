@@ -155,6 +155,30 @@ The full check runs:
 - Django production deploy check
 - pytest
 
+## Sprint Verification
+
+The executable scripts under `docs/sprint-runbook/` capture incremental sprint
+checkpoints. Use the Sprint 2 Day 5 script as the current end-to-end completion
+check:
+
+```bash
+./docs/sprint-runbook/sprint-2/sprint-2-day-5.sh
+```
+
+It verifies the Docker Compose project name, the
+`trackly-job-applications-tracker-project-web` container prefix,
+`postgres:16-alpine`, migrations, formatting, linting, dashboard routes,
+dashboard service contracts, templates, focused tests, and the full regression
+suite.
+
+See `docs/sprint-runbook/README.md` before running an earlier checkpoint script.
+
+## Continuous Integration
+
+GitHub Actions runs Ruff, Black, migration checks, Django's production deploy
+check, and pytest against PostgreSQL. CI requires at least 95% branch coverage
+for `apps` and uploads `coverage.xml` to Codecov.
+
 ## Settings Modules
 
 Trackly uses split Django settings:

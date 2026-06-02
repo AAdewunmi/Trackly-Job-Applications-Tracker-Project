@@ -1,6 +1,6 @@
 # Trackly Domain Model
 
-Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP. Sprint 2 introduces the core workflow domain: user-owned job applications, application notes, and user-scoped dashboard metrics.
+Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP. Sprint 2 implements the core workflow domain: user-owned job applications, application notes, and user-scoped dashboard metrics.
 
 ## Core Entity: JobApplication
 
@@ -72,7 +72,7 @@ The application list, detail, update, delete, and note creation flows query thro
 
 ## Selectors
 
-Sprint 2 introduces selectors for reusable read queries:
+Sprint 2 implements selectors for reusable read queries:
 
 - `application_queryset_for_user(user)`
 - `get_user_application_or_404(user, pk)`
@@ -85,7 +85,7 @@ Selectors keep ownership filtering out of templates and reduce duplicated query 
 
 ## Services
 
-Sprint 2 introduces service-layer metric helpers:
+Sprint 2 implements service-layer metric helpers:
 
 - `get_application_status_counts(user)`
 - `get_user_pipeline_metrics(user)`
@@ -110,9 +110,9 @@ The dashboard service prepares these user-scoped metrics for rendering:
 
 The dashboard template renders prepared metrics and recent applications while preserving an actionable empty state for new users.
 
-## Sprint 2 Completion Criteria
+## Sprint 2 Completion Status
 
-Sprint 2 is complete when:
+Sprint 2 is complete:
 
 1. Users can create job applications.
 2. Users can list only their own applications.

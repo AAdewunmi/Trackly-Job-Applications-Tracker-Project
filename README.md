@@ -15,18 +15,24 @@ A Django SaaS MVP for tracking job applications and matching job descriptions ag
 
 GitHub repository: <https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project>
 
-Trackly helps users register, manage job applications, track application status, maintain notes, review personal progress, and generate role-fit insights from job descriptions and stored target-role profiles.
+Trackly helps users register, manage job applications, track application status,
+maintain notes, and review personal progress. The planned NLP layer will generate
+role-fit insights from job descriptions and stored target-role profiles.
 
 The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The matching workflow is designed around text normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
 
-Sprint 1 establishes the product foundation: Django project structure, PostgreSQL-backed local development, custom email-first users, role support, authentication flows, protected dashboards, Bootstrap templates, and database-backed tests.
+Sprint 2 completes the core job-tracking workflow: user-owned applications,
+status validation, notes, ownership-protected CRUD routes, reusable selectors,
+service-layer dashboard metrics, and recent application activity. Sprint 1
+established the Django, PostgreSQL, identity, role, authentication, and UI
+foundation.
 
 ## Core MVP Direction
 
 Trackly is designed as a credible early SaaS product, not a toy example. The delivery stance is intentionally simple and production-minded:
 
 - Backend: Django 5
-- Frontend: Django templates, Bootstrap 5, lightweight custom CSS
+- Frontend: Django-rendered templates, HTMX-ready interactions, and Trackly CSS
 - Database: PostgreSQL
 - Testing: pytest, pytest-django, factory_boy
 - Development workflow: Docker and Docker Compose
@@ -34,9 +40,9 @@ Trackly is designed as a credible early SaaS product, not a toy example. The del
 - NLP layer: deterministic keyword extraction, target-role profile comparison, and explainable job-fit scoring
 - Deployment target: Render
 
-## Sprint 1 Capabilities
+## Implemented Through Sprint 2
 
-Sprint 1 delivers:
+Trackly currently includes:
 
 - Dockerised Django app and PostgreSQL service
 - Environment-driven settings
@@ -46,9 +52,17 @@ Sprint 1 delivers:
 - Signup, login, logout, and profile pages
 - Authenticated user dashboard
 - Protected admin dashboard
-- Bootstrap base template and navigation
-- Initial documentation
-- Model and integration tests
+- Trackly CSS design system and shared template shell
+- User-owned job application create, list, detail, update, and delete flows
+- Saved, applied, screening, interviewing, offer, rejected, and withdrawn statuses
+- Application notes attached only to user-owned applications
+- User-scoped selectors for reusable read queries
+- Service-layer dashboard metrics and recent application activity
+- Temporary unauthenticated dashboard preview at `/dashboard/preview/`
+- Database-backed model, selector, service, view, note, and permission tests
+
+The explainable NLP matching workflow, API layer, JWT authentication, and Render
+deployment remain planned work.
 
 ## Quick Start
 
@@ -69,6 +83,12 @@ Use these docs for the full reviewer path:
 - [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
 - [Architecture](docs/architecture.md) for settings modules, app boundaries,
   database choices, and CI expectations.
+- [Domain model](docs/domain-model.md) for Sprint 2 applications, notes,
+  selectors, services, metrics, and ownership rules.
+- [Design system](docs/design-system.md) for the Trackly template and CSS
+  standard.
+- [Sprint runbooks](docs/sprint-runbook/README.md) for historical checkpoint
+  scripts and the current Sprint 2 completion check.
 
 ## Environment Settings
 
@@ -130,6 +150,7 @@ compatibility:
 .
 ├── apps/
 │   ├── dashboard/
+│   ├── jobs/
 │   ├── roles/
 │   └── users/
 ├── config/
@@ -139,7 +160,10 @@ compatibility:
 │   └── wsgi.py
 ├── docs/
 │   ├── architecture.md
-│   └── local-setup.md
+│   ├── design-system.md
+│   ├── domain-model.md
+│   ├── local-setup.md
+│   └── sprint-runbook/
 ├── .env.example
 ├── static/
 ├── templates/

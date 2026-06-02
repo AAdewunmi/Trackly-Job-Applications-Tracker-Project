@@ -131,6 +131,15 @@ make check
 The `check` target runs Ruff, Black format checks, migration checks, Django's
 production deploy check, and pytest.
 
+To run the completed Sprint 2 end-to-end verification script:
+
+```bash
+./docs/sprint-runbook/sprint-2/sprint-2-day-5.sh
+```
+
+Earlier sprint scripts are incremental checkpoint runbooks. See
+`docs/sprint-runbook/README.md` before using them as current validation.
+
 ## Settings Modules
 
 Trackly uses split Django settings:

@@ -310,8 +310,10 @@ colour for action, status, and emphasis.
   `.tl-dashboard-side-link-active`.
 - Place the page heading above `.tl-dashboard-page`; the sidebar should align
   with the dashboard cards and stretch to the end of the dashboard content.
-- Keep sidebar destinations focused on frequent user workflows such as pipeline,
-  applications, metrics, insights, empty state, and profile.
+- Keep sidebar destinations focused on frequent user workflows such as
+  Application Pipeline, Application Tracker, Progress Metrics, AI/NLP Insights,
+  and Profile. Empty states belong inside the relevant workflow surface rather
+  than in a standalone sidebar destination.
 - On mobile, dashboard side navigation should stack above content and use compact
   grid links rather than hiding navigation.
 
