@@ -13,9 +13,7 @@ def get_application_status_counts(user) -> dict[str, int]:
     """Return user-scoped application counts for every workflow status."""
     counts = {status: 0 for status in JobApplication.Status.values}
     status_rows = (
-        application_queryset_for_user(user)
-        .values("status")
-        .annotate(count=Count("id"))
+        application_queryset_for_user(user).values("status").annotate(count=Count("id"))
     )
 
     for row in status_rows:
