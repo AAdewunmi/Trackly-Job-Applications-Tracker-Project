@@ -77,6 +77,7 @@ Sprint 2 introduces selectors for reusable read queries:
 - `application_queryset_for_user(user)`
 - `get_user_application_or_404(user, pk)`
 - `get_recent_applications_for_user(user, limit=5)`
+- `get_recent_applications_for_user_by_status(user, status, limit=5)`
 - `notes_queryset_for_user(user)`
 - `get_note_count_for_user(user)`
 
