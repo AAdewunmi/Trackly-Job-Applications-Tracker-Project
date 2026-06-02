@@ -2,16 +2,12 @@
 
 from django.urls import path
 
-from apps.dashboard.views import (
-    AdminDashboardView,
-    UserDashboardPreviewView,
-    UserDashboardView,
-)
+from apps.dashboard.views import admin_index, user_index, user_preview
 
 app_name = "dashboard"
 
 urlpatterns = [
-    path("", UserDashboardView.as_view(), name="user"),
-    path("preview/", UserDashboardPreviewView.as_view(), name="user-preview"),
-    path("admin/", AdminDashboardView.as_view(), name="admin"),
+    path("", user_index, name="user"),
+    path("preview/", user_preview, name="user-preview"),
+    path("admin/", admin_index, name="admin"),
 ]
