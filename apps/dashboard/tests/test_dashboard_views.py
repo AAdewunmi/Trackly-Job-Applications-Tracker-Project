@@ -3,6 +3,8 @@
 import pytest
 from django.urls import reverse
 
+from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
+from apps.jobs.models import JobApplication
 from apps.roles.factories import AdminRoleFactory
 from apps.users.factories import StaffUserFactory, UserFactory
 
@@ -17,14 +19,34 @@ def test_user_dashboard_requires_login(client) -> None:
 
 
 @pytest.mark.django_db
+def test_user_dashboard_preview_loads_without_login(client) -> None:
+    """Anonymous users should be able to view the temporary dashboard preview."""
+    response = client.get(reverse("dashboard:user-preview"))
+
+    assert response.status_code == 200
+    assert b"Your job search command centre" in response.content
+    assert response.context["metrics"]["total_applications"] == 0
+    assert list(response.context["recent_applications"]) == []
+
+
+@pytest.mark.django_db
 def test_user_dashboard_loads_for_authenticated_user(client) -> None:
     """Authenticated users should be able to load the dashboard."""
     user = UserFactory(email="dashboard@example.com")
+    application = JobApplicationFactory(
+        owner=user,
+        status=JobApplication.Status.INTERVIEWING,
+    )
+    ApplicationNoteFactory(application=application)
     client.force_login(user)
 
     response = client.get(reverse("dashboard:user"))
 
     assert response.status_code == 200
+    assert response.context["metrics"]["total_applications"] == 1
+    assert response.context["metrics"]["interviews"] == 1
+    assert response.context["metrics"]["notes"] == 1
+    assert list(response.context["recent_applications"]) == [application]
     assert b"Your job search command centre" in response.content
     assert reverse("jobs:application_create").encode() in response.content
     assert reverse("jobs:application_list").encode() in response.content

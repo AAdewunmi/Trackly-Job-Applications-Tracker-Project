@@ -1,54 +1,61 @@
-"""Dashboard views for Trackly product surfaces."""
+"""Views for Trackly dashboards."""
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.views import redirect_to_login
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.views.generic import TemplateView
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 
+from apps.dashboard.services import get_user_dashboard_context
 from apps.roles.models import Role
 from apps.roles.permissions import is_trackly_admin
 
 
-class UserDashboardView(LoginRequiredMixin, TemplateView):
-    """Display the authenticated user's Trackly dashboard shell."""
+@login_required
+def user_index(request: HttpRequest) -> HttpResponse:
+    """Render the authenticated user's dashboard."""
+    dashboard_context = get_user_dashboard_context(request.user)
 
-    template_name = "dashboard/user_index.html"
+    return render(
+        request,
+        "dashboard/user_index.html",
+        {
+            "page_title": "Dashboard",
+            "metrics": dashboard_context.metrics,
+            "recent_applications": dashboard_context.recent_applications,
+        },
+    )
 
-    def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Add Sprint 1 empty-state dashboard context."""
-        context = super().get_context_data(**kwargs)
-        context["page_title"] = "Dashboard"
-        return context
+
+def user_preview(request: HttpRequest) -> HttpResponse:
+    """Temporarily render the user dashboard without authentication."""
+    dashboard_context = get_user_dashboard_context(request.user)
+
+    return render(
+        request,
+        "dashboard/user_index.html",
+        {
+            "page_title": "Dashboard Preview",
+            "metrics": dashboard_context.metrics,
+            "recent_applications": dashboard_context.recent_applications,
+        },
+    )
 
 
-class AdminDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    """Display the protected admin dashboard shell."""
-
-    template_name = "dashboard/admin_index.html"
-    raise_exception = True
-
-    def test_func(self) -> bool:
-        """Allow staff users or users with the active admin role."""
-        return is_trackly_admin(self.request.user)
-
-    def handle_no_permission(self):
-        """Return login redirects for anonymous users and 403 for wrong roles."""
-        if not self.request.user.is_authenticated:
-            return redirect_to_login(
-                self.request.get_full_path(),
-                self.get_login_url(),
-                self.get_redirect_field_name(),
-            )
-
+@login_required
+def admin_index(request: HttpRequest) -> HttpResponse:
+    """Render the protected admin dashboard shell."""
+    if not is_trackly_admin(request.user):
         raise PermissionDenied("You do not have permission to access this dashboard.")
 
-    def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Add initial admin overview counts."""
-        context = super().get_context_data(**kwargs)
-        user_model = get_user_model()
+    user_model = get_user_model()
 
-        context["page_title"] = "Admin Dashboard"
-        context["total_users"] = user_model.objects.count()
-        context["total_roles"] = Role.objects.count()
-        return context
+    return render(
+        request,
+        "dashboard/admin_index.html",
+        {
+            "page_title": "Admin Dashboard",
+            "total_users": user_model.objects.count(),
+            "total_roles": Role.objects.count(),
+        },
+    )
