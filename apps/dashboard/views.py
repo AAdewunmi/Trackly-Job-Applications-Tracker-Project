@@ -22,6 +22,18 @@ class UserDashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class UserDashboardPreviewView(TemplateView):
+    """Temporarily expose the user dashboard shell without authentication."""
+
+    template_name = "dashboard/user_index.html"
+
+    def get_context_data(self, **kwargs: object) -> dict[str, object]:
+        """Add preview dashboard context."""
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Dashboard Preview"
+        return context
+
+
 class AdminDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Display the protected admin dashboard shell."""
 
