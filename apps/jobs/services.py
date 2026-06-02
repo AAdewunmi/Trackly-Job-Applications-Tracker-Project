@@ -34,6 +34,8 @@ def get_user_pipeline_metrics(user) -> dict[str, int]:
     return {
         "total_applications": total_applications,
         "active_applications": active_applications,
+        "saved_jobs": status_counts[JobApplication.Status.SAVED],
+        "follow_ups": status_counts[JobApplication.Status.SCREENING],
         "interviews": status_counts[JobApplication.Status.INTERVIEWING],
         "offers": status_counts[JobApplication.Status.OFFER],
         "rejections": status_counts[JobApplication.Status.REJECTED],

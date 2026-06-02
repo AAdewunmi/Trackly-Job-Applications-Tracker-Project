@@ -2,30 +2,29 @@
 
 ## Purpose
 
-Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP.
+Trackly is a Django SaaS MVP for tracking job applications and matching job
+descriptions against target-role profiles using explainable NLP.
 
-The product is structured around authenticated users who own their job application data, manage statuses and notes, review progress in a personal dashboard, and generate deterministic role-fit insights from job descriptions and persisted target-role profiles.
-
-The platform has two core product areas:
-
-- Job application tracking for applications, statuses, notes, and progress.
-- NLP-based role matching built around text processing, normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
-
-The platform framing fits the broader architecture: secured API surfaces, dashboards, stored role profiles, persisted insights, and a workflow that extends beyond a simple tracker.
-
-Sprint 1 establishes the foundation rather than the full feature set. The goal is to create a codebase that can grow safely into the job workflow, API layer, NLP role-matching layer, CI, and deployment work.
+Sprint 2 completes the core job-tracking workflow. Authenticated users can own
+applications, manage statuses and notes, review recent activity, and see
+user-scoped dashboard metrics. The NLP matching layer remains planned work:
+text processing, normalisation, TF-IDF/vector comparison, cosine similarity,
+and explainable overlapping terms.
 
 ## Architectural Style
 
 Trackly uses a modular Django architecture:
 
 - `config/` contains project-level settings, URLs, ASGI, and WSGI entry points.
-- `apps/users/` owns identity, custom user behaviour, account forms, and auth views.
+- `apps/users/` owns identity, account forms, and authentication views.
 - `apps/roles/` owns product roles and permission helpers.
-- `apps/dashboard/` owns authenticated dashboard surfaces.
+- `apps/jobs/` owns job applications, notes, forms, selectors, services, and
+  workflow views.
+- `apps/dashboard/` owns the user dashboard service context and dashboard
+  surfaces.
 - `templates/` contains server-rendered Django templates.
-- `static/` contains lightweight custom assets.
-- `docs/` contains architecture, setup, and operational notes.
+- `static/` contains Trackly CSS and other lightweight assets.
+- `docs/` contains architecture, setup, domain, design, and operational notes.
 
 ## Settings Split
 
@@ -36,13 +35,11 @@ The project uses environment-specific settings:
 - `config.settings.test` supports pytest and pytest-django.
 - `config.settings.production` prepares the app for production hardening.
 
-This split prevents local convenience settings from leaking into deployed environments.
-
-Each environment-specific module imports from `config.settings.base` first, then
+Each environment-specific module imports from `config.settings.base`, then
 overrides only the behaviour that differs for that environment. Secrets, debug
 mode, hosts, CSRF trusted origins, database connection values, and production
-security options are read from environment variables with explicit defaults for
-local or CI usage.
+security options are read from environment variables with explicit defaults
+for local or CI usage.
 
 Settings module usage:
 
@@ -58,11 +55,13 @@ CI enforces the settings split by running:
 - Black formatting checks
 - `makemigrations --check --dry-run` with `config.settings.test`
 - `check --deploy` with `config.settings.production`
-- pytest with `config.settings.test`
+- pytest with branch coverage for `apps`
+- Codecov upload from `coverage.xml`
 
 ## Database
 
-Trackly uses PostgreSQL from the first sprint. This avoids developing against SQLite assumptions and gives later features realistic persistence behaviour.
+Trackly uses PostgreSQL from the first sprint. Local Docker Compose and CI use
+`postgres:16-alpine`.
 
 Database settings are controlled by environment variables:
 
@@ -74,9 +73,10 @@ Database settings are controlled by environment variables:
 
 ## Identity
 
-Trackly uses a custom user model from Sprint 1. The user signs in with email rather than username. This is intentional because identity decisions become expensive to change after migrations and relations depend on the user model.
-
-The user model also has a many-to-many relationship with `Role`, allowing product-level access control without depending only on Django groups.
+Trackly uses a custom user model introduced in Sprint 1. Users sign in with
+email rather than username. The user model has a many-to-many relationship with
+`Role`, allowing product-level access control without depending only on Django
+groups.
 
 ## Roles and Access Control
 
@@ -85,60 +85,76 @@ The roles foundation supports:
 - `member`
 - `admin`
 
-The custom user model has a many-to-many relationship with roles. This creates a
-product-specific access-control foundation before protected role-gated workflows
-are implemented.
+The user dashboard at `/dashboard/` requires authentication. The admin dashboard
+at `/dashboard/admin/` requires authentication and passes users through the
+Trackly admin permission helper.
+
+The temporary `/dashboard/preview/` route intentionally renders the user
+dashboard without authentication for UI review. User-scoped selectors return
+empty querysets for anonymous users, so the preview renders zero metrics and no
+application records.
+
+Job application list, detail, update, delete, and note creation flows require
+authentication. Detail-level operations fetch applications through an
+owner-scoped selector, so a user attempting to access another user's record
+receives a 404 response.
+
+## Job Tracking Domain
+
+Sprint 2 implements:
+
+- User-owned `JobApplication` records
+- Explicit saved, applied, screening, interviewing, offer, rejected, and
+  withdrawn statuses
+- Validation for required title and company fields, valid statuses, valid
+  optional URLs, and non-future applied dates
+- Inline internal notes on each application
+- Timeline-style `ApplicationNote` records owned through their parent
+  application
+- Reusable selectors for user-scoped application and note reads
+- Service-layer dashboard metric aggregation
+
+See `docs/domain-model.md` for the complete contract.
 
 ## UI Surface
 
-Sprint 1 uses server-rendered Django templates with HTMX available for
-progressive interactions and custom Trackly CSS for styling. The product shell
-includes:
+Trackly uses server-rendered Django templates with HTMX available for
+progressive interactions and custom Trackly CSS for styling. The implemented
+surface includes:
 
-- Shared base template
-- Navigation
-- Flash messages
+- Shared base template, navigation, footer, and flash messages
 - Public landing page
-- Landing-page product preview, feature, map, pricing, and CTA sections
-- Signup page
-- Login page
-- Profile page
-- User dashboard placeholder
-- Admin dashboard placeholder
+- Signup, login, logout, and profile flows
+- Application list, create, detail, update, delete, and note creation flows
+- User dashboard with dynamic pipeline, progress metrics, and recent
+  applications
+- Protected admin dashboard shell
+- Temporary unauthenticated dashboard preview
 
-This gives the project a usable product surface before core job application workflow begins.
+The dashboard's AI/NLP Insights card is intentionally labelled `Planned`; there
+is no NLP insight backend wiring yet.
 
 ## Testing Approach
 
-Sprint 1 uses:
+Trackly uses pytest, pytest-django, factory_boy, and PostgreSQL-backed database
+tests.
 
-- pytest
-- pytest-django
-- factory_boy
-- PostgreSQL-backed database tests
+Sprint 2 coverage includes:
 
-Tests cover:
-
-- User creation
-- Email login assumptions
-- Role persistence
-- Role assignment
-- Authentication flows
-- Profile access
-- Dashboard access
-- Landing-page routing and account-aware actions
+- Custom users, roles, authentication flows, profile access, and landing routes
+- Job application model validation and admin registration
+- User-scoped selectors and metric services
+- Application list, create, detail, update, delete, and note workflows
+- Cross-user permission enforcement
+- Dashboard metric context, recent applications, protected access, admin
+  permissions, and unauthenticated preview behaviour
 
 ## Later Sprint Boundaries
 
-Sprint 1 deliberately avoids implementing:
+The following remain planned:
 
-- Job application CRUD
-- Application notes
-- Dashboard metrics
-- API endpoints
+- Django REST Framework API endpoints under `/api/v1/`
 - JWT authentication
-- NLP-based role matching
-- Render deployment
-- Role-gated dashboard restrictions
-
-Those features are intentionally staged across later sprints.
+- Persisted target-role profiles
+- Explainable NLP role matching and persisted insight history
+- Production deployment to Render

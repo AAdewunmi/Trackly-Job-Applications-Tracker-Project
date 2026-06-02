@@ -12,6 +12,7 @@ from apps.jobs.selectors import (
     application_queryset_for_user,
     get_note_count_for_user,
     get_recent_applications_for_user,
+    get_recent_applications_for_user_by_status,
     get_user_application_or_404,
     notes_queryset_for_user,
 )
@@ -106,6 +107,26 @@ def test_recent_applications_respects_limit() -> None:
 
     assert list(applications) == [third_application, second_application]
     assert first_application not in applications
+
+
+@pytest.mark.django_db
+def test_recent_applications_by_status_returns_only_requested_status() -> None:
+    """Status-filtered recent applications should remain user-scoped."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    saved_application = JobApplicationFactory(
+        owner=owner,
+        status="saved",
+    )
+    JobApplicationFactory(owner=owner, status="applied")
+    JobApplicationFactory(owner=other_user, status="saved")
+
+    applications = get_recent_applications_for_user_by_status(
+        owner,
+        status="saved",
+    )
+
+    assert list(applications) == [saved_application]
 
 
 @pytest.mark.django_db
