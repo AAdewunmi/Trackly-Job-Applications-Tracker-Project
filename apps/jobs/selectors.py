@@ -35,6 +35,15 @@ def get_recent_applications_for_user(
     return application_queryset_for_user(user)[:limit]
 
 
+def get_recent_applications_for_user_by_status(
+    user,
+    status: str,
+    limit: int = 5,
+) -> QuerySet[JobApplication]:
+    """Return recent user-owned applications for one workflow status."""
+    return application_queryset_for_user(user).filter(status=status)[:limit]
+
+
 def notes_queryset_for_user(user) -> QuerySet[ApplicationNote]:
     """Return notes attached to the supplied user's applications."""
     if (

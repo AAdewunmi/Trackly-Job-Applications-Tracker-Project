@@ -38,6 +38,8 @@ def test_pipeline_metrics_are_scoped_to_current_user() -> None:
         owner=owner,
         status=JobApplication.Status.APPLIED,
     )
+    JobApplicationFactory(owner=owner, status=JobApplication.Status.SAVED)
+    JobApplicationFactory(owner=owner, status=JobApplication.Status.SCREENING)
     JobApplicationFactory(owner=owner, status=JobApplication.Status.INTERVIEWING)
     JobApplicationFactory(owner=owner, status=JobApplication.Status.REJECTED)
     JobApplicationFactory(owner=other_user, status=JobApplication.Status.OFFER)
@@ -47,8 +49,10 @@ def test_pipeline_metrics_are_scoped_to_current_user() -> None:
     metrics = get_user_pipeline_metrics(owner)
 
     assert metrics == {
-        "total_applications": 3,
-        "active_applications": 2,
+        "total_applications": 5,
+        "active_applications": 3,
+        "saved_jobs": 1,
+        "follow_ups": 1,
         "interviews": 1,
         "offers": 0,
         "rejections": 1,
@@ -66,6 +70,8 @@ def test_pipeline_metrics_are_empty_for_anonymous_user() -> None:
     assert metrics == {
         "total_applications": 0,
         "active_applications": 0,
+        "saved_jobs": 0,
+        "follow_ups": 0,
         "interviews": 0,
         "offers": 0,
         "rejections": 0,

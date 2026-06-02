@@ -23,6 +23,9 @@ def user_index(request: HttpRequest) -> HttpResponse:
             "page_title": "Dashboard",
             "metrics": dashboard_context.metrics,
             "recent_applications": dashboard_context.recent_applications,
+            "saved_applications": dashboard_context.saved_applications,
+            "applied_applications": dashboard_context.applied_applications,
+            "interviewing_applications": dashboard_context.interviewing_applications,
         },
     )
 
@@ -38,6 +41,9 @@ def user_preview(request: HttpRequest) -> HttpResponse:
             "page_title": "Dashboard Preview",
             "metrics": dashboard_context.metrics,
             "recent_applications": dashboard_context.recent_applications,
+            "saved_applications": dashboard_context.saved_applications,
+            "applied_applications": dashboard_context.applied_applications,
+            "interviewing_applications": dashboard_context.interviewing_applications,
         },
     )
 

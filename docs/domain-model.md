@@ -100,12 +100,14 @@ The dashboard service prepares these user-scoped metrics for rendering:
 | --- | --- |
 | Total applications | All applications owned by the current user. |
 | Active applications | Applications with `applied`, `screening`, or `interviewing` status. |
+| Saved jobs | Applications with `saved` status. |
+| Follow-ups | Applications with `screening` status. |
 | Interviews | Applications with `interviewing` status. |
 | Offers | Applications with `offer` status. |
 | Rejections | Applications with `rejected` status. |
 | Notes | Notes attached to the current user's applications. |
 
-The current dashboard template still displays static preview values. Rendering the prepared metrics and recent applications is the remaining dashboard UI work.
+The dashboard template renders prepared metrics and recent applications while preserving an actionable empty state for new users.
 
 ## Sprint 2 Completion Criteria
 
