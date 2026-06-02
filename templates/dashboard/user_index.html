@@ -161,6 +161,36 @@
                     <p class="tl-muted">
                         Trackly calculates these metrics from your application records and notes, keeping your dashboard scoped to your job search.
                     </p>
+
+                    <div class="tl-metric-strip" aria-label="Progress metrics">
+                        <div>
+                            <strong>{{ metrics.total_applications }}</strong>
+                            <span>Total Applications</span>
+                        </div>
+                        <div>
+                            <strong>{{ metrics.active_applications }}</strong>
+                            <span>Active Applications</span>
+                        </div>
+                        <div>
+                            <strong>{{ metrics.interviews }}</strong>
+                            <span>Interviews</span>
+                        </div>
+                    </div>
+
+                    <div class="tl-metric-strip" aria-label="Progress outcome metrics">
+                        <div>
+                            <strong>{{ metrics.offers }}</strong>
+                            <span>Offers</span>
+                        </div>
+                        <div>
+                            <strong>{{ metrics.rejections }}</strong>
+                            <span>Rejections</span>
+                        </div>
+                        <div>
+                            <strong>{{ metrics.notes }}</strong>
+                            <span>Notes</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 

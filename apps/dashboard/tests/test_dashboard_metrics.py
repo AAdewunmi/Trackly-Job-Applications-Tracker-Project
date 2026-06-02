@@ -109,6 +109,11 @@ def test_user_dashboard_renders_metrics(client) -> None:
     assert b"Saved jobs" in response.content
     assert b"Follow-ups" in response.content
     assert b"Interviews" in response.content
+    assert b"Total Applications" in response.content
+    assert b"Active Applications" in response.content
+    assert b"Offers" in response.content
+    assert b"Rejections" in response.content
+    assert b"Notes" in response.content
 
 
 @pytest.mark.django_db
