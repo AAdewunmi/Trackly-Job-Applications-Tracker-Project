@@ -4,7 +4,7 @@ djangorestframework-simplejwt==5.5.1
 psycopg[binary]==3.2.4
 gunicorn==23.0.0
 whitenoise==6.8.2
-nltk==3.9.1
+nltk==3.9.4
 scikit-learn==1.6.1
 numpy==2.2.6
 scipy==1.15.3
