@@ -230,7 +230,6 @@ from django.urls import reverse
 
 expected_urls = {
     'dashboard:user': '/dashboard/',
-    'dashboard:user-preview': '/dashboard/preview/',
     'jobs:application_list': '/applications/',
     'jobs:application_create': '/applications/new/',
 }
@@ -390,7 +389,6 @@ Expected receipt:
 - jobs migrations are present and up to date.
 - database migrations apply non-interactively.
 - dashboard:user resolves to /dashboard/.
-- dashboard:user-preview resolves to /dashboard/preview/.
 - jobs application list and create URLs resolve correctly.
 - DashboardContext and dashboard user_index import cleanly.
 - user-scoped selectors and dashboard metric services import cleanly.

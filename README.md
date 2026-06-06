@@ -58,7 +58,6 @@ Trackly currently includes:
 - Application notes attached only to user-owned applications
 - User-scoped selectors for reusable read queries
 - Service-layer dashboard metrics and recent application activity
-- Temporary unauthenticated dashboard preview at `/dashboard/preview/`
 - Database-backed model, selector, service, view, note, and permission tests
 
 The explainable NLP matching workflow, API layer, JWT authentication, and Render

@@ -30,24 +30,6 @@ def user_index(request: HttpRequest) -> HttpResponse:
     )
 
 
-def user_preview(request: HttpRequest) -> HttpResponse:
-    """Temporarily render the user dashboard without authentication."""
-    dashboard_context = get_user_dashboard_context(request.user)
-
-    return render(
-        request,
-        "dashboard/user_index.html",
-        {
-            "page_title": "Dashboard Preview",
-            "metrics": dashboard_context.metrics,
-            "recent_applications": dashboard_context.recent_applications,
-            "saved_applications": dashboard_context.saved_applications,
-            "applied_applications": dashboard_context.applied_applications,
-            "interviewing_applications": dashboard_context.interviewing_applications,
-        },
-    )
-
-
 @login_required
 def admin_index(request: HttpRequest) -> HttpResponse:
     """Render the protected admin dashboard shell."""

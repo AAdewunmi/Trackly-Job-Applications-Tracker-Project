@@ -89,11 +89,6 @@ The user dashboard at `/dashboard/` requires authentication. The admin dashboard
 at `/dashboard/admin/` requires authentication and passes users through the
 Trackly admin permission helper.
 
-The temporary `/dashboard/preview/` route intentionally renders the user
-dashboard without authentication for UI review. User-scoped selectors return
-empty querysets for anonymous users, so the preview renders zero metrics and no
-application records.
-
 Job application list, detail, update, delete, and note creation flows require
 authentication. Detail-level operations fetch applications through an
 owner-scoped selector, so a user attempting to access another user's record
@@ -129,7 +124,6 @@ surface includes:
 - User dashboard with dynamic pipeline, progress metrics, and recent
   applications
 - Protected admin dashboard shell
-- Temporary unauthenticated dashboard preview
 
 The dashboard's AI/NLP Insights card is intentionally labelled `Planned`; there
 is no NLP insight backend wiring yet.
@@ -147,7 +141,7 @@ Sprint 2 coverage includes:
 - Application list, create, detail, update, delete, and note workflows
 - Cross-user permission enforcement
 - Dashboard metric context, recent applications, protected access, admin
-  permissions, and unauthenticated preview behaviour
+  permissions, and authentication behaviour
 
 ## Later Sprint Boundaries
 

@@ -62,7 +62,7 @@ def test_pipeline_metrics_are_scoped_to_current_user() -> None:
 
 @pytest.mark.django_db
 def test_pipeline_metrics_are_empty_for_anonymous_user() -> None:
-    """Anonymous dashboard previews should receive empty pipeline metrics."""
+    """Anonymous users should not receive pipeline metrics."""
     JobApplicationFactory()
 
     metrics = get_user_pipeline_metrics(AnonymousUser())
