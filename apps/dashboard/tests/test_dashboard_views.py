@@ -19,14 +19,11 @@ def test_user_dashboard_requires_login(client) -> None:
 
 
 @pytest.mark.django_db
-def test_user_dashboard_preview_loads_without_login(client) -> None:
-    """Anonymous users should be able to view the temporary dashboard preview."""
-    response = client.get(reverse("dashboard:user-preview"))
+def test_user_dashboard_preview_route_does_not_exist(client) -> None:
+    """The temporary unauthenticated dashboard preview route should stay removed."""
+    response = client.get("/dashboard/preview/")
 
-    assert response.status_code == 200
-    assert b"Your job search command centre" in response.content
-    assert response.context["metrics"]["total_applications"] == 0
-    assert list(response.context["recent_applications"]) == []
+    assert response.status_code == 404
 
 
 @pytest.mark.django_db
