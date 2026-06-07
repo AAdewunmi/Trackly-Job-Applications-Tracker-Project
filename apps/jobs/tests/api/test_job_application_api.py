@@ -3,25 +3,25 @@ API tests for authenticated job application workflow behaviour.
 """
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.jobs.factories import JobApplicationFactory
-from apps.jobs.models import JobApplication, JobApplicationStatus
-
+from apps.jobs.models import JobApplication
+from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
 
-def create_user(email: str = "api.user@example.com", password: str = "pass12345"):
+def create_user(
+    email: str = "api.user@example.com",
+    password: str = "pass12345",
+):
     """Create a user for API tests."""
-    return get_user_model().objects.create_user(
+    return UserFactory(
         email=email,
         password=password,
-        first_name="API",
-        last_name="User",
     )
 
 
@@ -55,9 +55,7 @@ def test_authenticated_user_can_list_own_applications() -> None:
     own_application = JobApplicationFactory(owner=user, title="Backend Engineer")
     JobApplicationFactory(owner=other_user, title="Hidden Role")
 
-    response = authenticated_client(user).get(
-        reverse("jobs_api:job-application-list-create")
-    )
+    response = authenticated_client(user).get(reverse("job-application-list-create"))
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -71,7 +69,7 @@ def test_authenticated_user_can_create_application() -> None:
     payload = {
         "title": "Graduate Django Engineer",
         "company": "Trackly Labs",
-        "status": JobApplicationStatus.APPLIED,
+        "status": JobApplication.Status.APPLIED,
         "job_link": "https://example.com/jobs/1",
         "applied_date": "2026-04-01",
         "job_description": "Python Django REST PostgreSQL Docker testing.",
@@ -79,7 +77,7 @@ def test_authenticated_user_can_create_application() -> None:
     }
 
     response = authenticated_client(user).post(
-        reverse("jobs_api:job-application-list-create"),
+        reverse("job-application-list-create"),
         payload,
         format="json",
     )
@@ -98,7 +96,7 @@ def test_authenticated_user_can_retrieve_application_detail() -> None:
 
     response = authenticated_client(user).get(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         )
     )
@@ -110,20 +108,20 @@ def test_authenticated_user_can_retrieve_application_detail() -> None:
 def test_authenticated_user_can_update_application() -> None:
     """Application API update should allow the owner to edit application fields."""
     user = create_user()
-    application = JobApplicationFactory(owner=user, status=JobApplicationStatus.SAVED)
+    application = JobApplicationFactory(owner=user, status=JobApplication.Status.SAVED)
 
     response = authenticated_client(user).patch(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         ),
-        {"status": JobApplicationStatus.INTERVIEWING},
+        {"status": JobApplication.Status.INTERVIEWING},
         format="json",
     )
 
     application.refresh_from_db()
     assert response.status_code == status.HTTP_200_OK
-    assert application.status == JobApplicationStatus.INTERVIEWING
+    assert application.status == JobApplication.Status.INTERVIEWING
 
 
 def test_authenticated_user_can_update_job_description() -> None:
@@ -133,7 +131,7 @@ def test_authenticated_user_can_update_job_description() -> None:
 
     response = authenticated_client(user).patch(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         ),
         {"job_description": "Python Django APIs and testing."},
@@ -152,7 +150,7 @@ def test_authenticated_user_can_delete_application() -> None:
 
     response = authenticated_client(user).delete(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         )
     )

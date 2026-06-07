@@ -3,24 +3,21 @@ API permission tests for Trackly job application endpoints.
 """
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.jobs.factories import JobApplicationFactory
-
+from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
 
 def create_user(email: str):
     """Create a user for API permission tests."""
-    return get_user_model().objects.create_user(
+    return UserFactory(
         email=email,
         password="pass12345",
-        first_name="Permission",
-        last_name="User",
     )
 
 
@@ -33,7 +30,7 @@ def authenticated_client(user):
 
 def test_unauthenticated_user_cannot_list_applications() -> None:
     """Anonymous API requests should be rejected."""
-    response = APIClient().get(reverse("jobs_api:job-application-list-create"))
+    response = APIClient().get(reverse("job-application-list-create"))
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -41,7 +38,7 @@ def test_unauthenticated_user_cannot_list_applications() -> None:
 def test_unauthenticated_user_cannot_create_application() -> None:
     """Anonymous API create requests should be rejected."""
     response = APIClient().post(
-        reverse("jobs_api:job-application-list-create"),
+        reverse("job-application-list-create"),
         {"title": "Role", "company": "Company"},
         format="json",
     )
@@ -57,7 +54,7 @@ def test_user_cannot_retrieve_another_users_application() -> None:
 
     response = authenticated_client(other_user).get(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         )
     )
@@ -73,7 +70,7 @@ def test_user_cannot_update_another_users_application() -> None:
 
     response = authenticated_client(other_user).patch(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         ),
         {"title": "Changed"},
@@ -91,7 +88,7 @@ def test_user_cannot_delete_another_users_application() -> None:
 
     response = authenticated_client(other_user).delete(
         reverse(
-            "jobs_api:job-application-detail",
+            "job-application-detail",
             kwargs={"pk": application.pk},
         )
     )
