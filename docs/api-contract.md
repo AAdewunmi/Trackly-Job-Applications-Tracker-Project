@@ -18,18 +18,18 @@ user-owned job application endpoints:
 | --- | --- | --- |
 | `POST` | `/api/v1/auth/token/` | Obtain access and refresh tokens. |
 | `POST` | `/api/v1/auth/token/refresh/` | Refresh an access token. |
-| `GET` | `/api/v1/applications/` | List the authenticated user's job applications. |
-| `POST` | `/api/v1/applications/` | Create a job application owned by the authenticated user. |
-| `GET` | `/api/v1/applications/<id>/` | Retrieve one user-owned job application. |
-| `PUT` | `/api/v1/applications/<id>/` | Replace one user-owned job application. |
-| `PATCH` | `/api/v1/applications/<id>/` | Partially update one user-owned job application. |
-| `DELETE` | `/api/v1/applications/<id>/` | Delete one user-owned job application. |
-| `GET` | `/api/v1/applications/<id>/notes/` | List notes for one user-owned job application. |
-| `POST` | `/api/v1/applications/<id>/notes/` | Add a note to one user-owned job application. |
-| `GET` | `/api/v1/applications/<id>/notes/<note_id>/` | Retrieve one note on a user-owned job application. |
-| `PUT` | `/api/v1/applications/<id>/notes/<note_id>/` | Replace one note on a user-owned job application. |
-| `PATCH` | `/api/v1/applications/<id>/notes/<note_id>/` | Partially update one note on a user-owned job application. |
-| `DELETE` | `/api/v1/applications/<id>/notes/<note_id>/` | Delete one note on a user-owned job application. |
+| `GET` | `/api/v1/jobs/applications/` | List the authenticated user's job applications. |
+| `POST` | `/api/v1/jobs/applications/` | Create a job application owned by the authenticated user. |
+| `GET` | `/api/v1/jobs/applications/<id>/` | Retrieve one user-owned job application. |
+| `PUT` | `/api/v1/jobs/applications/<id>/` | Replace one user-owned job application. |
+| `PATCH` | `/api/v1/jobs/applications/<id>/` | Partially update one user-owned job application. |
+| `DELETE` | `/api/v1/jobs/applications/<id>/` | Delete one user-owned job application. |
+| `GET` | `/api/v1/jobs/applications/<id>/notes/` | List notes for one user-owned job application. |
+| `POST` | `/api/v1/jobs/applications/<id>/notes/` | Add a note to one user-owned job application. |
+| `GET` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Retrieve one note on a user-owned job application. |
+| `PUT` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Replace one note on a user-owned job application. |
+| `PATCH` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Partially update one note on a user-owned job application. |
+| `DELETE` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Delete one note on a user-owned job application. |
 
 ## Authentication
 
@@ -61,7 +61,7 @@ The current browser application routes remain:
 
 ## API Resource Notes
 
-Job application API endpoints are registered under `/api/v1/applications/`.
+Job application API endpoints are registered under `/api/v1/jobs/applications/`.
 Application note API endpoints are nested under their parent application. Both
 resource groups use the same user ownership boundary as the browser job
 application workflow.

@@ -107,7 +107,7 @@ def test_application_api_retrieves_owned_application(api_client) -> None:
     application = JobApplicationFactory(owner=user, title="Product Analyst")
     api_client.force_authenticate(user=user)
 
-    response = api_client.get(f"/api/v1/applications/{application.pk}/")
+    response = api_client.get(f"/api/v1/jobs/applications/{application.pk}/")
 
     assert response.status_code == 200
     assert response.data["id"] == application.id
@@ -122,7 +122,7 @@ def test_application_api_updates_owned_application(api_client) -> None:
     api_client.force_authenticate(user=user)
 
     response = api_client.patch(
-        f"/api/v1/applications/{application.pk}/",
+        f"/api/v1/jobs/applications/{application.pk}/",
         data={"title": "Updated Role"},
         format="json",
     )
@@ -139,7 +139,7 @@ def test_application_api_deletes_owned_application(api_client) -> None:
     application = JobApplicationFactory(owner=user)
     api_client.force_authenticate(user=user)
 
-    response = api_client.delete(f"/api/v1/applications/{application.pk}/")
+    response = api_client.delete(f"/api/v1/jobs/applications/{application.pk}/")
 
     assert response.status_code == 204
     assert not JobApplication.objects.filter(pk=application.pk).exists()
