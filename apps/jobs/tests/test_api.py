@@ -5,8 +5,8 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from apps.jobs.factories import JobApplicationFactory
-from apps.jobs.models import JobApplication
+from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
+from apps.jobs.models import ApplicationNote, JobApplication
 from apps.users.factories import UserFactory
 
 
@@ -53,6 +53,32 @@ def test_application_api_lists_only_authenticated_users_records(api_client) -> N
     assert response.status_code == 200
     titles = [application["title"] for application in response.data]
     assert titles == [own_application.title]
+
+
+@pytest.mark.django_db
+def test_application_api_detail_includes_application_notes(api_client) -> None:
+    """Application detail should expose notes from the browser workflow."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(
+        application=application,
+        body="Interview scheduled for Thursday.",
+    )
+    api_client.force_authenticate(user=user)
+
+    response = api_client.get(
+        reverse("job-application-detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert response.data["application_notes"] == [
+        {
+            "id": note.id,
+            "body": "Interview scheduled for Thursday.",
+            "created_at": response.data["application_notes"][0]["created_at"],
+            "updated_at": response.data["application_notes"][0]["updated_at"],
+        }
+    ]
 
 
 @pytest.mark.django_db
@@ -122,3 +148,107 @@ def test_application_api_delete_hides_other_users_records(api_client) -> None:
 
     assert response.status_code == 404
     assert JobApplication.objects.filter(pk=other_application.pk).exists()
+
+
+@pytest.mark.django_db
+def test_application_note_api_rejects_unauthenticated_requests(api_client) -> None:
+    """Anonymous API requests should not access application notes."""
+    application = JobApplicationFactory()
+
+    response = api_client.get(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": application.pk},
+        )
+    )
+
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_application_note_api_lists_only_parent_application_notes(api_client) -> None:
+    """The notes endpoint should list notes for the owned parent application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    other_application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Send portfolio.")
+    ApplicationNoteFactory(application=other_application, body="Different note.")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.get(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": application.pk},
+        )
+    )
+
+    assert response.status_code == 200
+    assert [item["body"] for item in response.data] == [note.body]
+
+
+@pytest.mark.django_db
+def test_application_note_api_creates_note_for_owned_application(api_client) -> None:
+    """The note create endpoint should attach notes to the owned application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    api_client.force_authenticate(user=user)
+
+    response = api_client.post(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": application.pk},
+        ),
+        data={"body": "  Recruiter asked for availability.  "},
+        format="json",
+    )
+
+    assert response.status_code == 201
+    note = ApplicationNote.objects.get(application=application)
+    assert note.body == "Recruiter asked for availability."
+
+
+@pytest.mark.django_db
+def test_application_note_api_rejects_blank_body(api_client) -> None:
+    """Blank notes should not be persisted through the API."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    api_client.force_authenticate(user=user)
+
+    response = api_client.post(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": application.pk},
+        ),
+        data={"body": "   "},
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert ApplicationNote.objects.filter(application=application).count() == 0
+
+
+@pytest.mark.django_db
+def test_application_note_api_hides_other_users_applications(api_client) -> None:
+    """Users should not be able to list or create notes on foreign applications."""
+    user = UserFactory()
+    other_application = JobApplicationFactory(owner=UserFactory())
+    api_client.force_authenticate(user=user)
+
+    list_response = api_client.get(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": other_application.pk},
+        )
+    )
+    create_response = api_client.post(
+        reverse(
+            "application-note-list-create",
+            kwargs={"application_pk": other_application.pk},
+        ),
+        data={"body": "Attempted foreign note."},
+        format="json",
+    )
+
+    assert list_response.status_code == 404
+    assert create_response.status_code == 404
+    assert ApplicationNote.objects.count() == 0

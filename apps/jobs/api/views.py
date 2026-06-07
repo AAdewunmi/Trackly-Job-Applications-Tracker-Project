@@ -1,12 +1,16 @@
-"""
-API views for Trackly job application resources.
-"""
+"""API views for Trackly job application resources."""
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from apps.jobs.api.serializers import JobApplicationSerializer
-from apps.jobs.selectors import application_queryset_for_user
+from apps.jobs.api.serializers import (
+    ApplicationNoteSerializer,
+    JobApplicationSerializer,
+)
+from apps.jobs.selectors import (
+    application_queryset_for_user,
+    get_user_application_or_404,
+)
 
 
 class JobApplicationListCreateAPIView(generics.ListCreateAPIView):
@@ -33,3 +37,25 @@ class JobApplicationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         """Return only applications owned by the authenticated user."""
         return application_queryset_for_user(self.request.user)
+
+
+class ApplicationNoteListCreateAPIView(generics.ListCreateAPIView):
+    """List and create notes for one authenticated user's application."""
+
+    serializer_class = ApplicationNoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_application(self):
+        """Return the user-owned parent application."""
+        return get_user_application_or_404(
+            self.request.user,
+            pk=self.kwargs["application_pk"],
+        )
+
+    def get_queryset(self):
+        """Return notes attached to the user-owned parent application."""
+        return self.get_application().application_notes.all()
+
+    def perform_create(self, serializer):
+        """Attach the note to the user-owned parent application."""
+        serializer.save(application=self.get_application())

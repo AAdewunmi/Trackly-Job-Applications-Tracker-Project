@@ -24,6 +24,8 @@ user-owned job application endpoints:
 | `PUT` | `/api/v1/applications/<id>/` | Replace one user-owned job application. |
 | `PATCH` | `/api/v1/applications/<id>/` | Partially update one user-owned job application. |
 | `DELETE` | `/api/v1/applications/<id>/` | Delete one user-owned job application. |
+| `GET` | `/api/v1/applications/<id>/notes/` | List notes for one user-owned job application. |
+| `POST` | `/api/v1/applications/<id>/notes/` | Add a note to one user-owned job application. |
 
 ## Authentication
 
@@ -54,8 +56,9 @@ The current browser application routes remain:
 ## API Resource Notes
 
 Job application API endpoints are registered under `/api/v1/applications/`.
-They use the same user ownership boundary as the browser job application
-workflow.
+Application note API endpoints are nested under their parent application. Both
+resource groups use the same user ownership boundary as the browser job
+application workflow.
 
 Insights API endpoints are also planned work. The project does not currently
 include an `apps.insights` Django app, so no insights routes are registered.

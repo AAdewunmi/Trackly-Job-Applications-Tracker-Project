@@ -1,3 +1,1 @@
-"""
-API package for Trackly job application endpoints.
-"""
+"""API package for Trackly job application endpoints."""
