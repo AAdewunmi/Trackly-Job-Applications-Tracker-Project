@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from apps.jobs.api.serializers import JobApplicationSerializer
-from apps.jobs.models import JobApplication
+from apps.jobs.selectors import application_queryset_for_user
 
 
 class JobApplicationListCreateAPIView(generics.ListCreateAPIView):
@@ -17,10 +17,7 @@ class JobApplicationListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """Return only applications owned by the authenticated user."""
-        return JobApplication.objects.filter(owner=self.request.user).order_by(
-            "-updated_at",
-            "-created_at",
-        )
+        return application_queryset_for_user(self.request.user)
 
     def perform_create(self, serializer):
         """Assign ownership from the authenticated request."""
@@ -35,4 +32,4 @@ class JobApplicationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         """Return only applications owned by the authenticated user."""
-        return JobApplication.objects.filter(owner=self.request.user)
+        return application_queryset_for_user(self.request.user)

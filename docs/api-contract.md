@@ -11,12 +11,19 @@ Trackly's role and staff permission checks.
 
 ## Current API Surface
 
-The configured API surface currently includes JWT authentication endpoints:
+The configured API surface currently includes JWT authentication endpoints and
+user-owned job application endpoints:
 
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `POST` | `/api/v1/auth/token/` | Obtain access and refresh tokens. |
 | `POST` | `/api/v1/auth/token/refresh/` | Refresh an access token. |
+| `GET` | `/api/v1/applications/` | List the authenticated user's job applications. |
+| `POST` | `/api/v1/applications/` | Create a job application owned by the authenticated user. |
+| `GET` | `/api/v1/applications/<id>/` | Retrieve one user-owned job application. |
+| `PUT` | `/api/v1/applications/<id>/` | Replace one user-owned job application. |
+| `PATCH` | `/api/v1/applications/<id>/` | Partially update one user-owned job application. |
+| `DELETE` | `/api/v1/applications/<id>/` | Delete one user-owned job application. |
 
 ## Authentication
 
@@ -44,11 +51,11 @@ The current browser application routes remain:
 | `/dashboard/` | Authenticated user dashboard. |
 | `/admin/` | Django admin. |
 
-## Planned API Resources
+## API Resource Notes
 
-Job application API endpoints are planned under `/api/v1/` once serializers,
-viewsets, API URL modules, and tests are added. No jobs API route is currently
-registered in `config.urls`.
+Job application API endpoints are registered under `/api/v1/applications/`.
+They use the same user ownership boundary as the browser job application
+workflow.
 
 Insights API endpoints are also planned work. The project does not currently
 include an `apps.insights` Django app, so no insights routes are registered.

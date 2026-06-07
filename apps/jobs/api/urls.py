@@ -1,6 +1,4 @@
-"""
-URL routes for Trackly job application API endpoints.
-"""
+"""URL routes for Trackly job application API endpoints."""
 
 from django.urls import path
 
@@ -8,7 +6,6 @@ from apps.jobs.api.views import (
     JobApplicationDetailAPIView,
     JobApplicationListCreateAPIView,
 )
-
 
 urlpatterns = [
     path(
