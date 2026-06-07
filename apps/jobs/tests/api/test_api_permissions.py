@@ -47,6 +47,44 @@ def test_unauthenticated_user_cannot_create_application() -> None:
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+def test_unauthenticated_user_cannot_retrieve_application() -> None:
+    """Anonymous API detail requests should be rejected."""
+    application = JobApplicationFactory()
+
+    response = APIClient().get(
+        reverse("job-application-detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_unauthenticated_user_cannot_update_application() -> None:
+    """Anonymous API update requests should be rejected."""
+    application = JobApplicationFactory(title="Original")
+
+    response = APIClient().patch(
+        reverse("job-application-detail", kwargs={"pk": application.pk}),
+        {"title": "Changed"},
+        format="json",
+    )
+
+    application.refresh_from_db()
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert application.title == "Original"
+
+
+def test_unauthenticated_user_cannot_delete_application() -> None:
+    """Anonymous API delete requests should be rejected."""
+    application = JobApplicationFactory()
+
+    response = APIClient().delete(
+        reverse("job-application-detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert JobApplication.objects.filter(pk=application.pk).exists()
+
+
 def test_authenticated_user_list_excludes_other_users_applications() -> None:
     """API list ownership should match the browser application list boundary."""
     user = create_user("list.owner@example.com")
