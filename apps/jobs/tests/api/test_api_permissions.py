@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.jobs.factories import JobApplicationFactory
+from apps.jobs.models import JobApplication
 from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -46,6 +47,21 @@ def test_unauthenticated_user_cannot_create_application() -> None:
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+def test_authenticated_user_list_excludes_other_users_applications() -> None:
+    """API list ownership should match the browser application list boundary."""
+    user = create_user("list.owner@example.com")
+    other_user = create_user("list.other@example.com")
+    own_application = JobApplicationFactory(owner=user, title="Visible Role")
+    hidden_application = JobApplicationFactory(owner=other_user, title="Hidden Role")
+
+    response = authenticated_client(user).get(reverse("job-application-list-create"))
+
+    assert response.status_code == status.HTTP_200_OK
+    returned_ids = {application["id"] for application in response.data}
+    assert own_application.id in returned_ids
+    assert hidden_application.id not in returned_ids
+
+
 def test_user_cannot_retrieve_another_users_application() -> None:
     """Object ownership should be enforced on retrieve."""
     owner = create_user("owner@example.com")
@@ -66,7 +82,7 @@ def test_user_cannot_update_another_users_application() -> None:
     """Object ownership should be enforced on update."""
     owner = create_user("owner.update@example.com")
     other_user = create_user("other.update@example.com")
-    application = JobApplicationFactory(owner=owner)
+    application = JobApplicationFactory(owner=owner, title="Original")
 
     response = authenticated_client(other_user).patch(
         reverse(
@@ -77,7 +93,9 @@ def test_user_cannot_update_another_users_application() -> None:
         format="json",
     )
 
+    application.refresh_from_db()
     assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert application.title == "Original"
 
 
 def test_user_cannot_delete_another_users_application() -> None:
@@ -94,3 +112,4 @@ def test_user_cannot_delete_another_users_application() -> None:
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert JobApplication.objects.filter(pk=application.pk).exists()

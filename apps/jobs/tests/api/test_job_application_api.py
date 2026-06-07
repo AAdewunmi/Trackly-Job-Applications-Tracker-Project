@@ -89,6 +89,28 @@ def test_authenticated_user_can_create_application() -> None:
     assert application.job_description == payload["job_description"]
 
 
+def test_application_create_uses_authenticated_user_as_owner() -> None:
+    """Application API create should ignore any submitted owner field."""
+    user = create_user(email="creator@example.com")
+    other_user = create_user(email="posted-owner@example.com")
+    payload = {
+        "title": "Frontend Engineer",
+        "company": "Trackly Labs",
+        "status": JobApplication.Status.SAVED,
+        "owner": other_user.pk,
+    }
+
+    response = authenticated_client(user).post(
+        reverse("job-application-list-create"),
+        payload,
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    application = JobApplication.objects.get(id=response.data["id"])
+    assert application.owner == user
+
+
 def test_authenticated_user_can_retrieve_application_detail() -> None:
     """Application API detail should return the requested owned application."""
     user = create_user()
