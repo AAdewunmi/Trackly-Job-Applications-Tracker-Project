@@ -101,6 +101,51 @@ def test_application_api_create_assigns_owner_from_request_user(api_client) -> N
 
 
 @pytest.mark.django_db
+def test_application_api_retrieves_owned_application(api_client) -> None:
+    """The detail endpoint should retrieve the authenticated user's application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Product Analyst")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.get(f"/api/v1/applications/{application.pk}/")
+
+    assert response.status_code == 200
+    assert response.data["id"] == application.id
+    assert response.data["title"] == "Product Analyst"
+
+
+@pytest.mark.django_db
+def test_application_api_updates_owned_application(api_client) -> None:
+    """The detail endpoint should update the authenticated user's application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Original Role")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.patch(
+        f"/api/v1/applications/{application.pk}/",
+        data={"title": "Updated Role"},
+        format="json",
+    )
+
+    application.refresh_from_db()
+    assert response.status_code == 200
+    assert application.title == "Updated Role"
+
+
+@pytest.mark.django_db
+def test_application_api_deletes_owned_application(api_client) -> None:
+    """The detail endpoint should delete the authenticated user's application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    api_client.force_authenticate(user=user)
+
+    response = api_client.delete(f"/api/v1/applications/{application.pk}/")
+
+    assert response.status_code == 204
+    assert not JobApplication.objects.filter(pk=application.pk).exists()
+
+
+@pytest.mark.django_db
 def test_application_api_detail_hides_other_users_records(api_client) -> None:
     """Users should receive 404 for another user's application detail."""
     user = UserFactory()
