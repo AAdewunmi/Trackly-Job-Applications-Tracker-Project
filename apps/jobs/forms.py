@@ -99,6 +99,11 @@ class ApplicationNoteForm(forms.ModelForm):
         labels = {
             "body": "New note",
         }
+        error_messages = {
+            "body": {
+                "required": "Note body is required.",
+            },
+        }
 
     def clean_body(self) -> str:
         """Return normalised note content."""

@@ -3,6 +3,7 @@
 from django.urls import path
 
 from apps.jobs.api.views import (
+    ApplicationNoteDetailAPIView,
     ApplicationNoteListCreateAPIView,
     JobApplicationDetailAPIView,
     JobApplicationListCreateAPIView,
@@ -23,5 +24,10 @@ urlpatterns = [
         "applications/<int:application_pk>/notes/",
         ApplicationNoteListCreateAPIView.as_view(),
         name="application-note-list-create",
+    ),
+    path(
+        "applications/<int:application_pk>/notes/<int:pk>/",
+        ApplicationNoteDetailAPIView.as_view(),
+        name="application-note-detail",
     ),
 ]

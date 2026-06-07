@@ -10,6 +10,7 @@ from apps.jobs.api.serializers import (
 from apps.jobs.selectors import (
     application_queryset_for_user,
     get_user_application_or_404,
+    notes_queryset_for_user,
 )
 
 
@@ -59,3 +60,20 @@ class ApplicationNoteListCreateAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         """Attach the note to the user-owned parent application."""
         serializer.save(application=self.get_application())
+
+
+class ApplicationNoteDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, or delete one note on a user-owned application."""
+
+    serializer_class = ApplicationNoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Return notes attached to the requested user-owned application."""
+        application = get_user_application_or_404(
+            self.request.user,
+            pk=self.kwargs["application_pk"],
+        )
+        return notes_queryset_for_user(self.request.user).filter(
+            application=application
+        )

@@ -26,6 +26,10 @@ user-owned job application endpoints:
 | `DELETE` | `/api/v1/applications/<id>/` | Delete one user-owned job application. |
 | `GET` | `/api/v1/applications/<id>/notes/` | List notes for one user-owned job application. |
 | `POST` | `/api/v1/applications/<id>/notes/` | Add a note to one user-owned job application. |
+| `GET` | `/api/v1/applications/<id>/notes/<note_id>/` | Retrieve one note on a user-owned job application. |
+| `PUT` | `/api/v1/applications/<id>/notes/<note_id>/` | Replace one note on a user-owned job application. |
+| `PATCH` | `/api/v1/applications/<id>/notes/<note_id>/` | Partially update one note on a user-owned job application. |
+| `DELETE` | `/api/v1/applications/<id>/notes/<note_id>/` | Delete one note on a user-owned job application. |
 
 ## Authentication
 
@@ -50,6 +54,8 @@ The current browser application routes remain:
 | `/` | Home page. |
 | `/accounts/` | User authentication and account routes. |
 | `/applications/` | Job application workflow. |
+| `/applications/notes/<id>/edit/` | Job application note update workflow. |
+| `/applications/notes/<id>/delete/` | Job application note delete workflow. |
 | `/dashboard/` | Authenticated user dashboard. |
 | `/admin/` | Django admin. |
 

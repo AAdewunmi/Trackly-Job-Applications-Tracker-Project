@@ -105,6 +105,10 @@
                         <div class="tl-card-body tl-stack">
                             <p>{{ note.body|linebreaksbr }}</p>
                             <p class="tl-muted">{{ note.created_at }}</p>
+                            <div class="tl-actions">
+                                <a class="tl-button tl-button-secondary" href="{% url 'jobs:note_update' note.pk %}">Edit note</a>
+                                <a class="tl-button tl-button-secondary" href="{% url 'jobs:note_delete' note.pk %}">Delete note</a>
+                            </div>
                         </div>
                     </article>
                 {% endfor %}

@@ -208,6 +208,67 @@ def test_application_note_api_creates_note_for_owned_application(api_client) -> 
 
 
 @pytest.mark.django_db
+def test_application_note_api_retrieves_owned_note(api_client) -> None:
+    """The note detail endpoint should retrieve notes on owned applications."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Follow up tomorrow.")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.get(
+        reverse(
+            "application-note-detail",
+            kwargs={"application_pk": application.pk, "pk": note.pk},
+        )
+    )
+
+    assert response.status_code == 200
+    assert response.data["id"] == note.id
+    assert response.data["body"] == "Follow up tomorrow."
+
+
+@pytest.mark.django_db
+def test_application_note_api_updates_owned_note(api_client) -> None:
+    """The note detail endpoint should update notes on owned applications."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.patch(
+        reverse(
+            "application-note-detail",
+            kwargs={"application_pk": application.pk, "pk": note.pk},
+        ),
+        data={"body": "  Updated note.  "},
+        format="json",
+    )
+
+    note.refresh_from_db()
+    assert response.status_code == 200
+    assert note.body == "Updated note."
+
+
+@pytest.mark.django_db
+def test_application_note_api_deletes_owned_note(api_client) -> None:
+    """The note detail endpoint should delete notes on owned applications."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application)
+    api_client.force_authenticate(user=user)
+
+    response = api_client.delete(
+        reverse(
+            "application-note-detail",
+            kwargs={"application_pk": application.pk, "pk": note.pk},
+        )
+    )
+
+    assert response.status_code == 204
+    assert not ApplicationNote.objects.filter(pk=note.pk).exists()
+
+
+@pytest.mark.django_db
 def test_application_note_api_rejects_blank_body(api_client) -> None:
     """Blank notes should not be persisted through the API."""
     user = UserFactory()
@@ -225,6 +286,28 @@ def test_application_note_api_rejects_blank_body(api_client) -> None:
 
     assert response.status_code == 400
     assert ApplicationNote.objects.filter(application=application).count() == 0
+
+
+@pytest.mark.django_db
+def test_application_note_api_rejects_blank_body_update(api_client) -> None:
+    """Blank note updates should not be persisted through the API."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    api_client.force_authenticate(user=user)
+
+    response = api_client.patch(
+        reverse(
+            "application-note-detail",
+            kwargs={"application_pk": application.pk, "pk": note.pk},
+        ),
+        data={"body": "   "},
+        format="json",
+    )
+
+    note.refresh_from_db()
+    assert response.status_code == 400
+    assert note.body == "Original note."
 
 
 @pytest.mark.django_db
@@ -252,3 +335,49 @@ def test_application_note_api_hides_other_users_applications(api_client) -> None
     assert list_response.status_code == 404
     assert create_response.status_code == 404
     assert ApplicationNote.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_application_note_api_hides_other_users_note_detail(api_client) -> None:
+    """Users should not retrieve, update, or delete foreign notes."""
+    user = UserFactory()
+    other_application = JobApplicationFactory(owner=UserFactory())
+    note = ApplicationNoteFactory(application=other_application, body="Foreign note.")
+    api_client.force_authenticate(user=user)
+    url = reverse(
+        "application-note-detail",
+        kwargs={"application_pk": other_application.pk, "pk": note.pk},
+    )
+
+    get_response = api_client.get(url)
+    update_response = api_client.patch(
+        url,
+        data={"body": "Attempted update."},
+        format="json",
+    )
+    delete_response = api_client.delete(url)
+
+    note.refresh_from_db()
+    assert get_response.status_code == 404
+    assert update_response.status_code == 404
+    assert delete_response.status_code == 404
+    assert note.body == "Foreign note."
+
+
+@pytest.mark.django_db
+def test_application_note_api_hides_note_under_wrong_parent(api_client) -> None:
+    """Owned notes should not be exposed under a different parent application."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    other_application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application)
+    api_client.force_authenticate(user=user)
+
+    response = api_client.get(
+        reverse(
+            "application-note-detail",
+            kwargs={"application_pk": other_application.pk, "pk": note.pk},
+        )
+    )
+
+    assert response.status_code == 404

@@ -58,6 +58,11 @@ def notes_queryset_for_user(user) -> QuerySet[ApplicationNote]:
     )
 
 
+def get_user_note_or_404(user, pk: int) -> ApplicationNote:
+    """Return a note attached to a user-owned application or raise a 404."""
+    return get_object_or_404(notes_queryset_for_user(user), pk=pk)
+
+
 def get_note_count_for_user(user) -> int:
     """Return the number of notes attached to the supplied user's applications."""
     return notes_queryset_for_user(user).count()

@@ -10,6 +10,7 @@ from apps.jobs.models import JobApplication
 from apps.jobs.selectors import (
     application_queryset_for_user,
     get_user_application_or_404,
+    get_user_note_or_404,
 )
 
 
@@ -137,5 +138,56 @@ def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
         "jobs/application_confirm_delete.html",
         {
             "application": application,
+        },
+    )
+
+
+@login_required
+def note_update(request: HttpRequest, pk: int) -> HttpResponse:
+    """Update a note attached to one of the authenticated user's applications."""
+    note = get_user_note_or_404(request.user, pk=pk)
+
+    if request.method == "POST":
+        form = ApplicationNoteForm(request.POST, instance=note)
+
+        if form.is_valid():
+            updated_note = form.save()
+
+            messages.success(request, "Note updated successfully.")
+            return redirect(updated_note.application.get_absolute_url())
+
+        messages.error(request, "Please correct the note errors below.")
+    else:
+        form = ApplicationNoteForm(instance=note)
+
+    return render(
+        request,
+        "jobs/note_form.html",
+        {
+            "application": note.application,
+            "form": form,
+            "note": note,
+        },
+    )
+
+
+@login_required
+def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
+    """Delete a note attached to one of the authenticated user's applications."""
+    note = get_user_note_or_404(request.user, pk=pk)
+    application = note.application
+
+    if request.method == "POST":
+        note.delete()
+
+        messages.success(request, "Note deleted successfully.")
+        return redirect(application.get_absolute_url())
+
+    return render(
+        request,
+        "jobs/note_confirm_delete.html",
+        {
+            "application": application,
+            "note": note,
         },
     )
