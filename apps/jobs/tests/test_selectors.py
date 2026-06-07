@@ -14,6 +14,7 @@ from apps.jobs.selectors import (
     get_recent_applications_for_user,
     get_recent_applications_for_user_by_status,
     get_user_application_or_404,
+    get_user_note_or_404,
     notes_queryset_for_user,
 )
 from apps.users.factories import UserFactory
@@ -156,6 +157,28 @@ def test_notes_queryset_for_user_returns_none_for_anonymous_user() -> None:
     notes = notes_queryset_for_user(AnonymousUser())
 
     assert list(notes) == []
+
+
+@pytest.mark.django_db
+def test_get_user_note_or_404_returns_owned_note() -> None:
+    """Owned note lookups should return the matching object."""
+    owner = UserFactory()
+    application = JobApplicationFactory(owner=owner)
+    note = ApplicationNoteFactory(application=application)
+
+    assert get_user_note_or_404(owner, pk=note.pk) == note
+
+
+@pytest.mark.django_db
+def test_get_user_note_or_404_hides_other_users_note() -> None:
+    """Other users' notes should behave as missing."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    application = JobApplicationFactory(owner=owner)
+    note = ApplicationNoteFactory(application=application)
+
+    with pytest.raises(Http404):
+        get_user_note_or_404(other_user, pk=note.pk)
 
 
 @pytest.mark.django_db

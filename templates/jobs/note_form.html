@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Edit note | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <a class="tl-back-link" href="{{ application.get_absolute_url }}">&larr; Back to application</a>
+        <p class="tl-eyebrow">Application note</p>
+        <h1>Edit note</h1>
+        <p class="tl-muted">{{ application.title }} at {{ application.company }}</p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="tl-alert tl-alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="tl-field">
+                    <label class="tl-label" for="{{ form.body.id_for_label }}">Note</label>
+                    {{ form.body }}
+                    {% for error in form.body.errors %}
+                        <div class="tl-field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">Save note</button>
+                    <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+{% endblock %}

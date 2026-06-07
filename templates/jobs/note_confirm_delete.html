@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Delete note | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <a class="tl-back-link" href="{{ application.get_absolute_url }}">&larr; Back to application</a>
+        <p class="tl-eyebrow">Delete note</p>
+        <h1>Delete this note?</h1>
+        <p class="tl-muted">{{ application.title }} at {{ application.company }}</p>
+    </div>
+
+    <section class="tl-panel tl-panel-danger">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post">
+                {% csrf_token %}
+                <p class="tl-muted">{{ note.body|linebreaksbr }}</p>
+                <div class="tl-actions">
+                    <a class="tl-button tl-button-secondary" href="{{ application.get_absolute_url }}">Cancel</a>
+                    <button class="tl-button tl-button-danger" type="submit">Delete note</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+{% endblock %}

@@ -59,6 +59,12 @@ def test_notes_render_on_application_detail(client) -> None:
 
     assert response.status_code == 200
     assert note.body.encode() in response.content
+    assert (
+        reverse("jobs:note_update", kwargs={"pk": note.pk}).encode() in response.content
+    )
+    assert (
+        reverse("jobs:note_delete", kwargs={"pk": note.pk}).encode() in response.content
+    )
 
 
 @pytest.mark.django_db
@@ -76,3 +82,118 @@ def test_user_cannot_add_note_to_another_users_application(client) -> None:
 
     assert response.status_code == 404
     assert ApplicationNote.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_owner_can_load_note_update_form(client) -> None:
+    """Owners should be able to load the edit form for their notes."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:note_update", kwargs={"pk": note.pk}))
+
+    assert response.status_code == 200
+    assert b"Edit note" in response.content
+    assert b"Original note." in response.content
+
+
+@pytest.mark.django_db
+def test_owner_can_update_note(client) -> None:
+    """Posting valid note data should update the owned note."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    client.force_login(user)
+
+    response = client.post(
+        reverse("jobs:note_update", kwargs={"pk": note.pk}),
+        data={"body": "Updated note."},
+    )
+
+    note.refresh_from_db()
+    assert response.status_code == 302
+    assert response.url == application.get_absolute_url()
+    assert note.body == "Updated note."
+
+
+@pytest.mark.django_db
+def test_note_update_rejects_blank_body(client) -> None:
+    """Blank note updates should be rejected."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    client.force_login(user)
+
+    response = client.post(
+        reverse("jobs:note_update", kwargs={"pk": note.pk}),
+        data={"body": "   "},
+    )
+
+    note.refresh_from_db()
+    assert response.status_code == 200
+    assert note.body == "Original note."
+    assert b"Note body is required" in response.content
+
+
+@pytest.mark.django_db
+def test_user_cannot_update_another_users_note(client) -> None:
+    """Users should not be able to update foreign notes."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=UserFactory())
+    note = ApplicationNoteFactory(application=application, body="Original note.")
+    client.force_login(user)
+
+    response = client.post(
+        reverse("jobs:note_update", kwargs={"pk": note.pk}),
+        data={"body": "Attempted update."},
+    )
+
+    note.refresh_from_db()
+    assert response.status_code == 404
+    assert note.body == "Original note."
+
+
+@pytest.mark.django_db
+def test_owner_can_load_note_delete_confirmation(client) -> None:
+    """Owners should be able to load note delete confirmation."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application, body="Delete me.")
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:note_delete", kwargs={"pk": note.pk}))
+
+    assert response.status_code == 200
+    assert b"Delete this note?" in response.content
+    assert b"Delete me." in response.content
+
+
+@pytest.mark.django_db
+def test_owner_can_delete_note(client) -> None:
+    """Posting to note delete should remove the owned note."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    note = ApplicationNoteFactory(application=application)
+    client.force_login(user)
+
+    response = client.post(reverse("jobs:note_delete", kwargs={"pk": note.pk}))
+
+    assert response.status_code == 302
+    assert response.url == application.get_absolute_url()
+    assert not ApplicationNote.objects.filter(pk=note.pk).exists()
+
+
+@pytest.mark.django_db
+def test_user_cannot_delete_another_users_note(client) -> None:
+    """Users should not be able to delete foreign notes."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=UserFactory())
+    note = ApplicationNoteFactory(application=application)
+    client.force_login(user)
+
+    response = client.post(reverse("jobs:note_delete", kwargs={"pk": note.pk}))
+
+    assert response.status_code == 404
+    assert ApplicationNote.objects.filter(pk=note.pk).exists()
