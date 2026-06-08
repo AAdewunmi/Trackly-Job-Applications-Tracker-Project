@@ -8,6 +8,7 @@ from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.insights.services import (
     TargetRoleProfileRequired,
+    _similarity_score,
     can_generate_insight,
     generate_job_insight,
     get_active_target_profile,
@@ -75,6 +76,42 @@ def test_user_with_active_target_profile_can_generate_insight() -> None:
 
 
 @pytest.mark.django_db
+def test_generate_insight_labels_jobs_with_no_overlap_as_low_match() -> None:
+    """A job with no target keyword overlap should be labelled as low match."""
+    owner = UserFactory(email="owner@example.com")
+    application = JobApplicationFactory(
+        owner=owner,
+        title="Customer Success Associate",
+        company="Example Ltd",
+        job_description="Handle account renewals and customer onboarding.",
+        notes="Remote role with stakeholder communication.",
+    )
+    TargetRoleProfileFactory(
+        owner=owner,
+        title="Backend Engineer",
+        description="Server-side platform work.",
+        keywords=["python", "django", "postgresql"],
+    )
+
+    insight = generate_job_insight(application)
+
+    assert insight.similarity_score == 0
+    assert insight.score_label == "Low match"
+    assert insight.top_overlapping_terms == []
+    assert insight.missing_target_terms == [
+        "backend",
+        "engineer",
+        "server",
+        "side",
+        "platform",
+        "work",
+        "python",
+        "django",
+        "postgresql",
+    ]
+
+
+@pytest.mark.django_db
 def test_generate_insight_rejects_foreign_target_profile() -> None:
     """A user should not match a job against another user's baseline."""
     application = JobApplicationFactory(owner=UserFactory(email="owner@example.com"))
@@ -112,6 +149,11 @@ def test_generate_insight_updates_existing_unchanged_source() -> None:
 
     assert second_insight == first_insight
     assert JobInsight.objects.count() == 1
+
+
+def test_similarity_score_returns_zero_without_target_terms() -> None:
+    """The defensive score helper should handle missing target terms."""
+    assert _similarity_score(["python"], []) == 0.0
 
 
 @pytest.mark.django_db

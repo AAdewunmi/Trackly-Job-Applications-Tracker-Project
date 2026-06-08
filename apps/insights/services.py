@@ -87,7 +87,10 @@ def generate_job_insight(
 def _clean_text(*values: object) -> str:
     """Return normalized text for deterministic keyword matching."""
     return " ".join(
-        token for value in values for token in TOKEN_PATTERN.findall(str(value).lower())
+        token.strip(".")
+        for value in values
+        for token in TOKEN_PATTERN.findall(str(value).lower())
+        if token.strip(".")
     )
 
 

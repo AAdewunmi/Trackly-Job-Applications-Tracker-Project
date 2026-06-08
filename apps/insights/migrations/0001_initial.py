@@ -63,9 +63,9 @@ class Migration(migrations.Migration):
                 ("pipeline_version", models.CharField(max_length=80)),
                 ("clean_job_text", models.TextField(blank=True)),
                 ("clean_target_text", models.TextField(blank=True)),
-                ("extracted_terms", models.JSONField(default=list)),
-                ("top_overlapping_terms", models.JSONField(default=list)),
-                ("missing_target_terms", models.JSONField(default=list)),
+                ("extracted_terms", models.JSONField(blank=True, default=list)),
+                ("top_overlapping_terms", models.JSONField(blank=True, default=list)),
+                ("missing_target_terms", models.JSONField(blank=True, default=list)),
                 (
                     "similarity_score",
                     models.FloatField(

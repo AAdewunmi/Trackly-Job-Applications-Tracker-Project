@@ -84,9 +84,9 @@ class JobInsight(models.Model):
     pipeline_version = models.CharField(max_length=80)
     clean_job_text = models.TextField(blank=True)
     clean_target_text = models.TextField(blank=True)
-    extracted_terms = models.JSONField(default=list)
-    top_overlapping_terms = models.JSONField(default=list)
-    missing_target_terms = models.JSONField(default=list)
+    extracted_terms = models.JSONField(default=list, blank=True)
+    top_overlapping_terms = models.JSONField(default=list, blank=True)
+    missing_target_terms = models.JSONField(default=list, blank=True)
     similarity_score = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
     )
