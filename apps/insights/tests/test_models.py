@@ -18,6 +18,16 @@ def test_target_role_profile_has_readable_string_representation() -> None:
 
 
 @pytest.mark.django_db
+def test_target_role_profile_persists_keywords() -> None:
+    """Target role profiles should persist cleaned lowercase keywords."""
+    profile = TargetRoleProfileFactory(keywords=["Python", " Django ", "python"])
+
+    profile.refresh_from_db()
+
+    assert profile.keywords == ["python", "django"]
+
+
+@pytest.mark.django_db
 def test_target_role_profile_requires_keyword_list() -> None:
     """Target role keywords should be stored as a list."""
     profile = TargetRoleProfile(
@@ -27,6 +37,19 @@ def test_target_role_profile_requires_keyword_list() -> None:
     )
 
     with pytest.raises(ValidationError, match="Keywords must be stored as a list."):
+        profile.save()
+
+
+@pytest.mark.django_db
+def test_target_role_profile_requires_at_least_one_keyword() -> None:
+    """Target role profiles should reject empty keyword lists."""
+    profile = TargetRoleProfile(
+        owner=UserFactory(),
+        title="Backend Engineer",
+        keywords=[],
+    )
+
+    with pytest.raises(ValidationError, match="At least one target keyword"):
         profile.save()
 
 
@@ -41,6 +64,20 @@ def test_job_insight_has_readable_string_representation() -> None:
     )
 
     assert str(insight) == "Insight for Backend Engineer at Example Ltd"
+
+
+@pytest.mark.django_db
+def test_job_insight_persists_retrieval_style_output() -> None:
+    """Job insights should store explainable retrieval-style output."""
+    insight = JobInsightFactory(similarity_score=0.75, score_label="Excellent match")
+
+    insight.refresh_from_db()
+
+    assert insight.similarity_score == 0.75
+    assert insight.score_label == "Excellent match"
+    assert insight.pipeline_version == "nltk-tfidf-cosine-v1"
+    assert insight.extracted_terms
+    assert insight.top_overlapping_terms
 
 
 @pytest.mark.django_db
