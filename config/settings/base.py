@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.dashboard",
     "apps.jobs",
+    "apps.insights",
 ]
 
 MIDDLEWARE = [
