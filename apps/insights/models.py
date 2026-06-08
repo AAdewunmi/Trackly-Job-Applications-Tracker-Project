@@ -70,6 +70,11 @@ class TargetRoleProfile(models.Model):
 class JobInsight(models.Model):
     """Stored retrieval-style insight generated from a job application."""
 
+    class PipelineVersion(models.TextChoices):
+        """Allowed AI/NLP insight generation pipelines."""
+
+        NLTK_TFIDF_COSINE_V1 = "nltk-tfidf-cosine-v1", "NLTK TF-IDF Cosine v1"
+
     job_application = models.ForeignKey(
         JobApplication,
         on_delete=models.CASCADE,
@@ -81,7 +86,11 @@ class JobInsight(models.Model):
         related_name="job_insights",
     )
     source_hash = models.CharField(max_length=64)
-    pipeline_version = models.CharField(max_length=80)
+    pipeline_version = models.CharField(
+        max_length=80,
+        choices=PipelineVersion.choices,
+        default=PipelineVersion.NLTK_TFIDF_COSINE_V1,
+    )
     clean_job_text = models.TextField(blank=True)
     clean_target_text = models.TextField(blank=True)
     extracted_terms = models.JSONField(default=list, blank=True)
