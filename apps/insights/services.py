@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.jobs.models import JobApplication
 
-PIPELINE_VERSION = "keyword-overlap-v1"
+PIPELINE_VERSION = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
 TOKEN_PATTERN = re.compile(r"[a-z0-9+#.]+")
 
 

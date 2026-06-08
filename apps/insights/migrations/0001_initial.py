@@ -60,7 +60,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("source_hash", models.CharField(max_length=64)),
-                ("pipeline_version", models.CharField(max_length=80)),
+                (
+                    "pipeline_version",
+                    models.CharField(
+                        choices=[("nltk-tfidf-cosine-v1", "NLTK TF-IDF Cosine v1")],
+                        default="nltk-tfidf-cosine-v1",
+                        max_length=80,
+                    ),
+                ),
                 ("clean_job_text", models.TextField(blank=True)),
                 ("clean_target_text", models.TextField(blank=True)),
                 ("extracted_terms", models.JSONField(blank=True, default=list)),

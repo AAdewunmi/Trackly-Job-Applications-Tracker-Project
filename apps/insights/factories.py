@@ -35,7 +35,7 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
         lambda obj: TargetRoleProfileFactory(owner=obj.job_application.owner)
     )
     source_hash = factory.Sequence(lambda number: f"{number:064x}"[-64:])
-    pipeline_version = "nltk-tfidf-cosine-v1"
+    pipeline_version = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
     clean_job_text = "python django api test"
     clean_target_text = "python django api postgresql docker test"
     extracted_terms = ["python", "django", "api", "test"]

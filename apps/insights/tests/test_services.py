@@ -70,6 +70,7 @@ def test_user_with_active_target_profile_can_generate_insight() -> None:
 
     assert insight.job_application == application
     assert insight.target_profile == target_profile
+    assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
     assert insight.similarity_score > 0
     assert insight.score_label in {"Partial match", "Strong match"}
     assert JobInsight.objects.filter(job_application=application).count() == 1

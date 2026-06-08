@@ -81,6 +81,36 @@ def test_job_insight_persists_retrieval_style_output() -> None:
 
 
 @pytest.mark.django_db
+def test_job_insight_uses_tfidf_pipeline_version() -> None:
+    """Job insights should persist the allowed TF-IDF pipeline version."""
+    insight = JobInsightFactory()
+
+    insight.refresh_from_db()
+
+    assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
+
+
+@pytest.mark.django_db
+def test_job_insight_rejects_non_tfidf_pipeline_version() -> None:
+    """Job insights should reject unsupported non-TF-IDF pipeline versions."""
+    owner = UserFactory()
+    application = JobApplicationFactory(owner=owner)
+    target_profile = TargetRoleProfileFactory(owner=owner)
+    insight = JobInsight(
+        job_application=application,
+        target_profile=target_profile,
+        source_hash="c" * 64,
+        pipeline_version="embedding-cosine-v1",
+        similarity_score=0.5,
+        score_label="Partial match",
+        explanation="Partial match.",
+    )
+
+    with pytest.raises(ValidationError, match="not a valid choice"):
+        insight.save()
+
+
+@pytest.mark.django_db
 def test_job_insight_rejects_mismatched_application_and_profile_owner() -> None:
     """A job insight should require the application and profile to share an owner."""
     application = JobApplicationFactory(owner=UserFactory(email="owner@example.com"))
@@ -91,7 +121,7 @@ def test_job_insight_rejects_mismatched_application_and_profile_owner() -> None:
         job_application=application,
         target_profile=target_profile,
         source_hash="a" * 64,
-        pipeline_version="keyword-overlap-v1",
+        pipeline_version=JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1,
         similarity_score=0.5,
         score_label="Partial match",
         explanation="Partial match.",
@@ -111,7 +141,7 @@ def test_job_insight_requires_json_list_fields() -> None:
         job_application=application,
         target_profile=target_profile,
         source_hash="b" * 64,
-        pipeline_version="keyword-overlap-v1",
+        pipeline_version=JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1,
         extracted_terms="python",
         top_overlapping_terms=[],
         missing_target_terms=[],
