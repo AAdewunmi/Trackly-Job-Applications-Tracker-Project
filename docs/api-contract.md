@@ -66,5 +66,6 @@ Application note API endpoints are nested under their parent application. Both
 resource groups use the same user ownership boundary as the browser job
 application workflow.
 
-Insights API endpoints are also planned work. The project does not currently
-include an `apps.insights` Django app, so no insights routes are registered.
+Insights API endpoints are also planned work. The project includes an
+`apps.insights` Django app for persistence and admin support, but no insights
+routes are registered yet.

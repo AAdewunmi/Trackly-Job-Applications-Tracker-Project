@@ -1,6 +1,6 @@
-"""
-Persistence models for Trackly's retrieval-style job insight feature.
-"""
+"""Persistence models for Trackly job insights."""
+
+from __future__ import annotations
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -34,25 +34,8 @@ class TargetRoleProfile(models.Model):
         """Return a readable representation of the target role profile."""
         return self.title
 
-    def clean(self) -> None:
-        """Validate keyword structure for retrieval-style matching."""
-        super().clean()
-        if not isinstance(self.keywords, list):
-            raise ValidationError({"keywords": "Keywords must be stored as a list."})
-
-        cleaned_keywords = [
-            str(keyword).strip()
-            for keyword in self.keywords
-            if str(keyword).strip()
-        ]
-
-        if not cleaned_keywords:
-            raise ValidationError(
-                {"keywords": "At least one target keyword is required."}
-            )
-
-    def save(self, *args, **kwargs):
-        """Normalise keywords before saving the target profile."""
+    def save(self, *args: object, **kwargs: object) -> None:
+        """Persist the target profile after normalisation and validation."""
         if isinstance(self.keywords, list):
             seen_keywords: set[str] = set()
             normalised_keywords: list[str] = []
@@ -65,7 +48,23 @@ class TargetRoleProfile(models.Model):
 
             self.keywords = normalised_keywords
 
+        self.full_clean()
         super().save(*args, **kwargs)
+
+    def clean(self) -> None:
+        """Validate keyword structure for retrieval-style matching."""
+        super().clean()
+        if not isinstance(self.keywords, list):
+            raise ValidationError({"keywords": "Keywords must be stored as a list."})
+
+        cleaned_keywords = [
+            str(keyword).strip() for keyword in self.keywords if str(keyword).strip()
+        ]
+
+        if not cleaned_keywords:
+            raise ValidationError(
+                {"keywords": "At least one target keyword is required."}
+            )
 
 
 class JobInsight(models.Model):
@@ -114,6 +113,11 @@ class JobInsight(models.Model):
     def __str__(self) -> str:
         """Return a readable representation of the stored insight."""
         return f"Insight for {self.job_application}"
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        """Persist the insight after running model validation."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def clean(self) -> None:
         """Validate insight ownership and JSON list fields."""

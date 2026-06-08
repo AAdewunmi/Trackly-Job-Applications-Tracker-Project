@@ -1,6 +1,4 @@
-"""
-factory_boy factories for Trackly insight tests.
-"""
+"""Factory helpers for insight tests."""
 
 import factory
 
@@ -10,10 +8,10 @@ from apps.users.factories import UserFactory
 
 
 class TargetRoleProfileFactory(factory.django.DjangoModelFactory):
-    """Factory for target role profiles."""
+    """Create a valid target role profile for tests."""
 
     class Meta:
-        """Factory metadata for target role profiles."""
+        """Factory metadata for TargetRoleProfileFactory."""
 
         model = TargetRoleProfile
 
@@ -25,10 +23,10 @@ class TargetRoleProfileFactory(factory.django.DjangoModelFactory):
 
 
 class JobInsightFactory(factory.django.DjangoModelFactory):
-    """Factory for stored job insights."""
+    """Create a valid stored job insight for tests."""
 
     class Meta:
-        """Factory metadata for job insights."""
+        """Factory metadata for JobInsightFactory."""
 
         model = JobInsight
 
@@ -36,7 +34,7 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
     target_profile = factory.LazyAttribute(
         lambda obj: TargetRoleProfileFactory(owner=obj.job_application.owner)
     )
-    source_hash = factory.Sequence(lambda n: f"{n:064d}"[-64:])
+    source_hash = factory.Sequence(lambda number: f"{number:064x}"[-64:])
     pipeline_version = "nltk-tfidf-cosine-v1"
     clean_job_text = "python django api test"
     clean_target_text = "python django api postgresql docker test"
