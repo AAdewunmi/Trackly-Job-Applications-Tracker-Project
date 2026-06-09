@@ -9,6 +9,15 @@ from apps.insights.nlp.similarity import (
     target_terms_from_text,
 )
 
+LOW_VALUE_TERMS = {"and", "about", "target", "role", "using"}
+
+
+def assert_low_value_terms_excluded(terms: list[str]) -> None:
+    """Assert that low-value terms do not appear as terms or n-gram parts."""
+    for term in terms:
+        assert term not in LOW_VALUE_TERMS
+        assert LOW_VALUE_TERMS.isdisjoint(term.split())
+
 
 def test_related_job_scores_higher_than_unrelated_job() -> None:
     """Related job text should score higher than unrelated job text."""
@@ -60,6 +69,21 @@ def test_similarity_result_contains_extracted_terms() -> None:
 
     assert result.extracted_terms
     assert "python" in result.extracted_terms
+
+
+def test_similarity_evidence_excludes_low_value_terms() -> None:
+    """Extracted, overlapping, and missing terms should exclude stop words."""
+    result = analyse_text_similarity(
+        job_text="Target role using Python and Django about APIs",
+        target_text="Target role using Python Django about PostgreSQL",
+    )
+
+    assert "python" in result.extracted_terms
+    assert "python" in result.top_overlapping_terms
+    assert "postgresql" in result.missing_target_terms
+    assert_low_value_terms_excluded(result.extracted_terms)
+    assert_low_value_terms_excluded(result.top_overlapping_terms)
+    assert_low_value_terms_excluded(result.missing_target_terms)
 
 
 def test_similarity_output_is_deterministic_for_same_input() -> None:

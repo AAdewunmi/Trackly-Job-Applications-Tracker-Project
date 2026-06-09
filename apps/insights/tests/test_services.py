@@ -20,6 +20,15 @@ from apps.insights.services import (
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
+LOW_VALUE_TERMS = {"and", "about", "target", "role", "using"}
+
+
+def assert_low_value_terms_excluded(terms: list[str]) -> None:
+    """Assert that low-value terms do not appear as terms or n-gram parts."""
+    for term in terms:
+        assert term not in LOW_VALUE_TERMS
+        assert LOW_VALUE_TERMS.isdisjoint(term.split())
+
 
 @pytest.mark.django_db
 def test_active_target_profile_returns_latest_active_profile_for_user() -> None:
@@ -189,6 +198,33 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     assert "api delivery" in insight.missing_target_terms
     assert "overlaps with your target profile on" in insight.explanation
     assert "Missing or weaker target terms include" in insight.explanation
+
+
+@pytest.mark.django_db
+def test_generate_insight_excludes_low_value_terms_from_evidence() -> None:
+    """Generated insight evidence should exclude configured low-value terms."""
+    owner = UserFactory(email="owner@example.com")
+    application = JobApplicationFactory(
+        owner=owner,
+        title="Target Backend Role",
+        company="Example Ltd",
+        job_description="Using Python and Django about API delivery.",
+    )
+    target_profile = TargetRoleProfileFactory(
+        owner=owner,
+        title="Target Backend Role",
+        description="Using Python Django about PostgreSQL.",
+        keywords=["target", "role", "using", "python", "django", "postgresql"],
+    )
+
+    insight = generate_job_insight(application, target_profile)
+
+    assert "python" in insight.top_overlapping_terms
+    assert "postgresql" in insight.missing_target_terms
+    assert "python" in insight.clean_job_text.split()
+    assert_low_value_terms_excluded(insight.extracted_terms)
+    assert_low_value_terms_excluded(insight.top_overlapping_terms)
+    assert_low_value_terms_excluded(insight.missing_target_terms)
 
 
 @pytest.mark.django_db

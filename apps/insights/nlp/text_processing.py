@@ -65,6 +65,7 @@ STOP_WORDS = frozenset(
         "role",
         "should",
         "team",
+        "target",
         "that",
         "the",
         "their",
