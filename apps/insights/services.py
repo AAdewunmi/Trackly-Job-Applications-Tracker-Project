@@ -7,7 +7,11 @@ import hashlib
 from django.core.exceptions import ValidationError
 
 from apps.insights.models import JobInsight, TargetRoleProfile
-from apps.insights.nlp import preprocess_text
+from apps.insights.nlp import (
+    analyse_text_similarity,
+    build_target_profile_text,
+    preprocess_text,
+)
 from apps.jobs.models import JobApplication
 
 PIPELINE_VERSION = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
@@ -43,12 +47,11 @@ def build_job_source_text(job_application: JobApplication) -> str:
 
 def build_target_source_text(target_profile: TargetRoleProfile) -> str:
     """Return the target-side source text used for insight generation."""
-    parts = [
-        target_profile.title,
-        target_profile.description,
-        *target_profile.keywords,
-    ]
-    return "\n".join(str(part) for part in parts if part)
+    return build_target_profile_text(
+        title=target_profile.title,
+        description=target_profile.description,
+        keywords=target_profile.keywords,
+    )
 
 
 def generate_job_insight(
@@ -67,32 +70,28 @@ def generate_job_insight(
             "Job insight application and target profile must share an owner."
         )
 
-    clean_job_text = _clean_text(build_job_source_text(job_application))
-    clean_target_text = _clean_text(build_target_source_text(target_profile))
-    job_terms = _ordered_terms(clean_job_text)
-    target_terms = _ordered_terms(clean_target_text)
-    overlapping_terms = [term for term in target_terms if term in set(job_terms)]
-    missing_terms = [term for term in target_terms if term not in set(job_terms)]
-    similarity_score = _similarity_score(job_terms, target_terms)
-    score_label = _score_label(similarity_score)
+    analysis = analyse_text_similarity(
+        job_text=build_job_source_text(job_application),
+        target_text=build_target_source_text(target_profile),
+    )
 
     insight, _created = JobInsight.objects.update_or_create(
         job_application=job_application,
         target_profile=target_profile,
         source_hash=calculate_source_hash(
-            clean_job_text=clean_job_text,
-            clean_target_text=clean_target_text,
+            clean_job_text=analysis.clean_job_text,
+            clean_target_text=analysis.clean_target_text,
         ),
         pipeline_version=PIPELINE_VERSION,
         defaults={
-            "clean_job_text": clean_job_text,
-            "clean_target_text": clean_target_text,
-            "extracted_terms": job_terms,
-            "top_overlapping_terms": overlapping_terms[:10],
-            "missing_target_terms": missing_terms[:10],
-            "similarity_score": similarity_score,
-            "score_label": score_label,
-            "explanation": _explanation(score_label, overlapping_terms, missing_terms),
+            "clean_job_text": analysis.clean_job_text,
+            "clean_target_text": analysis.clean_target_text,
+            "extracted_terms": analysis.extracted_terms,
+            "top_overlapping_terms": analysis.top_overlapping_terms,
+            "missing_target_terms": analysis.missing_target_terms,
+            "similarity_score": analysis.similarity_score,
+            "score_label": analysis.score_label,
+            "explanation": analysis.explanation,
         },
     )
     return insight
@@ -102,19 +101,6 @@ def _clean_text(*values: object) -> str:
     """Return NLTK-standardised text for deterministic retrieval matching."""
     source_text = " ".join(str(value) for value in values if value)
     return preprocess_text(source_text)
-
-
-def _ordered_terms(text: str) -> list[str]:
-    """Return de-duplicated terms in first-seen order."""
-    seen_terms: set[str] = set()
-    terms: list[str] = []
-
-    for term in text.split():
-        if term not in seen_terms:
-            terms.append(term)
-            seen_terms.add(term)
-
-    return terms
 
 
 def calculate_source_hash(
@@ -133,36 +119,4 @@ def _source_hash(clean_job_text: str, clean_target_text: str) -> str:
     return calculate_source_hash(
         clean_job_text=clean_job_text,
         clean_target_text=clean_target_text,
-    )
-
-
-def _similarity_score(job_terms: list[str], target_terms: list[str]) -> float:
-    """Return a simple overlap score between job and target terms."""
-    if not target_terms:
-        return 0.0
-
-    overlap = set(job_terms) & set(target_terms)
-    return round(len(overlap) / len(set(target_terms)), 2)
-
-
-def _score_label(score: float) -> str:
-    """Return a human-readable label for the similarity score."""
-    if score >= 0.7:
-        return "Strong match"
-    if score >= 0.4:
-        return "Partial match"
-    return "Low match"
-
-
-def _explanation(
-    score_label: str,
-    overlapping_terms: list[str],
-    missing_terms: list[str],
-) -> str:
-    """Return a concise explanation for the generated insight."""
-    overlap = ", ".join(overlapping_terms[:5]) or "no target terms"
-    missing = ", ".join(missing_terms[:5]) or "no major target terms"
-    return (
-        f"{score_label}: this job overlaps with your target profile on {overlap}. "
-        f"Missing or weaker target terms include {missing}."
     )

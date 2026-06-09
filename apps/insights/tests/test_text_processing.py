@@ -40,6 +40,20 @@ def test_preprocess_tokens_filters_stop_words() -> None:
     assert "team" not in tokens
 
 
+def test_preprocess_tokens_filters_low_value_role_terms() -> None:
+    """Preprocessing should remove low-value role description terms."""
+    tokens = preprocess_tokens("Target role using Python and Django about APIs")
+
+    assert "python" in tokens
+    assert "django" in tokens
+    assert "api" in tokens or "apis" in tokens
+    assert "and" not in tokens
+    assert "about" not in tokens
+    assert "target" not in tokens
+    assert "role" not in tokens
+    assert "using" not in tokens
+
+
 def test_ensure_nltk_data_available_passes_when_runtime_data_exists(
     monkeypatch,
 ) -> None:
