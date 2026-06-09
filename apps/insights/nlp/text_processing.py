@@ -8,9 +8,16 @@ startup reliable when corpora have not been downloaded.
 
 import re
 
+import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import TreebankWordTokenizer
 
+REQUIRED_NLTK_DATA = {
+    "tokenizers/punkt": "punkt",
+    "corpora/wordnet": "wordnet",
+    "corpora/omw-1.4": "omw-1.4",
+    "corpora/stopwords": "stopwords",
+}
 
 STOP_WORDS = frozenset(
     {
@@ -75,6 +82,36 @@ STOP_WORDS = frozenset(
 
 TOKENISER = TreebankWordTokenizer()
 LEMMATISER = WordNetLemmatizer()
+
+
+class NLTKDataUnavailable(RuntimeError):
+    """Raised when required NLTK runtime data has not been provisioned."""
+
+
+def ensure_nltk_data_available() -> None:
+    """Raise an actionable error if required NLTK runtime data is missing."""
+    missing_packages = [
+        package_name
+        for lookup_path, package_name in REQUIRED_NLTK_DATA.items()
+        if not _nltk_data_exists(lookup_path)
+    ]
+
+    if missing_packages:
+        packages = " ".join(missing_packages)
+        raise NLTKDataUnavailable(
+            "Missing required NLTK data. Run "
+            f"`python -m nltk.downloader {packages}` or `make nltk-data`."
+        )
+
+
+def _nltk_data_exists(lookup_path: str) -> bool:
+    """Return whether an NLTK data lookup path is available."""
+    try:
+        nltk.data.find(lookup_path)
+    except LookupError:
+        return False
+
+    return True
 
 
 def normalise_token(token: str) -> str:

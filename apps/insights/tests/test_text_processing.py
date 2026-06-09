@@ -2,12 +2,24 @@
 Unit tests for NLTK-backed text preprocessing.
 """
 
+import pytest
+
+from apps.insights.nlp import preprocess_text as package_preprocess_text
 from apps.insights.nlp.text_processing import (
+    NLTKDataUnavailable,
+    ensure_nltk_data_available,
     fallback_lemmatise,
     normalise_token,
     preprocess_text,
     preprocess_tokens,
 )
+
+
+def test_package_exports_preprocessing_helpers() -> None:
+    """The NLP package should expose preprocessing helpers for services."""
+    assert package_preprocess_text("Python developer") == preprocess_text(
+        "Python developer"
+    )
 
 
 def test_normalise_token_lowercases_and_removes_noise() -> None:
@@ -24,6 +36,31 @@ def test_preprocess_tokens_filters_stop_words() -> None:
     assert "developer" in tokens
     assert "we" not in tokens
     assert "team" not in tokens
+
+
+def test_ensure_nltk_data_available_passes_when_runtime_data_exists(
+    monkeypatch,
+) -> None:
+    """The runtime-data check should pass when every lookup path resolves."""
+    monkeypatch.setattr(
+        "apps.insights.nlp.text_processing._nltk_data_exists",
+        lambda lookup_path: True,
+    )
+
+    ensure_nltk_data_available()
+
+
+def test_ensure_nltk_data_available_raises_actionable_error_when_data_missing(
+    monkeypatch,
+) -> None:
+    """Missing runtime data should fail with a setup command."""
+    monkeypatch.setattr(
+        "apps.insights.nlp.text_processing._nltk_data_exists",
+        lambda lookup_path: lookup_path != "corpora/wordnet",
+    )
+
+    with pytest.raises(NLTKDataUnavailable, match="make nltk-data"):
+        ensure_nltk_data_available()
 
 
 def test_preprocess_tokens_keeps_technical_terms() -> None:
