@@ -142,12 +142,12 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     insight = generate_job_insight(application, target_profile)
 
     assert insight.clean_job_text == (
-        "backend backend engineer example ltd build python django and api "
-        "services testing apis with python postgresql experience preferred"
+        "backend backend engineer example ltd build python django api service "
+        "test apis python postgresql experience prefer"
     )
     assert insight.clean_target_text == (
-        "backend engineer python django api delivery python django api "
-        "postgresql testing"
+        "backend engineer python django api delivery python django api postgresql "
+        "test"
     )
     assert insight.extracted_terms == [
         "backend",
@@ -157,15 +157,13 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "build",
         "python",
         "django",
-        "and",
         "api",
-        "services",
-        "testing",
+        "service",
+        "test",
         "apis",
-        "with",
         "postgresql",
         "experience",
-        "preferred",
+        "prefer",
     ]
     assert insight.top_overlapping_terms == [
         "backend",
@@ -174,7 +172,7 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "django",
         "api",
         "postgresql",
-        "testing",
+        "test",
     ]
     assert insight.missing_target_terms == ["delivery"]
     assert "overlaps with your target profile on backend" in insight.explanation
@@ -207,10 +205,8 @@ def test_generate_insight_labels_jobs_with_no_overlap_as_low_match() -> None:
     assert insight.missing_target_terms == [
         "backend",
         "engineer",
-        "server",
-        "side",
+        "server-side",
         "platform",
-        "work",
         "python",
         "django",
         "postgresql",
@@ -280,11 +276,11 @@ def test_generate_insight_creates_new_record_when_source_text_changes() -> None:
     assert JobInsight.objects.count() == 2
 
 
-def test_clean_text_normalises_values_for_matching() -> None:
-    """Text cleaning should produce deterministic lowercase token text."""
+def test_clean_text_uses_nltk_preprocessing_for_matching() -> None:
+    """Text cleaning should use NLTK-backed preprocessing."""
     assert (
         _clean_text("Python/Django APIs.", None, "C++ and C# roles")
-        == "python django apis none c++ and c# roles"
+        == "pythondjango apis c++"
     )
 
 

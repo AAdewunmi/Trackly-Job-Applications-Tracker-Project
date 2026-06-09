@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import hashlib
-import re
 
 from django.core.exceptions import ValidationError
 
 from apps.insights.models import JobInsight, TargetRoleProfile
+from apps.insights.nlp import preprocess_text
 from apps.jobs.models import JobApplication
 
 PIPELINE_VERSION = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
-TOKEN_PATTERN = re.compile(r"[a-z0-9+#.]+")
 
 
 class TargetRoleProfileRequired(Exception):
@@ -100,13 +99,9 @@ def generate_job_insight(
 
 
 def _clean_text(*values: object) -> str:
-    """Return normalized text for deterministic keyword matching."""
-    return " ".join(
-        token.strip(".")
-        for value in values
-        for token in TOKEN_PATTERN.findall(str(value).lower())
-        if token.strip(".")
-    )
+    """Return NLTK-standardised text for deterministic retrieval matching."""
+    source_text = " ".join(str(value) for value in values if value)
+    return preprocess_text(source_text)
 
 
 def _ordered_terms(text: str) -> list[str]:
