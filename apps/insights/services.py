@@ -31,6 +31,27 @@ def can_generate_insight(user) -> bool:
     return get_active_target_profile(user) is not None
 
 
+def build_job_source_text(job_application: JobApplication) -> str:
+    """Return the job-side source text used for insight generation."""
+    parts = [
+        job_application.title,
+        job_application.company,
+        job_application.job_description,
+        job_application.notes,
+    ]
+    return "\n".join(str(part) for part in parts if part)
+
+
+def build_target_source_text(target_profile: TargetRoleProfile) -> str:
+    """Return the target-side source text used for insight generation."""
+    parts = [
+        target_profile.title,
+        target_profile.description,
+        *target_profile.keywords,
+    ]
+    return "\n".join(str(part) for part in parts if part)
+
+
 def generate_job_insight(
     job_application: JobApplication,
     target_profile: TargetRoleProfile | None = None,
@@ -47,17 +68,8 @@ def generate_job_insight(
             "Job insight application and target profile must share an owner."
         )
 
-    clean_job_text = _clean_text(
-        job_application.title,
-        job_application.company,
-        job_application.job_description,
-        job_application.notes,
-    )
-    clean_target_text = _clean_text(
-        target_profile.title,
-        target_profile.description,
-        *target_profile.keywords,
-    )
+    clean_job_text = _clean_text(build_job_source_text(job_application))
+    clean_target_text = _clean_text(build_target_source_text(target_profile))
     job_terms = _ordered_terms(clean_job_text)
     target_terms = _ordered_terms(clean_target_text)
     overlapping_terms = [term for term in target_terms if term in set(job_terms)]
@@ -68,7 +80,10 @@ def generate_job_insight(
     insight, _created = JobInsight.objects.update_or_create(
         job_application=job_application,
         target_profile=target_profile,
-        source_hash=_source_hash(clean_job_text, clean_target_text),
+        source_hash=calculate_source_hash(
+            clean_job_text=clean_job_text,
+            clean_target_text=clean_target_text,
+        ),
         pipeline_version=PIPELINE_VERSION,
         defaults={
             "clean_job_text": clean_job_text,
@@ -107,10 +122,23 @@ def _ordered_terms(text: str) -> list[str]:
     return terms
 
 
+def calculate_source_hash(
+    *,
+    clean_job_text: str,
+    clean_target_text: str,
+    pipeline_version: str = PIPELINE_VERSION,
+) -> str:
+    """Return a stable hash for cleaned job text, target text, and pipeline."""
+    source = f"{pipeline_version}\n{clean_job_text}\n{clean_target_text}"
+    return hashlib.sha256(source.encode()).hexdigest()
+
+
 def _source_hash(clean_job_text: str, clean_target_text: str) -> str:
     """Return a stable source hash for an unchanged job/profile pair."""
-    source = f"{PIPELINE_VERSION}\n{clean_job_text}\n{clean_target_text}"
-    return hashlib.sha256(source.encode()).hexdigest()
+    return calculate_source_hash(
+        clean_job_text=clean_job_text,
+        clean_target_text=clean_target_text,
+    )
 
 
 def _similarity_score(job_terms: list[str], target_terms: list[str]) -> float:

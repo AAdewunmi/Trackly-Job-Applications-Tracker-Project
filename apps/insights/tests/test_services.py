@@ -11,6 +11,9 @@ from apps.insights.services import (
     _clean_text,
     _similarity_score,
     _source_hash,
+    build_job_source_text,
+    build_target_source_text,
+    calculate_source_hash,
     can_generate_insight,
     generate_job_insight,
     get_active_target_profile,
@@ -59,6 +62,35 @@ def test_user_without_target_profile_cannot_generate_insight() -> None:
         match="active target role profile is required",
     ):
         generate_job_insight(application)
+
+
+@pytest.mark.django_db
+def test_build_job_source_text_joins_non_empty_application_fields() -> None:
+    """The job-side source text should preserve meaningful application fields."""
+    application = JobApplicationFactory(
+        title="Backend Engineer",
+        company="Example Ltd",
+        job_description="Build Django APIs.",
+        notes="",
+    )
+
+    assert build_job_source_text(application) == (
+        "Backend Engineer\nExample Ltd\nBuild Django APIs."
+    )
+
+
+@pytest.mark.django_db
+def test_build_target_source_text_joins_profile_fields_and_keywords() -> None:
+    """The target-side source text should include profile keywords."""
+    target_profile = TargetRoleProfileFactory(
+        title="Backend Engineer",
+        description="Server-side product work.",
+        keywords=["python", "django", "postgresql"],
+    )
+
+    assert build_target_source_text(target_profile) == (
+        "Backend Engineer\nServer-side product work.\npython\ndjango\npostgresql"
+    )
 
 
 @pytest.mark.django_db
@@ -261,8 +293,23 @@ def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
     original_hash = _source_hash("python django", "python")
 
     assert _source_hash("python django", "python") == original_hash
+    assert (
+        calculate_source_hash(
+            clean_job_text="python django",
+            clean_target_text="python",
+        )
+        == original_hash
+    )
     assert _source_hash("python django api", "python") != original_hash
     assert _source_hash("python django", "python api") != original_hash
+    assert (
+        calculate_source_hash(
+            clean_job_text="python django",
+            clean_target_text="python",
+            pipeline_version="other-pipeline",
+        )
+        != original_hash
+    )
 
 
 def test_similarity_score_returns_zero_without_target_terms() -> None:
