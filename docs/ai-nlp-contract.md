@@ -82,6 +82,16 @@ target profile text
 -> stored JobInsight
 ```
 
+## Score Labels
+
+The cosine similarity score is rounded to two decimal places before labelling.
+Labels are deterministic:
+
+- `Excellent match`: score >= 0.75.
+- `Strong match`: score >= 0.50 and < 0.75.
+- `Partial match`: score >= 0.25 and < 0.50.
+- `Low match`: score < 0.25.
+
 ## Implementation Status
 
 ### Phase 1: Persistence and Contract Boundary
