@@ -44,7 +44,7 @@ def test_ensure_nltk_data_available_passes_when_runtime_data_exists(
     """The runtime-data check should pass when every lookup path resolves."""
     monkeypatch.setattr(
         "apps.insights.nlp.text_processing._nltk_data_exists",
-        lambda lookup_path: True,
+        lambda lookup_paths: True,
     )
 
     ensure_nltk_data_available()
@@ -56,7 +56,7 @@ def test_ensure_nltk_data_available_raises_actionable_error_when_data_missing(
     """Missing runtime data should fail with a setup command."""
     monkeypatch.setattr(
         "apps.insights.nlp.text_processing._nltk_data_exists",
-        lambda lookup_path: lookup_path != "corpora/wordnet",
+        lambda lookup_paths: "corpora/wordnet" not in lookup_paths,
     )
 
     with pytest.raises(NLTKDataUnavailable, match="make nltk-data"):

@@ -13,10 +13,10 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import TreebankWordTokenizer
 
 REQUIRED_NLTK_DATA = {
-    "tokenizers/punkt": "punkt",
-    "corpora/wordnet": "wordnet",
-    "corpora/omw-1.4": "omw-1.4",
-    "corpora/stopwords": "stopwords",
+    "punkt": ("tokenizers/punkt", "tokenizers/punkt.zip"),
+    "wordnet": ("corpora/wordnet", "corpora/wordnet.zip"),
+    "omw-1.4": ("corpora/omw-1.4", "corpora/omw-1.4.zip"),
+    "stopwords": ("corpora/stopwords", "corpora/stopwords.zip"),
 }
 
 STOP_WORDS = frozenset(
@@ -92,8 +92,8 @@ def ensure_nltk_data_available() -> None:
     """Raise an actionable error if required NLTK runtime data is missing."""
     missing_packages = [
         package_name
-        for lookup_path, package_name in REQUIRED_NLTK_DATA.items()
-        if not _nltk_data_exists(lookup_path)
+        for package_name, lookup_paths in REQUIRED_NLTK_DATA.items()
+        if not _nltk_data_exists(lookup_paths)
     ]
 
     if missing_packages:
@@ -104,14 +104,17 @@ def ensure_nltk_data_available() -> None:
         )
 
 
-def _nltk_data_exists(lookup_path: str) -> bool:
-    """Return whether an NLTK data lookup path is available."""
-    try:
-        nltk.data.find(lookup_path)
-    except LookupError:
-        return False
+def _nltk_data_exists(lookup_paths: tuple[str, ...]) -> bool:
+    """Return whether any NLTK data lookup path is available."""
+    for lookup_path in lookup_paths:
+        try:
+            nltk.data.find(lookup_path)
+        except LookupError:
+            continue
 
-    return True
+        return True
+
+    return False
 
 
 def normalise_token(token: str) -> str:
