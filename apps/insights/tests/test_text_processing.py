@@ -102,6 +102,18 @@ def test_preprocess_tokens_keeps_technical_terms() -> None:
     assert "postgresql" in tokens
 
 
+def test_preprocess_tokens_skips_terms_that_become_stop_words_after_lemmatisation(
+    monkeypatch,
+) -> None:
+    """Lemmatised stop words should not be appended to processed tokens."""
+    monkeypatch.setattr(
+        "apps.insights.nlp.text_processing.lemmatise_token",
+        lambda token: "and",
+    )
+
+    assert preprocess_tokens("developer") == []
+
+
 def test_fallback_lemmatise_reduces_common_inflections() -> None:
     """Fallback lemmatisation should handle common role-description forms."""
     assert fallback_lemmatise("testing") == "test"
