@@ -58,9 +58,9 @@ Implemented now:
 - Ownership validation so job applications and target role profiles must belong
   to the same user.
 
-The current service implementation is transitional. It writes durable
-`JobInsight` records under the `nltk-tfidf-cosine-v1` contract, while the full
-NLTK/scikit-learn TF-IDF cosine algorithm is implemented in phases.
+The current service implementation writes durable `JobInsight` records under
+the `nltk-tfidf-cosine-v1` contract and uses the implemented NLTK/scikit-learn
+TF-IDF cosine pipeline.
 
 ## Canonical Pipeline
 
@@ -82,7 +82,7 @@ target profile text
 -> stored JobInsight
 ```
 
-## Phased Implementation
+## Implementation Status
 
 ### Phase 1: Persistence and Contract Boundary
 
@@ -96,15 +96,15 @@ Implemented:
 
 ### Phase 2: NLTK Preprocessing
 
-Planned:
+Implemented:
 
 - Token normalisation backed by NLTK.
-- Stop-word filtering where useful.
+- Stop-word filtering for common and low-value role-description terms.
 - Lemmatized clean job and target text.
 
 ### Phase 3: TF-IDF Cosine Matching
 
-Planned:
+Implemented:
 
 - scikit-learn TF-IDF vectorisation.
 - Cosine similarity between job and target documents.
@@ -112,7 +112,7 @@ Planned:
 
 ### Phase 4: Explainability Terms
 
-Planned:
+Implemented:
 
 - Top overlapping high-value terms.
 - Missing target terms.
