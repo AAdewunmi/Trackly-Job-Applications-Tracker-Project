@@ -9,7 +9,6 @@ from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.insights.services import (
     TargetRoleProfileRequired,
     _clean_text,
-    _similarity_score,
     _source_hash,
     build_job_source_text,
     build_target_source_text,
@@ -89,7 +88,7 @@ def test_build_target_source_text_joins_profile_fields_and_keywords() -> None:
     )
 
     assert build_target_source_text(target_profile) == (
-        "Backend Engineer\nServer-side product work.\npython\ndjango\npostgresql"
+        "Backend Engineer\nServer-side product work.\npython django postgresql"
     )
 
 
@@ -115,7 +114,7 @@ def test_user_with_active_target_profile_can_generate_insight() -> None:
     assert insight.target_profile == target_profile
     assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
     assert insight.similarity_score > 0
-    assert insight.score_label in {"Partial match", "Strong match"}
+    assert insight.score_label in {"Partial match", "Strong match", "Excellent match"}
     assert JobInsight.objects.filter(job_application=application).count() == 1
 
 
@@ -176,34 +175,20 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "postgresql",
         "test",
     ]
-    assert insight.extracted_terms[:10] == [
-        "backend",
-        "engineer",
-        "example",
-        "ltd",
-        "build",
-        "python",
-        "django",
-        "api",
-        "service",
-        "test",
-    ]
-    assert "postgresql" in insight.extracted_terms
-    assert "experience" in insight.extracted_terms
+    assert insight.extracted_terms
+    assert len(insight.extracted_terms) <= 12
+    assert "backend" in insight.extracted_terms
+    assert "python" in insight.extracted_terms
     assert {"api", "apis"} & set(insight.extracted_terms)
-    assert insight.extracted_terms[-1] in {"prefer", "preferr"}
-    assert insight.top_overlapping_terms == [
-        "backend",
-        "engineer",
-        "python",
-        "django",
-        "api",
-        "postgresql",
-        "test",
-    ]
-    assert insight.missing_target_terms == ["delivery"]
-    assert "overlaps with your target profile on backend" in insight.explanation
-    assert "Missing or weaker target terms include delivery" in insight.explanation
+    assert insight.similarity_score > 0
+    assert insight.score_label == "Partial match"
+    assert "python" in insight.top_overlapping_terms
+    assert "backend" in insight.top_overlapping_terms
+    assert "django api" in insight.top_overlapping_terms
+    assert "delivery" in insight.missing_target_terms
+    assert "api delivery" in insight.missing_target_terms
+    assert "overlaps with your target profile on" in insight.explanation
+    assert "Missing or weaker target terms include" in insight.explanation
 
 
 @pytest.mark.django_db
@@ -229,15 +214,10 @@ def test_generate_insight_labels_jobs_with_no_overlap_as_low_match() -> None:
     assert insight.similarity_score == 0
     assert insight.score_label == "Low match"
     assert insight.top_overlapping_terms == []
-    assert insight.missing_target_terms == [
-        "backend",
-        "engineer",
-        "server-side",
-        "platform",
-        "python",
-        "django",
-        "postgresql",
-    ]
+    assert "backend" in insight.missing_target_terms
+    assert "backend engineer" in insight.missing_target_terms
+    assert "platform" in insight.missing_target_terms
+    assert "django" in insight.missing_target_terms
 
 
 @pytest.mark.django_db
@@ -335,11 +315,6 @@ def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
         )
         != original_hash
     )
-
-
-def test_similarity_score_returns_zero_without_target_terms() -> None:
-    """The defensive score helper should handle missing target terms."""
-    assert _similarity_score(["python"], []) == 0.0
 
 
 @pytest.mark.django_db

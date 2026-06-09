@@ -9,7 +9,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from apps.insights.nlp.text_processing import preprocess_text, preprocess_tokens
 
-
 PIPELINE_VERSION = "nltk-tfidf-cosine-v1"
 
 
@@ -171,7 +170,9 @@ def analyse_text_similarity(
     job_vector = matrix[0:1]
     target_vector = matrix[1:2]
 
-    similarity_score = round(float(cosine_similarity(job_vector, target_vector)[0][0]), 2)
+    similarity_score = round(
+        float(cosine_similarity(job_vector, target_vector)[0][0]), 2
+    )
     score_label = score_label_for(similarity_score)
     extracted_terms = extract_weighted_terms(
         feature_names=feature_names,
