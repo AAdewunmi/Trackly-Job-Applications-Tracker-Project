@@ -4,8 +4,10 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 
+from apps.insights import services
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
+from apps.insights.nlp.similarity import TextSimilarityResult, score_label_for
 from apps.insights.services import (
     TargetRoleProfileRequired,
     _clean_text,
@@ -225,6 +227,63 @@ def test_generate_insight_excludes_low_value_terms_from_evidence() -> None:
     assert_low_value_terms_excluded(insight.extracted_terms)
     assert_low_value_terms_excluded(insight.top_overlapping_terms)
     assert_low_value_terms_excluded(insight.missing_target_terms)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("similarity_score", "expected_label"),
+    [
+        (0.5, "Strong match"),
+        (0.25, "Partial match"),
+        (0.24, "Low match"),
+    ],
+)
+def test_generate_insight_persists_threshold_score_labels(
+    monkeypatch,
+    similarity_score: float,
+    expected_label: str,
+) -> None:
+    """Generated insights should persist deterministic threshold labels."""
+    owner = UserFactory(email="owner@example.com")
+    application = JobApplicationFactory(
+        owner=owner,
+        title="Backend Engineer",
+        job_description="Build Python Django APIs.",
+    )
+    target_profile = TargetRoleProfileFactory(
+        owner=owner,
+        title="Backend Engineer",
+        keywords=["python", "django", "api"],
+    )
+
+    def fake_analyse_text_similarity(
+        *,
+        job_text: str,
+        target_text: str,
+    ) -> TextSimilarityResult:
+        return TextSimilarityResult(
+            clean_job_text=f"job {similarity_score}",
+            clean_target_text=f"target {similarity_score}",
+            extracted_terms=["python"],
+            top_overlapping_terms=["python"],
+            missing_target_terms=[],
+            similarity_score=similarity_score,
+            score_label=score_label_for(similarity_score),
+            explanation=f"{expected_label}: deterministic threshold test.",
+        )
+
+    monkeypatch.setattr(
+        services,
+        "analyse_text_similarity",
+        fake_analyse_text_similarity,
+    )
+
+    insight = generate_job_insight(application, target_profile)
+
+    assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
+    assert insight.similarity_score == similarity_score
+    assert insight.score_label == expected_label
+    assert insight.explanation.startswith(expected_label)
 
 
 @pytest.mark.django_db

@@ -2,6 +2,8 @@
 Unit tests for TF-IDF cosine similarity and explanation output.
 """
 
+import pytest
+
 from apps.insights.nlp import similarity
 from apps.insights.nlp.similarity import (
     PIPELINE_VERSION,
@@ -134,12 +136,24 @@ def test_similarity_output_is_deterministic_for_same_input() -> None:
     assert first == second
 
 
-def test_score_label_for_thresholds() -> None:
-    """Score labels should map consistently to score thresholds."""
-    assert score_label_for(0.8) == "Excellent match"
-    assert score_label_for(0.5) == "Strong match"
-    assert score_label_for(0.25) == "Partial match"
-    assert score_label_for(0.1) == "Low match"
+@pytest.mark.parametrize(
+    ("similarity_score", "expected_label"),
+    [
+        (0.75, "Excellent match"),
+        (0.74, "Strong match"),
+        (0.5, "Strong match"),
+        (0.49, "Partial match"),
+        (0.25, "Partial match"),
+        (0.24, "Low match"),
+        (0.0, "Low match"),
+    ],
+)
+def test_score_label_for_thresholds(
+    similarity_score: float,
+    expected_label: str,
+) -> None:
+    """Score labels should map consistently to deterministic thresholds."""
+    assert score_label_for(similarity_score) == expected_label
 
 
 def test_explanation_includes_overlap_and_missing_terms() -> None:
