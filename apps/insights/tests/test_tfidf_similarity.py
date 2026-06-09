@@ -2,7 +2,9 @@
 Unit tests for TF-IDF cosine similarity and explanation output.
 """
 
+from apps.insights.nlp import similarity
 from apps.insights.nlp.similarity import (
+    PIPELINE_VERSION,
     analyse_text_similarity,
     build_target_profile_text,
     score_label_for,
@@ -69,6 +71,38 @@ def test_similarity_result_contains_extracted_terms() -> None:
 
     assert result.extracted_terms
     assert "python" in result.extracted_terms
+
+
+def test_similarity_pipeline_uses_sklearn_tfidf_cosine_contract(monkeypatch) -> None:
+    """The pipeline contract should use scikit-learn TF-IDF and cosine scoring."""
+    real_vectorizer = similarity.TfidfVectorizer
+    real_cosine_similarity = similarity.cosine_similarity
+    calls = {}
+
+    def tracking_vectorizer(*args, **kwargs):
+        calls["vectorizer_kwargs"] = kwargs
+        return real_vectorizer(*args, **kwargs)
+
+    def tracking_cosine_similarity(job_vector, target_vector):
+        calls["cosine_similarity"] = True
+        return real_cosine_similarity(job_vector, target_vector)
+
+    monkeypatch.setattr(similarity, "TfidfVectorizer", tracking_vectorizer)
+    monkeypatch.setattr(similarity, "cosine_similarity", tracking_cosine_similarity)
+
+    result = analyse_text_similarity(
+        job_text="Python Django REST API testing",
+        target_text="Python Django PostgreSQL testing",
+    )
+
+    assert PIPELINE_VERSION == "nltk-tfidf-cosine-v1"
+    assert calls["vectorizer_kwargs"] == {
+        "lowercase": False,
+        "ngram_range": (1, 2),
+        "token_pattern": r"(?u)\b[a-z][a-z0-9+#.-]{1,}\b",
+    }
+    assert calls["cosine_similarity"] is True
+    assert result.similarity_score > 0
 
 
 def test_similarity_evidence_excludes_low_value_terms() -> None:
