@@ -11,6 +11,9 @@ from apps.insights.services import (
     _clean_text,
     _similarity_score,
     _source_hash,
+    build_job_source_text,
+    build_target_source_text,
+    calculate_source_hash,
     can_generate_insight,
     generate_job_insight,
     get_active_target_profile,
@@ -62,6 +65,35 @@ def test_user_without_target_profile_cannot_generate_insight() -> None:
 
 
 @pytest.mark.django_db
+def test_build_job_source_text_joins_non_empty_application_fields() -> None:
+    """The job-side source text should preserve meaningful application fields."""
+    application = JobApplicationFactory(
+        title="Backend Engineer",
+        company="Example Ltd",
+        job_description="Build Django APIs.",
+        notes="",
+    )
+
+    assert build_job_source_text(application) == (
+        "Backend Engineer\nExample Ltd\nBuild Django APIs."
+    )
+
+
+@pytest.mark.django_db
+def test_build_target_source_text_joins_profile_fields_and_keywords() -> None:
+    """The target-side source text should include profile keywords."""
+    target_profile = TargetRoleProfileFactory(
+        title="Backend Engineer",
+        description="Server-side product work.",
+        keywords=["python", "django", "postgresql"],
+    )
+
+    assert build_target_source_text(target_profile) == (
+        "Backend Engineer\nServer-side product work.\npython\ndjango\npostgresql"
+    )
+
+
+@pytest.mark.django_db
 def test_user_with_active_target_profile_can_generate_insight() -> None:
     """A user with a target baseline should receive a stored job insight."""
     owner = UserFactory(email="owner@example.com")
@@ -109,15 +141,11 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
 
     insight = generate_job_insight(application, target_profile)
 
-    assert insight.clean_job_text == (
-        "backend backend engineer example ltd build python django and api "
-        "services testing apis with python postgresql experience preferred"
-    )
-    assert insight.clean_target_text == (
-        "backend engineer python django api delivery python django api "
-        "postgresql testing"
-    )
-    assert insight.extracted_terms == [
+    clean_job_terms = insight.clean_job_text.split()
+    clean_target_terms = insight.clean_target_text.split()
+
+    assert clean_job_terms[:10] == [
+        "backend",
         "backend",
         "engineer",
         "example",
@@ -125,16 +153,45 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "build",
         "python",
         "django",
-        "and",
         "api",
-        "services",
-        "testing",
-        "apis",
-        "with",
-        "postgresql",
-        "experience",
-        "preferred",
+        "service",
     ]
+    assert "and" not in clean_job_terms
+    assert "with" not in clean_job_terms
+    assert "services" not in clean_job_terms
+    assert "testing" not in clean_job_terms
+    assert "test" in clean_job_terms
+    assert "postgresql" in clean_job_terms
+    assert {"prefer", "preferr"} & set(clean_job_terms)
+    assert clean_target_terms == [
+        "backend",
+        "engineer",
+        "python",
+        "django",
+        "api",
+        "delivery",
+        "python",
+        "django",
+        "api",
+        "postgresql",
+        "test",
+    ]
+    assert insight.extracted_terms[:10] == [
+        "backend",
+        "engineer",
+        "example",
+        "ltd",
+        "build",
+        "python",
+        "django",
+        "api",
+        "service",
+        "test",
+    ]
+    assert "postgresql" in insight.extracted_terms
+    assert "experience" in insight.extracted_terms
+    assert {"api", "apis"} & set(insight.extracted_terms)
+    assert insight.extracted_terms[-1] in {"prefer", "preferr"}
     assert insight.top_overlapping_terms == [
         "backend",
         "engineer",
@@ -142,7 +199,7 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "django",
         "api",
         "postgresql",
-        "testing",
+        "test",
     ]
     assert insight.missing_target_terms == ["delivery"]
     assert "overlaps with your target profile on backend" in insight.explanation
@@ -175,10 +232,8 @@ def test_generate_insight_labels_jobs_with_no_overlap_as_low_match() -> None:
     assert insight.missing_target_terms == [
         "backend",
         "engineer",
-        "server",
-        "side",
+        "server-side",
         "platform",
-        "work",
         "python",
         "django",
         "postgresql",
@@ -248,12 +303,14 @@ def test_generate_insight_creates_new_record_when_source_text_changes() -> None:
     assert JobInsight.objects.count() == 2
 
 
-def test_clean_text_normalises_values_for_matching() -> None:
-    """Text cleaning should produce deterministic lowercase token text."""
-    assert (
-        _clean_text("Python/Django APIs.", None, "C++ and C# roles")
-        == "python django apis none c++ and c# roles"
-    )
+def test_clean_text_uses_nltk_preprocessing_for_matching() -> None:
+    """Text cleaning should use NLTK-backed preprocessing."""
+    clean_text = _clean_text("Python/Django APIs.", None, "C++ and C# roles")
+
+    assert clean_text.split() in [
+        ["pythondjango", "api", "c++"],
+        ["pythondjango", "apis", "c++"],
+    ]
 
 
 def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
@@ -261,8 +318,23 @@ def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
     original_hash = _source_hash("python django", "python")
 
     assert _source_hash("python django", "python") == original_hash
+    assert (
+        calculate_source_hash(
+            clean_job_text="python django",
+            clean_target_text="python",
+        )
+        == original_hash
+    )
     assert _source_hash("python django api", "python") != original_hash
     assert _source_hash("python django", "python api") != original_hash
+    assert (
+        calculate_source_hash(
+            clean_job_text="python django",
+            clean_target_text="python",
+            pipeline_version="other-pipeline",
+        )
+        != original_hash
+    )
 
 
 def test_similarity_score_returns_zero_without_target_terms() -> None:

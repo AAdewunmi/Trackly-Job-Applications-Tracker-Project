@@ -1,7 +1,7 @@
 """
 Retrieval-style NLP utilities for Trackly insights.
 
-The package contains preprocessing and similarity functions used by the insight
+The package contains preprocessing and runtime-data helpers for the insight
 generation service.
 """
 
