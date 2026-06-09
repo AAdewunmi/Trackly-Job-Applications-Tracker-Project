@@ -97,6 +97,12 @@ instance/
 # Sphinx documentation
 docs/_build/
 
+# Temporary sprint planning notes
+docs/sprint-runbook/sprint-3/sprint-3-tuesday-issues.md
+
+# Local IDE context instructions
+.ide-context/ide-context.md
+
 # PyBuilder
 .pybuilder/
 target/
