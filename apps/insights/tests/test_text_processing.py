@@ -114,6 +114,20 @@ def test_preprocess_tokens_skips_terms_that_become_stop_words_after_lemmatisatio
     assert preprocess_tokens("developer") == []
 
 
+@pytest.mark.parametrize("lemma", ["", "x"])
+def test_preprocess_tokens_skips_empty_or_short_lemmas(
+    monkeypatch,
+    lemma: str,
+) -> None:
+    """Empty or too-short lemmas should not be appended to processed tokens."""
+    monkeypatch.setattr(
+        "apps.insights.nlp.text_processing.lemmatise_token",
+        lambda token: lemma,
+    )
+
+    assert preprocess_tokens("developer") == []
+
+
 def test_fallback_lemmatise_reduces_common_inflections() -> None:
     """Fallback lemmatisation should handle common role-description forms."""
     assert fallback_lemmatise("testing") == "test"
