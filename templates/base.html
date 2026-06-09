@@ -42,8 +42,8 @@
                 <button class="tl-button tl-button-primary tl-button-small" type="submit">Sign out</button>
               </form>
             {% else %}
-              <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'users:login' %}">Sign in</a>
               <a class="tl-button tl-button-primary tl-button-small" href="{% url 'users:signup' %}">Create account</a>
+              <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'users:login' %}">Sign in</a>
             {% endif %}
           </div>
         </div>

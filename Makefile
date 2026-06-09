@@ -8,7 +8,7 @@ MANAGE_T := $(WEB_T) python manage.py
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build up down restart logs shell dbshell migrate migrations superuser test lint format format-check check deploy-check clean
+.PHONY: help build up down restart logs shell dbshell migrate migrations superuser nltk-data test lint format format-check check deploy-check clean
 
 help:
 	@echo "Trackly development commands"
@@ -23,6 +23,7 @@ help:
 	@echo "  make migrate       Apply database migrations"
 	@echo "  make migrations    Create Django migrations"
 	@echo "  make superuser     Create a Django superuser"
+	@echo "  make nltk-data     Download NLTK runtime data inside the web container"
 	@echo "  make test          Run pytest"
 	@echo "  make lint          Run Ruff"
 	@echo "  make format        Format with Black and Ruff"
@@ -59,6 +60,9 @@ migrations:
 
 superuser:
 	$(MANAGE) createsuperuser
+
+nltk-data:
+	$(WEB_T) python -m nltk.downloader -d /usr/local/share/nltk_data punkt punkt_tab wordnet omw-1.4 stopwords
 
 test:
 	$(WEB_T) pytest
