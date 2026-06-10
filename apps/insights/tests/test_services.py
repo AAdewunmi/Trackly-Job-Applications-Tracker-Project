@@ -464,6 +464,12 @@ def test_generate_insight_updates_existing_unchanged_source() -> None:
     second_insight = generate_job_insight(application, target_profile)
 
     assert second_insight == first_insight
+    assert second_insight.source_hash == first_insight.source_hash
+    assert second_insight.source_hash == calculate_source_hash(
+        clean_job_text=second_insight.clean_job_text,
+        clean_target_text=second_insight.clean_target_text,
+        pipeline_version=second_insight.pipeline_version,
+    )
     assert JobInsight.objects.count() == 1
 
 
@@ -498,7 +504,7 @@ def test_clean_text_uses_nltk_preprocessing_for_matching() -> None:
 
 
 def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
-    """The hash should change when either cleaned input changes."""
+    """The hash should be derived from cleaned inputs and pipeline version."""
     original_hash = _source_hash("python django", "python")
 
     assert _source_hash("python django", "python") == original_hash
