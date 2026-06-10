@@ -200,7 +200,7 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "example ltd",
         "experience",
     ]
-    assert insight.similarity_score > 0
+    assert insight.similarity_score == 0.45
     assert insight.score_label == "Partial match"
     assert insight.top_overlapping_terms == [
         "api",
