@@ -40,7 +40,25 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
     clean_target_text = "python django api postgresql docker test"
     extracted_terms = ["python", "django", "api", "test"]
     top_overlapping_terms = ["python", "django", "api", "test"]
+    top_overlapping_weighted_terms = [
+        {
+            "term": "python",
+            "job_weight": 0.5,
+            "target_weight": 0.4,
+            "overlap_weight": 0.2,
+        },
+        {
+            "term": "django",
+            "job_weight": 0.4,
+            "target_weight": 0.35,
+            "overlap_weight": 0.14,
+        },
+    ]
     missing_target_terms = ["postgresql", "docker"]
+    missing_weighted_target_terms = [
+        {"term": "postgresql", "target_weight": 0.3},
+        {"term": "docker", "target_weight": 0.25},
+    ]
     similarity_score = 0.67
     score_label = "Strong match"
     explanation = (

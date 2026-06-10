@@ -49,8 +49,9 @@ Implemented now:
 - Stored `JobInsight` records linked to a job application and target role
   profile.
 - Durable insight fields for cleaned source text, extracted terms, overlapping
-  terms, missing target terms, similarity score, score label, explanation,
-  source hash, and pipeline version.
+  terms, weighted overlapping terms, missing target terms, weighted missing
+  target terms, similarity score, score label, explanation, source hash, and
+  pipeline version.
 - A single allowed pipeline version:
   `nltk-tfidf-cosine-v1`.
 - Service-level enforcement that users need an active target role profile before
@@ -125,7 +126,10 @@ Implemented:
 Implemented:
 
 - Top overlapping high-value terms.
+- Top overlapping weighted evidence containing term, job TF-IDF weight, target
+  TF-IDF weight, and overlap contribution weight.
 - Missing target terms.
+- Missing weighted target evidence containing term and target TF-IDF weight.
 - Explanation text derived from the similarity score and term analysis.
 
 Deterministic ranking rules:
@@ -138,8 +142,12 @@ Deterministic ranking rules:
 - Missing-term ranking uses target TF-IDF weight, descending.
 - Equal weights are ordered alphabetically, so repeated generation for the same
   cleaned input produces the same term order.
-- Stored explanation fields contain the ranked term names, not raw numeric
-  TF-IDF weights.
+- `top_overlapping_terms` and `missing_target_terms` contain ranked term names
+  for simple display.
+- `top_overlapping_weighted_terms` and `missing_weighted_target_terms` contain
+  the numeric TF-IDF evidence used to produce those rankings.
+- Stored weights are rounded to four decimal places to avoid noisy floating
+  point output while preserving enough precision for explanation and audit.
 
 ## Stored Output
 
@@ -155,7 +163,9 @@ Stored fields include:
 - `clean_target_text`
 - `extracted_terms`
 - `top_overlapping_terms`
+- `top_overlapping_weighted_terms`
 - `missing_target_terms`
+- `missing_weighted_target_terms`
 - `similarity_score`
 - `score_label`
 - `explanation`

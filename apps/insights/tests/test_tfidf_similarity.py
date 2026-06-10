@@ -62,11 +62,37 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
     )
 
     assert result.top_overlapping_terms == ["alpha", "alpha beta", "beta"]
+    assert result.top_overlapping_weighted_terms == [
+        {
+            "term": "alpha",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+        {
+            "term": "alpha beta",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+        {
+            "term": "beta",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+    ]
     assert result.missing_target_terms == [
         "beta gamma",
         "delta",
         "gamma",
         "gamma delta",
+    ]
+    assert result.missing_weighted_target_terms == [
+        {"term": "beta gamma", "target_weight": 0.4257},
+        {"term": "delta", "target_weight": 0.4257},
+        {"term": "gamma", "target_weight": 0.4257},
+        {"term": "gamma delta", "target_weight": 0.4257},
     ]
     assert result.explanation == (
         "Strong match: this job description overlaps with your target profile "
