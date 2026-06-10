@@ -212,6 +212,9 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "backend engineer",
         "engineer",
     ]
+    assert insight.top_overlapping_terms == [
+        str(item["term"]) for item in insight.top_overlapping_weighted_terms
+    ]
     assert insight.top_overlapping_weighted_terms == [
         {
             "term": "python",
@@ -269,6 +272,9 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "delivery python",
         "engineer python",
         "postgresql test",
+    ]
+    assert insight.missing_target_terms == [
+        str(item["term"]) for item in insight.missing_weighted_target_terms
     ]
     assert insight.missing_weighted_target_terms == [
         {"term": "api delivery", "target_weight": 0.2315},

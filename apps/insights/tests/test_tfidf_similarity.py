@@ -54,7 +54,7 @@ def test_similarity_result_contains_overlapping_terms() -> None:
 
 
 def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
-    """Explanation terms should be ranked by TF-IDF weight with stable tie breaks."""
+    """High-value evidence terms should be ranked from TF-IDF output."""
     result = analyse_text_similarity(
         job_text="Alpha Beta",
         target_text="Alpha Beta Gamma Delta",
@@ -62,6 +62,9 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
     )
 
     assert result.top_overlapping_terms == ["alpha", "alpha beta", "beta"]
+    assert result.top_overlapping_terms == [
+        str(item["term"]) for item in result.top_overlapping_weighted_terms
+    ]
     assert result.top_overlapping_weighted_terms == [
         {
             "term": "alpha",
@@ -87,6 +90,9 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
         "delta",
         "gamma",
         "gamma delta",
+    ]
+    assert result.missing_target_terms == [
+        str(item["term"]) for item in result.missing_weighted_target_terms
     ]
     assert result.missing_weighted_target_terms == [
         {"term": "beta gamma", "target_weight": 0.4257},
