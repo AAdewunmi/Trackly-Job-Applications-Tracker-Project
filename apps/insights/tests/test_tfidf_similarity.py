@@ -53,6 +53,117 @@ def test_similarity_result_contains_overlapping_terms() -> None:
     assert "django" in result.top_overlapping_terms
 
 
+def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
+    """High-value evidence terms should be ranked from TF-IDF output."""
+    result = analyse_text_similarity(
+        job_text="Alpha Beta",
+        target_text="Alpha Beta Gamma Delta",
+        explanation_term_limit=10,
+    )
+
+    assert result.top_overlapping_terms == ["alpha", "alpha beta", "beta"]
+    assert result.top_overlapping_terms == [
+        str(item["term"]) for item in result.top_overlapping_weighted_terms
+    ]
+    assert result.top_overlapping_weighted_terms == [
+        {
+            "term": "alpha",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+        {
+            "term": "alpha beta",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+        {
+            "term": "beta",
+            "job_weight": 0.5774,
+            "target_weight": 0.3029,
+            "overlap_weight": 0.1749,
+        },
+    ]
+    assert result.missing_target_terms == [
+        "beta gamma",
+        "delta",
+        "gamma",
+        "gamma delta",
+    ]
+    assert result.missing_target_terms == [
+        str(item["term"]) for item in result.missing_weighted_target_terms
+    ]
+    assert result.missing_weighted_target_terms == [
+        {"term": "beta gamma", "target_weight": 0.4257},
+        {"term": "delta", "target_weight": 0.4257},
+        {"term": "gamma", "target_weight": 0.4257},
+        {"term": "gamma delta", "target_weight": 0.4257},
+    ]
+    assert result.explanation == (
+        "Strong match: this job description overlaps with your target profile "
+        "on alpha, alpha beta, beta. Missing or weaker target terms include "
+        "beta gamma, delta, gamma, gamma delta."
+    )
+
+
+def test_simple_term_extractors_derive_names_from_weighted_evidence(
+    monkeypatch,
+) -> None:
+    """Simple evidence helpers should preserve weighted evidence ordering."""
+    feature_names = object()
+    job_vector = object()
+    target_vector = object()
+
+    def fake_overlapping_weighted_terms(**kwargs):
+        assert kwargs == {
+            "feature_names": feature_names,
+            "job_vector": job_vector,
+            "target_vector": target_vector,
+            "limit": 2,
+        }
+        return [
+            {"term": "python", "overlap_weight": 0.4},
+            {"term": "django", "overlap_weight": 0.3},
+        ]
+
+    def fake_missing_weighted_terms(**kwargs):
+        assert kwargs == {
+            "feature_names": feature_names,
+            "job_vector": job_vector,
+            "target_vector": target_vector,
+            "limit": 2,
+        }
+        return [
+            {"term": "docker", "target_weight": 0.5},
+            {"term": "postgresql", "target_weight": 0.4},
+        ]
+
+    monkeypatch.setattr(
+        similarity,
+        "extract_top_overlapping_weighted_terms",
+        fake_overlapping_weighted_terms,
+    )
+    monkeypatch.setattr(
+        similarity,
+        "extract_missing_weighted_target_terms",
+        fake_missing_weighted_terms,
+    )
+
+    assert similarity.extract_top_overlapping_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=2,
+    ) == ["python", "django"]
+    assert similarity.extract_missing_target_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=2,
+    ) == ["docker", "postgresql"]
+
+
 def test_similarity_result_contains_missing_target_terms() -> None:
     """Similarity output should include target terms absent from job text."""
     result = analyse_text_similarity(

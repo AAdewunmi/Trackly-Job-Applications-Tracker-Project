@@ -78,6 +78,24 @@ def test_job_insight_persists_retrieval_style_output() -> None:
     assert insight.pipeline_version == "nltk-tfidf-cosine-v1"
     assert insight.extracted_terms
     assert insight.top_overlapping_terms
+    assert insight.top_overlapping_weighted_terms == [
+        {
+            "term": "python",
+            "job_weight": 0.5,
+            "target_weight": 0.4,
+            "overlap_weight": 0.2,
+        },
+        {
+            "term": "django",
+            "job_weight": 0.4,
+            "target_weight": 0.35,
+            "overlap_weight": 0.14,
+        },
+    ]
+    assert insight.missing_weighted_target_terms == [
+        {"term": "postgresql", "target_weight": 0.3},
+        {"term": "docker", "target_weight": 0.25},
+    ]
 
 
 @pytest.mark.django_db
@@ -144,7 +162,34 @@ def test_job_insight_requires_json_list_fields() -> None:
         pipeline_version=JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1,
         extracted_terms="python",
         top_overlapping_terms=[],
+        top_overlapping_weighted_terms=[],
         missing_target_terms=[],
+        missing_weighted_target_terms=[],
+        similarity_score=0.5,
+        score_label="Partial match",
+        explanation="Partial match.",
+    )
+
+    with pytest.raises(ValidationError, match="This field must be a list."):
+        insight.save()
+
+
+@pytest.mark.django_db
+def test_job_insight_requires_weighted_evidence_list_fields() -> None:
+    """Stored weighted evidence fields should reject non-list values."""
+    owner = UserFactory()
+    application = JobApplicationFactory(owner=owner)
+    target_profile = TargetRoleProfileFactory(owner=owner)
+    insight = JobInsight(
+        job_application=application,
+        target_profile=target_profile,
+        source_hash="d" * 64,
+        pipeline_version=JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1,
+        extracted_terms=[],
+        top_overlapping_terms=[],
+        top_overlapping_weighted_terms={"term": "python"},
+        missing_target_terms=[],
+        missing_weighted_target_terms=[],
         similarity_score=0.5,
         score_label="Partial match",
         explanation="Partial match.",

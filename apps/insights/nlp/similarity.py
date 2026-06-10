@@ -20,7 +20,9 @@ class TextSimilarityResult:
     clean_target_text: str
     extracted_terms: list[str]
     top_overlapping_terms: list[str]
+    top_overlapping_weighted_terms: list[dict[str, float | str]]
     missing_target_terms: list[str]
+    missing_weighted_target_terms: list[dict[str, float | str]]
     similarity_score: float
     score_label: str
     explanation: str
@@ -74,6 +76,23 @@ def extract_top_overlapping_terms(
     limit: int,
 ) -> list[str]:
     """Return high-value terms that appear in both job and target vectors."""
+    weighted_terms = extract_top_overlapping_weighted_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=limit,
+    )
+    return [str(item["term"]) for item in weighted_terms]
+
+
+def extract_top_overlapping_weighted_terms(
+    *,
+    feature_names,
+    job_vector,
+    target_vector,
+    limit: int,
+) -> list[dict[str, float | str]]:
+    """Return top overlapping terms with their TF-IDF contribution weights."""
     job_weights = job_vector.toarray()[0]
     target_weights = target_vector.toarray()[0]
     overlapping_terms = []
@@ -82,10 +101,25 @@ def extract_top_overlapping_terms(
         if job_weights[index] > 0 and target_weights[index] > 0:
             # Multiplying weights favours terms that are important in both texts.
             combined_weight = job_weights[index] * target_weights[index]
-            overlapping_terms.append((term, combined_weight))
+            overlapping_terms.append(
+                (
+                    term,
+                    float(job_weights[index]),
+                    float(target_weights[index]),
+                    float(combined_weight),
+                )
+            )
 
-    ranked_terms = sorted(overlapping_terms, key=lambda item: (-item[1], item[0]))
-    return [term for term, _weight in ranked_terms[:limit]]
+    ranked_terms = sorted(overlapping_terms, key=lambda item: (-item[3], item[0]))
+    return [
+        {
+            "term": term,
+            "job_weight": round(job_weight, 4),
+            "target_weight": round(target_weight, 4),
+            "overlap_weight": round(overlap_weight, 4),
+        }
+        for term, job_weight, target_weight, overlap_weight in ranked_terms[:limit]
+    ]
 
 
 def extract_missing_target_terms(
@@ -96,16 +130,39 @@ def extract_missing_target_terms(
     limit: int,
 ) -> list[str]:
     """Return high-value target terms that are absent from the job text."""
+    weighted_terms = extract_missing_weighted_target_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=limit,
+    )
+    return [str(item["term"]) for item in weighted_terms]
+
+
+def extract_missing_weighted_target_terms(
+    *,
+    feature_names,
+    job_vector,
+    target_vector,
+    limit: int,
+) -> list[dict[str, float | str]]:
+    """Return missing target terms with their target-side TF-IDF weights."""
     job_weights = job_vector.toarray()[0]
     target_weights = target_vector.toarray()[0]
     missing_terms = []
 
     for index, term in enumerate(feature_names):
         if target_weights[index] > 0 and job_weights[index] == 0:
-            missing_terms.append((term, target_weights[index]))
+            missing_terms.append((term, float(target_weights[index])))
 
     ranked_terms = sorted(missing_terms, key=lambda item: (-item[1], item[0]))
-    return [term for term, _weight in ranked_terms[:limit]]
+    return [
+        {
+            "term": term,
+            "target_weight": round(target_weight, 4),
+        }
+        for term, target_weight in ranked_terms[:limit]
+    ]
 
 
 def build_explanation(
@@ -154,7 +211,9 @@ def analyse_text_similarity(
             clean_target_text=clean_target_text,
             extracted_terms=[],
             top_overlapping_terms=[],
+            top_overlapping_weighted_terms=[],
             missing_target_terms=[],
+            missing_weighted_target_terms=[],
             similarity_score=0.0,
             score_label=score_label,
             explanation=explanation,
@@ -179,18 +238,22 @@ def analyse_text_similarity(
         vector=job_vector,
         limit=extracted_term_limit,
     )
-    top_overlapping_terms = extract_top_overlapping_terms(
+    top_overlapping_weighted_terms = extract_top_overlapping_weighted_terms(
         feature_names=feature_names,
         job_vector=job_vector,
         target_vector=target_vector,
         limit=explanation_term_limit,
     )
-    missing_target_terms = extract_missing_target_terms(
+    top_overlapping_terms = [
+        str(item["term"]) for item in top_overlapping_weighted_terms
+    ]
+    missing_weighted_target_terms = extract_missing_weighted_target_terms(
         feature_names=feature_names,
         job_vector=job_vector,
         target_vector=target_vector,
         limit=explanation_term_limit,
     )
+    missing_target_terms = [str(item["term"]) for item in missing_weighted_target_terms]
     explanation = build_explanation(
         score_label=score_label,
         top_overlapping_terms=top_overlapping_terms,
@@ -202,7 +265,9 @@ def analyse_text_similarity(
         clean_target_text=clean_target_text,
         extracted_terms=extracted_terms,
         top_overlapping_terms=top_overlapping_terms,
+        top_overlapping_weighted_terms=top_overlapping_weighted_terms,
         missing_target_terms=missing_target_terms,
+        missing_weighted_target_terms=missing_weighted_target_terms,
         similarity_score=similarity_score,
         score_label=score_label,
         explanation=explanation,

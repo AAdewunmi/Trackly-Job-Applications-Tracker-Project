@@ -150,6 +150,7 @@ def lemmatise_token(token: str) -> str:
             LEMMATISER.lemmatize(token, pos="n"),
             LEMMATISER.lemmatize(token, pos="a"),
             LEMMATISER.lemmatize(token, pos="r"),
+            fallback_lemmatise(token),
             token,
         ]
     except LookupError:

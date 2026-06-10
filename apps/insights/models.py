@@ -95,7 +95,9 @@ class JobInsight(models.Model):
     clean_target_text = models.TextField(blank=True)
     extracted_terms = models.JSONField(default=list, blank=True)
     top_overlapping_terms = models.JSONField(default=list, blank=True)
+    top_overlapping_weighted_terms = models.JSONField(default=list, blank=True)
     missing_target_terms = models.JSONField(default=list, blank=True)
+    missing_weighted_target_terms = models.JSONField(default=list, blank=True)
     similarity_score = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
     )
@@ -144,7 +146,9 @@ class JobInsight(models.Model):
         list_fields = {
             "extracted_terms": self.extracted_terms,
             "top_overlapping_terms": self.top_overlapping_terms,
+            "top_overlapping_weighted_terms": self.top_overlapping_weighted_terms,
             "missing_target_terms": self.missing_target_terms,
+            "missing_weighted_target_terms": self.missing_weighted_target_terms,
         }
 
         for field_name, value in list_fields.items():
