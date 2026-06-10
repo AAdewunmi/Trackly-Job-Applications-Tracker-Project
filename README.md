@@ -36,7 +36,7 @@ Trackly is designed as a credible early SaaS product, not a toy example. The del
 - Database: PostgreSQL
 - Testing: pytest, pytest-django, factory_boy
 - Development workflow: Docker and Docker Compose
-- Future API layer: Django REST Framework under `/api/v1/`
+- API layer: Django REST Framework under `/api/v1/` with JWT token endpoints
 - NLP layer: NLTK preprocessing, TF-IDF cosine comparison, and explainable
   job-fit scoring
 - Deployment target: Render
@@ -69,8 +69,7 @@ Trackly currently includes:
 - Idempotent insight generation for unchanged cleaned inputs and pipeline
   version
 
-The broader API layer, JWT authentication, and Render deployment remain planned
-work.
+Insights API endpoints and Render deployment remain planned work.
 
 ## Quick Start
 
@@ -98,12 +97,12 @@ Use these docs for the full reviewer path:
 - [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
 - [Architecture](docs/architecture.md) for settings modules, app boundaries,
   database choices, and CI expectations.
-- [Domain model](docs/domain-model.md) for Sprint 2 applications, notes,
-  selectors, services, metrics, and ownership rules.
+- [Domain model](docs/domain-model.md) for applications, notes, selectors,
+  services, metrics, insights, and ownership rules.
 - [Design system](docs/design-system.md) for the Trackly template and CSS
   standard.
 - [Sprint runbooks](docs/sprint-runbook/README.md) for historical checkpoint
-  scripts and the current Sprint 2 completion check.
+  scripts and the current Sprint 3 completion check.
 
 ## Environment Settings
 
