@@ -2,6 +2,7 @@
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import models
 
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
@@ -102,6 +103,22 @@ def test_job_insight_uses_tfidf_pipeline_version() -> None:
     insight.refresh_from_db()
 
     assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
+
+
+def test_job_insight_uniqueness_uses_source_hash_and_pipeline_version() -> None:
+    """Insight idempotency should be scoped to source hash and pipeline version."""
+    constraints = [
+        constraint
+        for constraint in JobInsight._meta.constraints
+        if isinstance(constraint, models.UniqueConstraint)
+    ]
+
+    assert any(
+        constraint.name == "unique_insight_for_unchanged_retrieval_source"
+        and list(constraint.fields)
+        == ["job_application", "target_profile", "source_hash", "pipeline_version"]
+        for constraint in constraints
+    )
 
 
 def test_job_insight_rejects_non_tfidf_pipeline_version() -> None:
