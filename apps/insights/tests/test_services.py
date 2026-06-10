@@ -400,7 +400,7 @@ def test_generate_insight_persists_threshold_score_labels(
 
 @pytest.mark.django_db
 def test_generate_insight_labels_jobs_with_no_overlap_as_low_match() -> None:
-    """A job with no target keyword overlap should be labelled as low match."""
+    """A job with no TF-IDF target-term overlap should be labelled as low match."""
     owner = UserFactory(email="owner@example.com")
     application = JobApplicationFactory(
         owner=owner,
