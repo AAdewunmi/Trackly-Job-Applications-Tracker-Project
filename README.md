@@ -84,6 +84,13 @@ make migrate
 make test
 ```
 
+The Docker image provisions required NLTK runtime data during build. If a local
+container ever reports missing NLTK data, refresh it with:
+
+```bash
+make nltk-data
+```
+
 Use these docs for the full reviewer path:
 
 - [Local setup](docs/local-setup.md) for environment setup, Docker Compose,
