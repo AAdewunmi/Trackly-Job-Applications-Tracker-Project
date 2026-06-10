@@ -19,13 +19,13 @@ Trackly helps users register, manage job applications, track application status,
 maintain notes, review personal progress, and generate role-fit insights from
 job descriptions and stored target-role profiles.
 
-The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The matching workflow is designed around text normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
+The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The implemented matching workflow uses NLTK-backed text normalisation, scikit-learn TF-IDF vectorisation, cosine similarity scoring, and explainable overlapping and missing target terms.
 
-Sprint 2 completes the core job-tracking workflow: user-owned applications,
-status validation, notes, ownership-protected CRUD routes, reusable selectors,
-service-layer dashboard metrics, and recent application activity. Sprint 1
-established the Django, PostgreSQL, identity, role, authentication, and UI
-foundation.
+Sprint 3 adds the retrieval-style insights pipeline on top of the completed
+core job-tracking workflow: user-owned applications, status validation, notes,
+ownership-protected CRUD routes, reusable selectors, service-layer dashboard
+metrics, and recent application activity. Sprint 1 established the Django,
+PostgreSQL, identity, role, authentication, and UI foundation.
 
 ## Core MVP Direction
 
