@@ -113,6 +113,8 @@ def test_preprocess_tokens_keeps_technical_terms() -> None:
 
     assert "python" in tokens
     assert "django" in tokens
+    assert "api" in tokens
+    assert "apis" not in tokens
     assert "postgresql" in tokens
 
 

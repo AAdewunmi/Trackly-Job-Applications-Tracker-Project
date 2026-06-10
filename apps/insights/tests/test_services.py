@@ -187,11 +187,11 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "test",
     ]
     assert insight.extracted_terms == [
+        "api",
         "backend",
         "python",
+        "api python",
         "api service",
-        "apis",
-        "apis python",
         "backend backend",
         "build",
         "build python",
@@ -203,8 +203,8 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     assert insight.similarity_score > 0
     assert insight.score_label == "Partial match"
     assert insight.top_overlapping_terms == [
-        "python",
         "api",
+        "python",
         "backend",
         "django",
         "django api",
@@ -217,52 +217,52 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     ]
     assert insight.top_overlapping_weighted_terms == [
         {
-            "term": "python",
-            "job_weight": 0.2734,
+            "term": "api",
+            "job_weight": 0.2708,
             "target_weight": 0.3295,
-            "overlap_weight": 0.0901,
+            "overlap_weight": 0.0892,
         },
         {
-            "term": "api",
-            "job_weight": 0.1367,
+            "term": "python",
+            "job_weight": 0.2708,
             "target_weight": 0.3295,
-            "overlap_weight": 0.045,
+            "overlap_weight": 0.0892,
         },
         {
             "term": "backend",
-            "job_weight": 0.2734,
+            "job_weight": 0.2708,
             "target_weight": 0.1647,
-            "overlap_weight": 0.045,
+            "overlap_weight": 0.0446,
         },
         {
             "term": "django",
-            "job_weight": 0.1367,
+            "job_weight": 0.1354,
             "target_weight": 0.3295,
-            "overlap_weight": 0.045,
+            "overlap_weight": 0.0446,
         },
         {
             "term": "django api",
-            "job_weight": 0.1367,
+            "job_weight": 0.1354,
             "target_weight": 0.3295,
-            "overlap_weight": 0.045,
+            "overlap_weight": 0.0446,
         },
         {
             "term": "python django",
-            "job_weight": 0.1367,
+            "job_weight": 0.1354,
             "target_weight": 0.3295,
-            "overlap_weight": 0.045,
+            "overlap_weight": 0.0446,
         },
         {
             "term": "backend engineer",
-            "job_weight": 0.1367,
+            "job_weight": 0.1354,
             "target_weight": 0.1647,
-            "overlap_weight": 0.0225,
+            "overlap_weight": 0.0223,
         },
         {
             "term": "engineer",
-            "job_weight": 0.1367,
+            "job_weight": 0.1354,
             "target_weight": 0.1647,
-            "overlap_weight": 0.0225,
+            "overlap_weight": 0.0223,
         },
     ]
     assert insight.missing_target_terms == [
@@ -286,7 +286,7 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     ]
     assert insight.explanation == (
         "Partial match: this job description overlaps with your target profile "
-        "on python, api, backend, django, django api, python django, "
+        "on api, python, backend, django, django api, python django, "
         "backend engineer, engineer. Missing or weaker target terms include "
         "api delivery, api postgresql, delivery, delivery python, "
         "engineer python, postgresql test."
