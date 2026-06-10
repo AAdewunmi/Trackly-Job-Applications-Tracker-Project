@@ -7,17 +7,19 @@ specific sprint day.
 
 ## Current Completion Check
 
-Sprint 2 is complete. Run the Sprint 2 Day 5 script for the current end-to-end
-verification path:
+Sprint 3 Day 2 is the current completed insights checkpoint. Run the Sprint 3
+Day 2 script for the current end-to-end verification path:
 
 ```bash
-./docs/sprint-runbook/sprint-2/sprint-2-day-5.sh
+./docs/sprint-runbook/sprint-3/sprint-3-day-2.sh
 ```
 
 The script uses the Docker Compose project name
 `trackly-job-applications-tracker-project`, expects the web container prefix
 `trackly-job-applications-tracker-project-web`, and verifies the
-`postgres:16-alpine` database image.
+`postgres:16-alpine` database image. It also verifies the implemented insights
+app, NLTK preprocessing, TF-IDF cosine scoring, explainability evidence, and
+source-hash idempotency.
 
 ## Historical Checkpoints
 
@@ -27,6 +29,10 @@ The earlier scripts remain executable delivery receipts:
   initial dashboard foundation.
 - `sprint-2/sprint-2-day-1.sh` through `sprint-2/sprint-2-day-4.sh` record the
   incremental job model, application workflow, ownership, and note milestones.
+- `sprint-2/sprint-2-day-5.sh` records the completed dashboard metrics and
+  Sprint 2 workflow checkpoint.
+- `sprint-3/sprint-3-day-1.sh` records the DRF/JWT job application API
+  checkpoint.
 
 Use those scripts when reviewing the corresponding historical checkpoint. Use
-Sprint 2 Day 5 when validating the current completed Sprint 2 state.
+Sprint 3 Day 2 when validating the current completed insights state.

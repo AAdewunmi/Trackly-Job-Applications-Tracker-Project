@@ -155,21 +155,33 @@ The full check runs:
 - Django production deploy check
 - pytest
 
+If repeated local test runs encounter a stale PostgreSQL test database, pytest
+is configured with `--reuse-db` so the existing `test_trackly` database is
+reused instead of being dropped and recreated.
+
+## NLP Runtime Data
+
+The Docker image provisions required NLTK runtime data during build. If a local
+container reports missing NLTK data, refresh the data inside the web container:
+
+```bash
+make nltk-data
+```
+
 ## Sprint Verification
 
 The executable scripts under `docs/sprint-runbook/` capture incremental sprint
-checkpoints. Use the Sprint 2 Day 5 script as the current end-to-end completion
+checkpoints. Use the Sprint 3 Day 2 script as the current insights completion
 check:
 
 ```bash
-./docs/sprint-runbook/sprint-2/sprint-2-day-5.sh
+./docs/sprint-runbook/sprint-3/sprint-3-day-2.sh
 ```
 
-It verifies the Docker Compose project name, the
-`trackly-job-applications-tracker-project-web` container prefix,
-`postgres:16-alpine`, migrations, formatting, linting, dashboard routes,
-dashboard service contracts, templates, focused tests, and the full regression
-suite.
+It verifies the Docker Compose project name, the web container, PostgreSQL,
+migrations, formatting, linting, insight models, NLTK preprocessing, TF-IDF
+cosine scoring, explainability fields, idempotency, focused insights tests, and
+the full regression suite.
 
 See `docs/sprint-runbook/README.md` before running an earlier checkpoint script.
 

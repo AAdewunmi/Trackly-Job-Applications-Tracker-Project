@@ -59,8 +59,8 @@ Use the same product-quality principles while keeping Trackly visually distinct.
    actions.
 
 2. Keep job-search context visible.
-   Page copy should connect account, dashboard, profile, and future application
-   tracking features back to the job search.
+   Page copy should connect account, dashboard, profile, application workflow,
+   and insights features back to the job search.
 
 3. Prefer calm operational UI.
    Trackly is a Django SaaS MVP for tracking job applications and matching job

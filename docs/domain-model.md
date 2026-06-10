@@ -1,6 +1,9 @@
 # Trackly Domain Model
 
-Trackly is a Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP. Sprint 2 implements the core workflow domain: user-owned job applications, application notes, and user-scoped dashboard metrics.
+Trackly is a Django SaaS MVP for tracking job applications and matching job
+descriptions against target-role profiles using explainable NLP. The current
+domain includes user-owned job applications, application notes, user-scoped
+dashboard metrics, target role profiles, and persisted job-fit insights.
 
 ## Core Entity: JobApplication
 
@@ -16,14 +19,15 @@ Trackly is a Django SaaS MVP for tracking job applications and matching job desc
 | `status` | The current workflow state. |
 | `job_link` | Optional link to the job advert. |
 | `applied_date` | Optional date when the user applied. |
-| `job_description` | Optional source text for later AI/NLP analysis. |
+| `job_description` | Optional source text for AI/NLP insight generation. |
 | `notes` | Lightweight internal notes stored on the application. |
 | `created_at` | Timestamp for record creation. |
 | `updated_at` | Timestamp for the latest update. |
 
 ## Status Workflow
 
-Trackly uses explicit status choices so metrics and future API behaviour remain predictable.
+Trackly uses explicit status choices so metrics and API behaviour remain
+predictable.
 
 Current statuses:
 
@@ -72,7 +76,7 @@ The application list, detail, update, delete, and note creation flows query thro
 
 ## Selectors
 
-Sprint 2 implements selectors for reusable read queries:
+Trackly implements selectors for reusable read queries:
 
 - `application_queryset_for_user(user)`
 - `get_user_application_or_404(user, pk)`
@@ -85,7 +89,7 @@ Selectors keep ownership filtering out of templates and reduce duplicated query 
 
 ## Services
 
-Sprint 2 implements service-layer metric helpers:
+Trackly implements service-layer metric helpers:
 
 - `get_application_status_counts(user)`
 - `get_user_pipeline_metrics(user)`
@@ -110,9 +114,53 @@ The dashboard service prepares these user-scoped metrics for rendering:
 
 The dashboard template renders prepared metrics and recent applications while preserving an actionable empty state for new users.
 
-## Sprint 2 Completion Status
+## Insights Domain
 
-Sprint 2 is complete:
+`TargetRoleProfile` stores a user's target-role baseline for retrieval-style
+matching.
+
+### TargetRoleProfile Fields
+
+| Field | Purpose |
+| --- | --- |
+| `owner` | The authenticated user who owns the profile. |
+| `title` | The target role title. |
+| `description` | Optional longer target-role description. |
+| `keywords` | Normalised list of desired skills or target terms. |
+| `is_active` | Whether the profile can be used for insight generation. |
+| `created_at` | Timestamp for record creation. |
+| `updated_at` | Timestamp for latest update. |
+
+`JobInsight` stores the durable output of comparing one job application against
+one target role profile.
+
+### JobInsight Fields
+
+| Field | Purpose |
+| --- | --- |
+| `job_application` | The job application being matched. |
+| `target_profile` | The target role profile used as the matching baseline. |
+| `source_hash` | Stable hash of cleaned job text, cleaned target text, and pipeline version. |
+| `pipeline_version` | Supported NLP pipeline, currently `nltk-tfidf-cosine-v1`. |
+| `clean_job_text` | NLTK-processed job-side text used for vectorisation. |
+| `clean_target_text` | NLTK-processed target-side text used for vectorisation. |
+| `extracted_terms` | Top weighted terms extracted from the job text. |
+| `top_overlapping_terms` | Ranked terms present in both job and target vectors. |
+| `top_overlapping_weighted_terms` | Overlap terms with job weight, target weight, and overlap contribution. |
+| `missing_target_terms` | Ranked target terms absent from the job vector. |
+| `missing_weighted_target_terms` | Missing target terms with target-side TF-IDF weights. |
+| `similarity_score` | Rounded TF-IDF cosine similarity score. |
+| `score_label` | Deterministic label derived from the score. |
+| `explanation` | User-facing explanation derived from score and term evidence. |
+| `created_at` | Timestamp for insight generation. |
+
+Insight generation requires the job application and target profile to share an
+owner. Repeated generation for unchanged cleaned inputs and the same pipeline
+version reuses the same persisted insight record.
+
+## Current Completion Status
+
+Trackly currently supports:
 
 1. Users can create job applications.
 2. Users can list only their own applications.
@@ -121,6 +169,9 @@ Sprint 2 is complete:
 5. Users can delete only their own applications.
 6. Users can add notes only to their own applications.
 7. Dashboard metrics reflect real user-owned data.
-8. Selectors and services are covered by database-backed tests.
-9. Permission tests prove cross-user access is blocked.
-10. All Sprint 2 tests pass through Docker Compose.
+8. Users can persist target-role profiles for retrieval-style matching.
+9. Users can generate persisted job insights from the NLTK + TF-IDF + cosine
+   similarity pipeline.
+10. Selectors, services, insights, API endpoints, and ownership boundaries are
+    covered by database-backed tests.
+11. Permission tests prove cross-user access is blocked.

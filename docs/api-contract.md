@@ -67,5 +67,6 @@ resource groups use the same user ownership boundary as the browser job
 application workflow.
 
 Insights API endpoints are also planned work. The project includes an
-`apps.insights` Django app for persistence and admin support, but no insights
-routes are registered yet.
+`apps.insights` Django app for target-role profile persistence, stored
+`JobInsight` records, admin support, and service-layer insight generation, but
+no insights API routes are registered yet.
