@@ -107,6 +107,63 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
     )
 
 
+def test_simple_term_extractors_derive_names_from_weighted_evidence(
+    monkeypatch,
+) -> None:
+    """Simple evidence helpers should preserve weighted evidence ordering."""
+    feature_names = object()
+    job_vector = object()
+    target_vector = object()
+
+    def fake_overlapping_weighted_terms(**kwargs):
+        assert kwargs == {
+            "feature_names": feature_names,
+            "job_vector": job_vector,
+            "target_vector": target_vector,
+            "limit": 2,
+        }
+        return [
+            {"term": "python", "overlap_weight": 0.4},
+            {"term": "django", "overlap_weight": 0.3},
+        ]
+
+    def fake_missing_weighted_terms(**kwargs):
+        assert kwargs == {
+            "feature_names": feature_names,
+            "job_vector": job_vector,
+            "target_vector": target_vector,
+            "limit": 2,
+        }
+        return [
+            {"term": "docker", "target_weight": 0.5},
+            {"term": "postgresql", "target_weight": 0.4},
+        ]
+
+    monkeypatch.setattr(
+        similarity,
+        "extract_top_overlapping_weighted_terms",
+        fake_overlapping_weighted_terms,
+    )
+    monkeypatch.setattr(
+        similarity,
+        "extract_missing_weighted_target_terms",
+        fake_missing_weighted_terms,
+    )
+
+    assert similarity.extract_top_overlapping_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=2,
+    ) == ["python", "django"]
+    assert similarity.extract_missing_target_terms(
+        feature_names=feature_names,
+        job_vector=job_vector,
+        target_vector=target_vector,
+        limit=2,
+    ) == ["docker", "postgresql"]
+
+
 def test_similarity_result_contains_missing_target_terms() -> None:
     """Similarity output should include target terms absent from job text."""
     result = analyse_text_similarity(
