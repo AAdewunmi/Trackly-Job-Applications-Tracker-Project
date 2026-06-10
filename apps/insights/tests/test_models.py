@@ -6,6 +6,8 @@ from django.db import models
 
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
+from apps.insights.nlp.similarity import analyse_text_similarity
+from apps.insights.services import calculate_source_hash
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
@@ -76,24 +78,51 @@ def test_job_insight_persists_retrieval_style_output() -> None:
     assert insight.pipeline_version == "nltk-tfidf-cosine-v1"
     assert insight.extracted_terms
     assert insight.top_overlapping_terms
-    assert insight.top_overlapping_weighted_terms == [
+    assert insight.top_overlapping_weighted_terms[:2] == [
         {
-            "term": "python",
-            "job_weight": 0.5,
-            "target_weight": 0.4,
-            "overlap_weight": 0.2,
+            "term": "api",
+            "job_weight": 0.3541,
+            "target_weight": 0.251,
+            "overlap_weight": 0.0889,
         },
         {
             "term": "django",
-            "job_weight": 0.4,
-            "target_weight": 0.35,
-            "overlap_weight": 0.14,
+            "job_weight": 0.3541,
+            "target_weight": 0.251,
+            "overlap_weight": 0.0889,
         },
     ]
-    assert insight.missing_weighted_target_terms == [
-        {"term": "postgresql", "target_weight": 0.3},
-        {"term": "docker", "target_weight": 0.25},
-    ]
+    assert insight.missing_weighted_target_terms[0] == {
+        "term": "api postgresql",
+        "target_weight": 0.3527,
+    }
+
+
+def test_job_insight_factory_defaults_match_real_tfidf_output() -> None:
+    """Factory defaults should mirror the current TF-IDF pipeline output."""
+    insight = JobInsightFactory()
+    result = analyse_text_similarity(
+        job_text=insight.clean_job_text,
+        target_text=insight.clean_target_text,
+    )
+
+    assert insight.source_hash == calculate_source_hash(
+        clean_job_text=result.clean_job_text,
+        clean_target_text=result.clean_target_text,
+        pipeline_version=insight.pipeline_version,
+    )
+    assert insight.clean_job_text == result.clean_job_text
+    assert insight.clean_target_text == result.clean_target_text
+    assert insight.extracted_terms == result.extracted_terms
+    assert insight.top_overlapping_terms == result.top_overlapping_terms
+    assert (
+        insight.top_overlapping_weighted_terms == result.top_overlapping_weighted_terms
+    )
+    assert insight.missing_target_terms == result.missing_target_terms
+    assert insight.missing_weighted_target_terms == result.missing_weighted_target_terms
+    assert insight.similarity_score == result.similarity_score
+    assert insight.score_label == result.score_label
+    assert insight.explanation == result.explanation
 
 
 def test_job_insight_uses_tfidf_pipeline_version() -> None:
