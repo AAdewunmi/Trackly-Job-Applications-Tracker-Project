@@ -1,4 +1,4 @@
-"""Factory helpers for insight tests."""
+"""factory_boy factories for Trackly insight tests."""
 
 import factory
 
@@ -8,10 +8,10 @@ from apps.users.factories import UserFactory
 
 
 class TargetRoleProfileFactory(factory.django.DjangoModelFactory):
-    """Create a valid target role profile for tests."""
+    """Factory for target role profiles."""
 
     class Meta:
-        """Factory metadata for TargetRoleProfileFactory."""
+        """Factory metadata for target role profiles."""
 
         model = TargetRoleProfile
 
@@ -23,10 +23,10 @@ class TargetRoleProfileFactory(factory.django.DjangoModelFactory):
 
 
 class JobInsightFactory(factory.django.DjangoModelFactory):
-    """Create a valid stored job insight for tests."""
+    """Factory for stored job insights."""
 
     class Meta:
-        """Factory metadata for JobInsightFactory."""
+        """Factory metadata for job insights."""
 
         model = JobInsight
 
