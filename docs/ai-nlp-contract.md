@@ -61,7 +61,8 @@ Implemented now:
 
 The current service implementation writes durable `JobInsight` records under
 the `nltk-tfidf-cosine-v1` contract and uses the implemented NLTK/scikit-learn
-TF-IDF cosine pipeline.
+TF-IDF cosine pipeline. The Docker image provisions required NLTK runtime data
+during build; local containers can refresh that data with `make nltk-data`.
 
 ## Canonical Pipeline
 
@@ -72,7 +73,7 @@ job source text
 +
 target profile text
 
--> NLTK-backed preprocessing
+-> NLTK-backed preprocessing with deterministic fallback lemmatisation
 -> lemmatised clean text
 -> scikit-learn TF-IDF vectorisation
 -> cosine similarity
@@ -117,6 +118,10 @@ Implemented:
 - Token normalisation backed by NLTK.
 - Stop-word filtering for common and low-value role-description terms.
 - Lemmatized clean job and target text.
+- A runtime-data check that raises an actionable error when required NLTK data
+  is missing and points developers to `make nltk-data`.
+- Deterministic fallback lemmatisation so preprocessing remains stable if
+  WordNet data is unavailable during token lemmatisation.
 
 ### Phase 3: TF-IDF Cosine Matching
 
