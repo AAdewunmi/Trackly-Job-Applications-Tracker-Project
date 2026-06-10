@@ -76,8 +76,11 @@ target profile text
 -> lemmatised clean text
 -> scikit-learn TF-IDF vectorisation
 -> cosine similarity
+-> extracted weighted job terms
 -> top overlapping high-value terms
+-> top overlapping weighted evidence
 -> missing target terms
+-> missing weighted target evidence
 -> score label
 -> explanation
 -> stored JobInsight

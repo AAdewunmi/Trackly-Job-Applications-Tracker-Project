@@ -494,10 +494,7 @@ def test_clean_text_uses_nltk_preprocessing_for_matching() -> None:
     """Text cleaning should use NLTK-backed preprocessing."""
     clean_text = _clean_text("Python/Django APIs.", None, "C++ and C# roles")
 
-    assert clean_text.split() in [
-        ["pythondjango", "api", "c++"],
-        ["pythondjango", "apis", "c++"],
-    ]
+    assert clean_text.split() == ["pythondjango", "api", "c++"]
 
 
 def test_source_hash_includes_cleaned_text_and_pipeline_version() -> None:
