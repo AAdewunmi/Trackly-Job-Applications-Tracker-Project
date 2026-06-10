@@ -46,7 +46,8 @@ def test_preprocess_tokens_filters_low_value_role_terms() -> None:
 
     assert "python" in tokens
     assert "django" in tokens
-    assert "api" in tokens or "apis" in tokens
+    assert "api" in tokens
+    assert "apis" not in tokens
     assert "and" not in tokens
     assert "about" not in tokens
     assert "target" not in tokens
@@ -175,7 +176,8 @@ def test_preprocess_text_returns_stable_string() -> None:
 
     assert isinstance(result, str)
     assert "django" in result
-    assert "service" in result or "services" in result
+    assert "service" in result
+    assert "api" in result
 
 
 def test_preprocess_text_handles_empty_input() -> None:

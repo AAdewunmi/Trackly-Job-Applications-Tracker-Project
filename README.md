@@ -16,8 +16,8 @@ A Django SaaS MVP for tracking job applications and matching job descriptions ag
 GitHub repository: <https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project>
 
 Trackly helps users register, manage job applications, track application status,
-maintain notes, and review personal progress. The planned NLP layer will generate
-role-fit insights from job descriptions and stored target-role profiles.
+maintain notes, review personal progress, and generate role-fit insights from
+job descriptions and stored target-role profiles.
 
 The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The matching workflow is designed around text normalisation, TF-IDF/vector comparison, cosine similarity, and explainable overlapping terms.
 
@@ -37,10 +37,11 @@ Trackly is designed as a credible early SaaS product, not a toy example. The del
 - Testing: pytest, pytest-django, factory_boy
 - Development workflow: Docker and Docker Compose
 - Future API layer: Django REST Framework under `/api/v1/`
-- NLP layer: deterministic keyword extraction, target-role profile comparison, and explainable job-fit scoring
+- NLP layer: NLTK preprocessing, TF-IDF cosine comparison, and explainable
+  job-fit scoring
 - Deployment target: Render
 
-## Implemented Through Sprint 2
+## Implemented Through Sprint 3
 
 Trackly currently includes:
 
@@ -59,9 +60,17 @@ Trackly currently includes:
 - User-scoped selectors for reusable read queries
 - Service-layer dashboard metrics and recent application activity
 - Database-backed model, selector, service, view, note, and permission tests
+- User-owned target role profiles for retrieval-style matching
+- Stored `JobInsight` records linked to job applications and target profiles
+- NLTK-backed text preprocessing with deterministic fallback lemmatisation
+- scikit-learn TF-IDF cosine similarity scoring
+- Explainability fields for extracted terms, overlapping terms, missing target
+  terms, and weighted TF-IDF evidence
+- Idempotent insight generation for unchanged cleaned inputs and pipeline
+  version
 
-The explainable NLP matching workflow, API layer, JWT authentication, and Render
-deployment remain planned work.
+The broader API layer, JWT authentication, and Render deployment remain planned
+work.
 
 ## Quick Start
 
@@ -149,6 +158,7 @@ compatibility:
 .
 ├── apps/
 │   ├── dashboard/
+│   ├── insights/
 │   ├── jobs/
 │   ├── roles/
 │   └── users/
