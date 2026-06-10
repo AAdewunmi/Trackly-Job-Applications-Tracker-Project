@@ -128,6 +128,19 @@ Implemented:
 - Missing target terms.
 - Explanation text derived from the similarity score and term analysis.
 
+Deterministic ranking rules:
+
+- `top_overlapping_terms` are generated from terms with non-zero TF-IDF weight
+  in both the job and target vectors.
+- Overlap ranking uses `job_tfidf_weight * target_tfidf_weight`, descending.
+- `missing_target_terms` are generated from terms with non-zero target TF-IDF
+  weight and zero job TF-IDF weight.
+- Missing-term ranking uses target TF-IDF weight, descending.
+- Equal weights are ordered alphabetically, so repeated generation for the same
+  cleaned input produces the same term order.
+- Stored explanation fields contain the ranked term names, not raw numeric
+  TF-IDF weights.
+
 ## Stored Output
 
 `JobInsight` is the durable record for generated output.

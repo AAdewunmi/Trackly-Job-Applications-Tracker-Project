@@ -186,20 +186,47 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "postgresql",
         "test",
     ]
-    assert insight.extracted_terms
-    assert len(insight.extracted_terms) <= 12
-    assert "backend" in insight.extracted_terms
-    assert "python" in insight.extracted_terms
-    assert {"api", "apis"} & set(insight.extracted_terms)
+    assert insight.extracted_terms == [
+        "backend",
+        "python",
+        "api service",
+        "apis",
+        "apis python",
+        "backend backend",
+        "build",
+        "build python",
+        "engineer example",
+        "example",
+        "example ltd",
+        "experience",
+    ]
     assert insight.similarity_score > 0
     assert insight.score_label == "Partial match"
-    assert "python" in insight.top_overlapping_terms
-    assert "backend" in insight.top_overlapping_terms
-    assert "django api" in insight.top_overlapping_terms
-    assert "delivery" in insight.missing_target_terms
-    assert "api delivery" in insight.missing_target_terms
-    assert "overlaps with your target profile on" in insight.explanation
-    assert "Missing or weaker target terms include" in insight.explanation
+    assert insight.top_overlapping_terms == [
+        "python",
+        "api",
+        "backend",
+        "django",
+        "django api",
+        "python django",
+        "backend engineer",
+        "engineer",
+    ]
+    assert insight.missing_target_terms == [
+        "api delivery",
+        "api postgresql",
+        "delivery",
+        "delivery python",
+        "engineer python",
+        "postgresql test",
+    ]
+    assert insight.explanation == (
+        "Partial match: this job description overlaps with your target profile "
+        "on python, api, backend, django, django api, python django, "
+        "backend engineer, engineer. Missing or weaker target terms include "
+        "api delivery, api postgresql, delivery, delivery python, "
+        "engineer python, postgresql test."
+    )
 
 
 @pytest.mark.django_db
@@ -283,6 +310,9 @@ def test_generate_insight_persists_threshold_score_labels(
     assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
     assert insight.similarity_score == similarity_score
     assert insight.score_label == expected_label
+    assert insight.extracted_terms == ["python"]
+    assert insight.top_overlapping_terms == ["python"]
+    assert insight.missing_target_terms == []
     assert insight.explanation.startswith(expected_label)
 
 

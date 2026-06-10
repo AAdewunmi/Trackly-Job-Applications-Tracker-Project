@@ -53,6 +53,28 @@ def test_similarity_result_contains_overlapping_terms() -> None:
     assert "django" in result.top_overlapping_terms
 
 
+def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
+    """Explanation terms should be ranked by TF-IDF weight with stable tie breaks."""
+    result = analyse_text_similarity(
+        job_text="Alpha Beta",
+        target_text="Alpha Beta Gamma Delta",
+        explanation_term_limit=10,
+    )
+
+    assert result.top_overlapping_terms == ["alpha", "alpha beta", "beta"]
+    assert result.missing_target_terms == [
+        "beta gamma",
+        "delta",
+        "gamma",
+        "gamma delta",
+    ]
+    assert result.explanation == (
+        "Strong match: this job description overlaps with your target profile "
+        "on alpha, alpha beta, beta. Missing or weaker target terms include "
+        "beta gamma, delta, gamma, gamma delta."
+    )
+
+
 def test_similarity_result_contains_missing_target_terms() -> None:
     """Similarity output should include target terms absent from job text."""
     result = analyse_text_similarity(
