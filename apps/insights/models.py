@@ -1,4 +1,4 @@
-"""Persistence models for Trackly job insights."""
+"""Persistence models for Trackly's retrieval-style job insight feature."""
 
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ class TargetRoleProfile(models.Model):
         return self.title
 
     def save(self, *args: object, **kwargs: object) -> None:
-        """Persist the target profile after normalisation and validation."""
+        """Normalise keywords and validate before saving the target profile."""
         if isinstance(self.keywords, list):
             seen_keywords: set[str] = set()
             normalised_keywords: list[str] = []
