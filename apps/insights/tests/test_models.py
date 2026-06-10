@@ -1,15 +1,17 @@
-"""Model tests for Trackly job insights."""
+"""Model tests for Trackly target role profiles and job insights."""
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import models
 
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 def test_target_role_profile_has_readable_string_representation() -> None:
     """A target role profile should render as its title."""
     profile = TargetRoleProfileFactory(title="Backend Engineer")
@@ -17,7 +19,6 @@ def test_target_role_profile_has_readable_string_representation() -> None:
     assert str(profile) == "Backend Engineer"
 
 
-@pytest.mark.django_db
 def test_target_role_profile_persists_keywords() -> None:
     """Target role profiles should persist cleaned lowercase keywords."""
     profile = TargetRoleProfileFactory(keywords=["Python", " Django ", "python"])
@@ -25,9 +26,9 @@ def test_target_role_profile_persists_keywords() -> None:
     profile.refresh_from_db()
 
     assert profile.keywords == ["python", "django"]
+    assert str(profile) == profile.title
 
 
-@pytest.mark.django_db
 def test_target_role_profile_requires_keyword_list() -> None:
     """Target role keywords should be stored as a list."""
     profile = TargetRoleProfile(
@@ -40,7 +41,6 @@ def test_target_role_profile_requires_keyword_list() -> None:
         profile.save()
 
 
-@pytest.mark.django_db
 def test_target_role_profile_requires_at_least_one_keyword() -> None:
     """Target role profiles should reject empty keyword lists."""
     profile = TargetRoleProfile(
@@ -53,7 +53,6 @@ def test_target_role_profile_requires_at_least_one_keyword() -> None:
         profile.save()
 
 
-@pytest.mark.django_db
 def test_job_insight_has_readable_string_representation() -> None:
     """A job insight should render against its parent application."""
     insight = JobInsightFactory(
@@ -66,7 +65,6 @@ def test_job_insight_has_readable_string_representation() -> None:
     assert str(insight) == "Insight for Backend Engineer at Example Ltd"
 
 
-@pytest.mark.django_db
 def test_job_insight_persists_retrieval_style_output() -> None:
     """Job insights should store explainable retrieval-style output."""
     insight = JobInsightFactory(similarity_score=0.75, score_label="Excellent match")
@@ -98,7 +96,6 @@ def test_job_insight_persists_retrieval_style_output() -> None:
     ]
 
 
-@pytest.mark.django_db
 def test_job_insight_uses_tfidf_pipeline_version() -> None:
     """Job insights should persist the allowed TF-IDF pipeline version."""
     insight = JobInsightFactory()
@@ -108,7 +105,22 @@ def test_job_insight_uses_tfidf_pipeline_version() -> None:
     assert insight.pipeline_version == JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
 
 
-@pytest.mark.django_db
+def test_job_insight_uniqueness_uses_source_hash_and_pipeline_version() -> None:
+    """Insight idempotency should be scoped to source hash and pipeline version."""
+    constraints = [
+        constraint
+        for constraint in JobInsight._meta.constraints
+        if isinstance(constraint, models.UniqueConstraint)
+    ]
+
+    assert any(
+        constraint.name == "unique_insight_for_unchanged_retrieval_source"
+        and list(constraint.fields)
+        == ["job_application", "target_profile", "source_hash", "pipeline_version"]
+        for constraint in constraints
+    )
+
+
 def test_job_insight_rejects_non_tfidf_pipeline_version() -> None:
     """Job insights should reject unsupported non-TF-IDF pipeline versions."""
     owner = UserFactory()
@@ -128,7 +140,6 @@ def test_job_insight_rejects_non_tfidf_pipeline_version() -> None:
         insight.save()
 
 
-@pytest.mark.django_db
 def test_job_insight_rejects_mismatched_application_and_profile_owner() -> None:
     """A job insight should require the application and profile to share an owner."""
     application = JobApplicationFactory(owner=UserFactory(email="owner@example.com"))
@@ -149,7 +160,6 @@ def test_job_insight_rejects_mismatched_application_and_profile_owner() -> None:
         insight.save()
 
 
-@pytest.mark.django_db
 def test_job_insight_requires_json_list_fields() -> None:
     """Stored insight term fields should reject non-list values."""
     owner = UserFactory()
@@ -174,7 +184,6 @@ def test_job_insight_requires_json_list_fields() -> None:
         insight.save()
 
 
-@pytest.mark.django_db
 def test_job_insight_requires_weighted_evidence_list_fields() -> None:
     """Stored weighted evidence fields should reject non-list values."""
     owner = UserFactory()

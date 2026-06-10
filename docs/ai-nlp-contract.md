@@ -76,8 +76,11 @@ target profile text
 -> lemmatised clean text
 -> scikit-learn TF-IDF vectorisation
 -> cosine similarity
+-> extracted weighted job terms
 -> top overlapping high-value terms
+-> top overlapping weighted evidence
 -> missing target terms
+-> missing weighted target evidence
 -> score label
 -> explanation
 -> stored JobInsight
@@ -102,8 +105,10 @@ Implemented:
 - `TargetRoleProfile` stores the target role baseline.
 - `JobInsight` stores generated insight output as durable product state.
 - The model enforces `nltk-tfidf-cosine-v1` as the supported pipeline version.
-- The service creates and reuses insight records for unchanged job/profile
-  sources.
+- The service derives `source_hash` from the cleaned job text, cleaned target
+  text, and pipeline version.
+- The service creates and reuses insight records for unchanged cleaned
+  job/profile sources under the same pipeline version.
 
 ### Phase 2: NLTK Preprocessing
 
@@ -171,5 +176,7 @@ Stored fields include:
 - `explanation`
 - `created_at`
 
-The `source_hash` and `pipeline_version` pair make insight records stable for
-unchanged inputs and a specific algorithm version.
+The `source_hash` is calculated from the cleaned job text, cleaned target text,
+and pipeline version. The `source_hash` and `pipeline_version` pair make
+insight records stable for unchanged cleaned inputs and a specific algorithm
+version.
