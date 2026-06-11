@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import dataclass
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.insights.nlp import (
@@ -15,6 +16,14 @@ from apps.insights.nlp import (
 from apps.jobs.models import JobApplication
 
 PIPELINE_VERSION = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
+
+
+@dataclass(frozen=True)
+class InsightGenerationResult:
+    """Return object for explicit user-scoped insight generation calls."""
+
+    insight: JobInsight
+    created: bool
 
 
 class TargetRoleProfileRequired(Exception):
@@ -55,15 +64,35 @@ def build_target_source_text(target_profile: TargetRoleProfile) -> str:
 
 
 def generate_job_insight(
-    job_application: JobApplication,
+    job_application: JobApplication | None = None,
     target_profile: TargetRoleProfile | None = None,
-) -> JobInsight:
+    *,
+    user=None,
+    application: JobApplication | None = None,
+) -> JobInsight | InsightGenerationResult:
     """Generate and store a user-scoped job insight for a target role profile."""
+    return_result = user is not None or application is not None
+    if application is not None:
+        if job_application is not None and job_application != application:
+            raise ValueError("Provide either job_application or application, not both.")
+        job_application = application
+
+    if job_application is None:
+        raise ValueError("A job application is required to generate an insight.")
+
+    if user is not None and job_application.owner_id != user.id:
+        raise PermissionDenied(
+            "Cannot generate insight for another user's application."
+        )
+
     target_profile = target_profile or get_active_target_profile(job_application.owner)
     if target_profile is None or not target_profile.is_active:
         raise TargetRoleProfileRequired(
             "An active target role profile is required before matching jobs."
         )
+
+    if user is not None and target_profile.owner_id != user.id:
+        raise PermissionDenied("Cannot use another user's target role profile.")
 
     if job_application.owner_id != target_profile.owner_id:
         raise ValidationError(
@@ -75,7 +104,7 @@ def generate_job_insight(
         target_text=build_target_source_text(target_profile),
     )
 
-    insight, _created = JobInsight.objects.update_or_create(
+    insight, created = JobInsight.objects.update_or_create(
         job_application=job_application,
         target_profile=target_profile,
         source_hash=calculate_source_hash(
@@ -96,6 +125,8 @@ def generate_job_insight(
             "explanation": analysis.explanation,
         },
     )
+    if return_result:
+        return InsightGenerationResult(insight=insight, created=created)
     return insight
 
 
@@ -107,11 +138,18 @@ def _clean_text(*values: object) -> str:
 
 def calculate_source_hash(
     *,
-    clean_job_text: str,
-    clean_target_text: str,
+    clean_job_text: str | None = None,
+    clean_target_text: str | None = None,
+    job_source_text: str | None = None,
+    target_source_text: str | None = None,
     pipeline_version: str = PIPELINE_VERSION,
 ) -> str:
     """Return a stable hash for cleaned job text, target text, and pipeline."""
+    if clean_job_text is None:
+        clean_job_text = _clean_text(job_source_text)
+    if clean_target_text is None:
+        clean_target_text = _clean_text(target_source_text)
+
     source = f"{pipeline_version}\n{clean_job_text}\n{clean_target_text}"
     return hashlib.sha256(source.encode()).hexdigest()
 

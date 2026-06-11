@@ -2,13 +2,14 @@
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from apps.insights import services
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.insights.nlp.similarity import TextSimilarityResult, score_label_for
 from apps.insights.services import (
+    InsightGenerationResult,
     TargetRoleProfileRequired,
     _clean_text,
     _source_hash,
@@ -471,6 +472,55 @@ def test_generate_insight_updates_existing_unchanged_source() -> None:
         pipeline_version=second_insight.pipeline_version,
     )
     assert JobInsight.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_generate_insight_explicit_user_api_returns_created_state() -> None:
+    """Explicit user-scoped calls should expose the stored insight and created flag."""
+    owner = UserFactory(email="owner@example.com")
+    application = JobApplicationFactory(owner=owner)
+    target_profile = TargetRoleProfileFactory(owner=owner)
+
+    first_result = generate_job_insight(
+        user=owner,
+        application=application,
+        target_profile=target_profile,
+    )
+    second_result = generate_job_insight(
+        user=owner,
+        application=application,
+        target_profile=target_profile,
+    )
+
+    assert isinstance(first_result, InsightGenerationResult)
+    assert first_result.created is True
+    assert isinstance(second_result, InsightGenerationResult)
+    assert second_result.created is False
+    assert second_result.insight == first_result.insight
+    assert JobInsight.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_generate_insight_explicit_user_api_rejects_foreign_resources() -> None:
+    """Explicit user-scoped calls should not accept another user's resources."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    application = JobApplicationFactory(owner=owner)
+    foreign_profile = TargetRoleProfileFactory(owner=other_user)
+
+    with pytest.raises(PermissionDenied, match="another user's application"):
+        generate_job_insight(
+            user=other_user,
+            application=application,
+            target_profile=foreign_profile,
+        )
+
+    with pytest.raises(PermissionDenied, match="another user's target role profile"):
+        generate_job_insight(
+            user=owner,
+            application=application,
+            target_profile=foreign_profile,
+        )
 
 
 @pytest.mark.django_db
