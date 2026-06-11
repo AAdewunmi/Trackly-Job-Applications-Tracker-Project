@@ -43,6 +43,8 @@ class TargetRoleProfileForm(forms.ModelForm):
         if not keywords:
             raise forms.ValidationError("At least one target keyword is required.")
 
+        self.instance.keywords = keywords
+
         return keywords
 
     def save(self, commit: bool = True):

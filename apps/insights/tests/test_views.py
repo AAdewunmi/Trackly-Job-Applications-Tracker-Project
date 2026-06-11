@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
-from apps.insights.models import JobInsight
+from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
@@ -47,6 +47,29 @@ def test_target_profile_create_renders_form(client) -> None:
 
     assert response.status_code == 200
     assert b"Create target profile" in response.content
+
+
+@pytest.mark.django_db
+def test_target_profile_create_normalises_keywords_and_redirects(client) -> None:
+    """Posting the target profile form should store normalised keyword JSON."""
+    user = UserFactory()
+    client.force_login(user)
+
+    response = client.post(
+        reverse("insights:target-profile-create"),
+        data={
+            "title": "Backend Target",
+            "description": "Python and Django backend role.",
+            "keywords_text": "Python, Django, API, Python",
+            "is_active": "on",
+        },
+    )
+
+    profile = TargetRoleProfile.objects.get(owner=user)
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("insights:insight-list")
+    assert profile.keywords == ["python", "django", "api"]
 
 
 @pytest.mark.django_db
