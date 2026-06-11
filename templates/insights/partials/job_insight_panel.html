@@ -1,43 +1,59 @@
-<section class="card shadow-sm">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-            <div>
-                <h2 class="h5 mb-1">Latest insight</h2>
-                <p class="text-muted small mb-0">{{ insight.target_profile.title }}</p>
-            </div>
-            <span class="badge text-bg-primary">{{ insight.score_label }}</span>
+<section class="tl-panel">
+    <div class="tl-panel-body tl-stack">
+        <div>
+            <p class="tl-eyebrow">Latest insight</p>
+            <h2>{{ insight.score_label }}</h2>
+            <p class="tl-muted">{{ insight.target_profile.title }}</p>
         </div>
 
-        <p class="display-6 mb-1">{{ insight.similarity_score|floatformat:2 }}</p>
-        <p class="text-muted small">TF-IDF cosine similarity score</p>
+        <div class="tl-definition-list">
+            <div class="tl-definition-row">
+                <dt>Score</dt>
+                <dd>
+                    <span class="tl-badge tl-badge-success">{{ insight.similarity_score|floatformat:2 }}</span>
+                    TF-IDF cosine similarity
+                </dd>
+            </div>
+
+            <div class="tl-definition-row">
+                <dt>Pipeline</dt>
+                <dd>{{ insight.pipeline_version }}</dd>
+            </div>
+        </div>
 
         <p>{{ insight.explanation }}</p>
 
-        <h3 class="h6">Extracted job terms</h3>
-        <div class="d-flex flex-wrap gap-1 mb-3">
-            {% for term in insight.extracted_terms %}
-                <span class="badge text-bg-secondary">{{ term }}</span>
-            {% empty %}
-                <span class="text-muted">No terms extracted.</span>
-            {% endfor %}
+        <div class="tl-stack">
+            <h3>Extracted job terms</h3>
+            <div class="tl-actions">
+                {% for term in insight.extracted_terms %}
+                    <span class="tl-badge tl-badge-muted">{{ term }}</span>
+                {% empty %}
+                    <span class="tl-muted">No terms extracted.</span>
+                {% endfor %}
+            </div>
         </div>
 
-        <h3 class="h6">Top overlapping terms</h3>
-        <div class="d-flex flex-wrap gap-1 mb-3">
-            {% for term in insight.top_overlapping_terms %}
-                <span class="badge text-bg-success">{{ term }}</span>
-            {% empty %}
-                <span class="text-muted">No high-value overlap found.</span>
-            {% endfor %}
+        <div class="tl-stack">
+            <h3>Top overlapping terms</h3>
+            <div class="tl-actions">
+                {% for term in insight.top_overlapping_terms %}
+                    <span class="tl-badge tl-badge-success">{{ term }}</span>
+                {% empty %}
+                    <span class="tl-muted">No high-value overlap found.</span>
+                {% endfor %}
+            </div>
         </div>
 
-        <h3 class="h6">Missing or weaker target terms</h3>
-        <div class="d-flex flex-wrap gap-1">
-            {% for term in insight.missing_target_terms %}
-                <span class="badge text-bg-warning">{{ term }}</span>
-            {% empty %}
-                <span class="text-muted">No major missing target terms.</span>
-            {% endfor %}
+        <div class="tl-stack">
+            <h3>Missing or weaker target terms</h3>
+            <div class="tl-actions">
+                {% for term in insight.missing_target_terms %}
+                    <span class="tl-badge tl-badge-primary">{{ term }}</span>
+                {% empty %}
+                    <span class="tl-muted">No major missing target terms.</span>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </section>
