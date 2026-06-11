@@ -67,16 +67,8 @@ def iter_job_insight_write_calls(path: Path):
         yield function.attr, node.lineno
 
 
-def assert_low_value_terms_excluded(terms: list[str]) -> None:
-    """Assert that low-value terms do not appear as terms or n-gram parts."""
-    for term in terms:
-        assert term not in LOW_VALUE_TERMS
-        assert LOW_VALUE_TERMS.isdisjoint(term.split())
-
-
-def test_job_insights_are_created_through_service_only() -> None:
-    """Production code should create JobInsight records through the service."""
-    project_root = Path(__file__).resolve().parents[3]
+def collect_job_insight_write_violations(project_root: Path) -> list[str]:
+    """Return direct JobInsight manager writes outside allowed boundaries."""
     violations = []
 
     for path in (project_root / "apps").rglob("*.py"):
@@ -89,7 +81,43 @@ def test_job_insights_are_created_through_service_only() -> None:
                 f"{relative_path}:{line_number} JobInsight.objects.{method_name}"
             )
 
-    assert violations == []
+    return violations
+
+
+def assert_low_value_terms_excluded(terms: list[str]) -> None:
+    """Assert that low-value terms do not appear as terms or n-gram parts."""
+    for term in terms:
+        assert term not in LOW_VALUE_TERMS
+        assert LOW_VALUE_TERMS.isdisjoint(term.split())
+
+
+def test_job_insights_are_created_through_service_only() -> None:
+    """Production code should create JobInsight records through the service."""
+    project_root = Path(__file__).resolve().parents[3]
+
+    assert collect_job_insight_write_violations(project_root) == []
+
+
+def test_job_insight_write_scan_reports_direct_production_writes(tmp_path) -> None:
+    """The direct-write scan should report production JobInsight writes."""
+    app_path = tmp_path / "apps" / "example"
+    app_path.mkdir(parents=True)
+    source_file = app_path / "writer.py"
+    source_file.write_text(
+        "\n".join(
+            [
+                "from apps.insights.models import JobInsight",
+                "",
+                "def create_insight():",
+                "    return JobInsight.objects.create(similarity_score=0.5)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert collect_job_insight_write_violations(tmp_path) == [
+        "apps/example/writer.py:4 JobInsight.objects.create"
+    ]
 
 
 @pytest.mark.django_db
