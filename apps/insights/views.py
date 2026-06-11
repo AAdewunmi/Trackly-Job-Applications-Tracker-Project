@@ -60,7 +60,7 @@ class GenerateJobInsightView(LoginRequiredMixin, View):
 
         if not form.is_valid():
             messages.error(request, "Select a target role profile before generating.")
-            return redirect("jobs:application-detail", pk=application.pk)
+            return redirect("jobs:application_detail", pk=application.pk)
 
         try:
             result = generate_job_insight(
@@ -70,11 +70,11 @@ class GenerateJobInsightView(LoginRequiredMixin, View):
             )
         except PermissionDenied:
             messages.error(request, "You cannot generate this insight.")
-            return redirect("jobs:application-detail", pk=application.pk)
+            return redirect("jobs:application_detail", pk=application.pk)
 
         if result.created:
             messages.success(request, "Job insight generated.")
         else:
             messages.info(request, "Existing insight reused for unchanged content.")
 
-        return redirect("jobs:application-detail", pk=application.pk)
+        return redirect("jobs:application_detail", pk=application.pk)

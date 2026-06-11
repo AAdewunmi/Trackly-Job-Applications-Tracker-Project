@@ -14,6 +14,7 @@ urlpatterns = [
     path("accounts/", include("apps.users.urls")),
     path("applications/", include("apps.jobs.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
+    path("insights/", include("apps.insights.urls")),
     path("api/v1/jobs/", include("apps.jobs.api.urls")),
     path(
         "api/v1/auth/token/",

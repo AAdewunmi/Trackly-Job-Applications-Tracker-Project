@@ -55,6 +55,90 @@
 
     <section class="tl-panel">
         <div class="tl-panel-body tl-stack">
+            <div>
+                <p class="tl-eyebrow">AI/NLP insights</p>
+                <h2>Generate job insight</h2>
+                <p class="tl-muted">
+                    Compare this application against an active target role profile and store an explainable job-fit summary.
+                </p>
+            </div>
+
+            {% if insight_generation_form.fields.target_profile.queryset.exists %}
+                <form class="tl-form" method="post" action="{% url 'insights:job-insight-generate' application.pk %}" novalidate>
+                    {% csrf_token %}
+
+                    <div class="tl-field">
+                        <label class="tl-label" for="{{ insight_generation_form.target_profile.id_for_label }}">
+                            {{ insight_generation_form.target_profile.label }}
+                        </label>
+                        {{ insight_generation_form.target_profile }}
+                        {% for error in insight_generation_form.target_profile.errors %}
+                            <div class="tl-field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="tl-actions">
+                        <button class="tl-button tl-button-primary" type="submit">Generate insight</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="tl-stack">
+                    <p class="tl-muted">
+                        Create an active target role profile before generating job-fit insights.
+                    </p>
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if latest_insight %}
+                <div class="tl-definition-list">
+                    <div class="tl-definition-row">
+                        <dt>Latest score</dt>
+                        <dd>
+                            <span class="tl-badge tl-badge-success">{{ latest_insight.score_label }}</span>
+                            {{ latest_insight.similarity_score }}
+                        </dd>
+                    </div>
+
+                    <div class="tl-definition-row">
+                        <dt>Target profile</dt>
+                        <dd>{{ latest_insight.target_profile.title }}</dd>
+                    </div>
+
+                    <div class="tl-definition-row">
+                        <dt>Overlap terms</dt>
+                        <dd>
+                            {% if latest_insight.top_overlapping_terms %}
+                                {{ latest_insight.top_overlapping_terms|join:", " }}
+                            {% else %}
+                                <span class="tl-muted">No strong overlap terms found.</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+
+                    <div class="tl-definition-row">
+                        <dt>Missing terms</dt>
+                        <dd>
+                            {% if latest_insight.missing_target_terms %}
+                                {{ latest_insight.missing_target_terms|join:", " }}
+                            {% else %}
+                                <span class="tl-muted">No major missing target terms.</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                </div>
+
+                <p>{{ latest_insight.explanation }}</p>
+            {% else %}
+                <p class="tl-muted">No insight has been generated for this application yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
             <h2>Job description</h2>
             {% if application.job_description %}
                 <p>{{ application.job_description|linebreaksbr }}</p>

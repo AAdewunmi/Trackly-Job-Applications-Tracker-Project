@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
+from apps.insights.forms import JobInsightGenerationForm
+from apps.insights.selectors import get_latest_insight_for_application
 from apps.jobs.forms import ApplicationNoteForm, JobApplicationForm
 from apps.jobs.models import JobApplication
 from apps.jobs.selectors import (
@@ -86,6 +88,8 @@ def application_detail(request: HttpRequest, pk: int) -> HttpResponse:
         "jobs/application_detail.html",
         {
             "application": application,
+            "insight_generation_form": JobInsightGenerationForm(user=request.user),
+            "latest_insight": get_latest_insight_for_application(application),
             "note_form": note_form,
             "notes": application.application_notes.all(),
         },
