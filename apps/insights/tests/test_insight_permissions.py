@@ -10,7 +10,6 @@ from apps.insights.models import JobInsight
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
-
 pytestmark = pytest.mark.django_db
 
 
@@ -37,7 +36,7 @@ def test_logged_in_user_can_generate_insight_from_application_detail(client) -> 
 
     assert response.status_code == 302
     assert response.url == reverse(
-        "jobs:application-detail",
+        "jobs:application_detail",
         kwargs={"pk": application.pk},
     )
     assert JobInsight.objects.filter(job_application=application).exists()
