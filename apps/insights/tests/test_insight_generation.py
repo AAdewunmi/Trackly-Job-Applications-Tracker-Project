@@ -17,7 +17,6 @@ from apps.insights.services import (
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
-
 pytestmark = pytest.mark.django_db
 
 
