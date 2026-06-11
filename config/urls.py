@@ -1,4 +1,9 @@
-"""Root URL configuration for Trackly."""
+"""
+Root URL configuration for Trackly.
+
+The project exposes browser-based product routes and versioned API routes from
+one central URL module.
+"""
 
 from django.conf import settings
 from django.conf.urls.static import static
