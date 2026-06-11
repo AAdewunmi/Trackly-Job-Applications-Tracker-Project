@@ -10,7 +10,6 @@ from apps.insights.views import (
     TargetRoleProfileCreateView,
 )
 
-
 app_name = "insights"
 
 urlpatterns = [
