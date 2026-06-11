@@ -9,7 +9,8 @@ from django.utils import timezone
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import JobApplicationFactory
 from apps.jobs.models import JobApplication
-from apps.users.factories import UserFactory
+from apps.roles.factories import AdminRoleFactory
+from apps.users.factories import StaffUserFactory, UserFactory
 
 
 def valid_application_data(**overrides: object) -> dict[str, object]:
@@ -61,6 +62,30 @@ def test_application_list_shows_only_current_user_records(client) -> None:
     assert response.status_code == 200
     assert own_application.title.encode() in response.content
     assert b"Other Role" not in response.content
+
+
+@pytest.mark.django_db
+def test_staff_user_cannot_access_application_list(client) -> None:
+    """Django staff users should not access end-user application workflows."""
+    user = StaffUserFactory(email="staff-applications@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_user_with_admin_role_cannot_access_application_list(client) -> None:
+    """Trackly admin-role users should not access end-user application workflows."""
+    admin_role = AdminRoleFactory()
+    user = UserFactory(email="role-admin-applications@example.com")
+    user.roles.add(admin_role)
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 403
 
 
 @pytest.mark.django_db

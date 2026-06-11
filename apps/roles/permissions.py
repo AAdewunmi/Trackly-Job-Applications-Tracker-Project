@@ -40,3 +40,16 @@ def is_trackly_admin(user: object) -> bool:
         return True
 
     return user_has_role(user, Role.Codes.ADMIN)
+
+
+def can_access_user_workspace(user: object) -> bool:
+    """Return whether a user can access end-user dashboard and application flows."""
+    if isinstance(user, AnonymousUser):
+        return False
+
+    is_authenticated = getattr(user, "is_authenticated", False)
+
+    if not is_authenticated:
+        return False
+
+    return not is_trackly_admin(user)

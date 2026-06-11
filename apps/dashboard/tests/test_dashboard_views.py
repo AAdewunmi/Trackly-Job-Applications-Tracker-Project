@@ -55,6 +55,30 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
 
 
 @pytest.mark.django_db
+def test_staff_user_cannot_access_user_dashboard(client) -> None:
+    """Django staff users should be kept out of end-user dashboard flows."""
+    user = StaffUserFactory(email="staff-dashboard@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("dashboard:user"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_user_with_admin_role_cannot_access_user_dashboard(client) -> None:
+    """Trackly admin-role users should be kept out of end-user dashboard flows."""
+    admin_role = AdminRoleFactory()
+    user = UserFactory(email="role-admin-dashboard@example.com")
+    user.roles.add(admin_role)
+    client.force_login(user)
+
+    response = client.get(reverse("dashboard:user"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
 def test_admin_dashboard_requires_login(client) -> None:
     """Anonymous visitors should be redirected before admin dashboard access."""
     response = client.get(reverse("dashboard:admin"))
@@ -74,6 +98,8 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
     assert reverse("dashboard:admin").encode() in response.content
+    assert f'href="{reverse("dashboard:user")}"'.encode() not in response.content
+    assert f'href="{reverse("jobs:application_list")}"'.encode() not in response.content
     assert response.context["total_users"] == 1
 
 

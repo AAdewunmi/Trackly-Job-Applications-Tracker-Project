@@ -8,12 +8,15 @@ from django.shortcuts import render
 
 from apps.dashboard.services import get_user_dashboard_context
 from apps.roles.models import Role
-from apps.roles.permissions import is_trackly_admin
+from apps.roles.permissions import can_access_user_workspace, is_trackly_admin
 
 
 @login_required
 def user_index(request: HttpRequest) -> HttpResponse:
     """Render the authenticated user's dashboard."""
+    if not can_access_user_workspace(request.user):
+        raise PermissionDenied("Admin users cannot access the user dashboard.")
+
     dashboard_context = get_user_dashboard_context(request.user)
 
     return render(
