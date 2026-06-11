@@ -1,14 +1,18 @@
 """Service tests for target-role job insight generation."""
 
+import ast
+from pathlib import Path
+
 import pytest
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from apps.insights import services
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.insights.nlp.similarity import TextSimilarityResult, score_label_for
 from apps.insights.services import (
+    InsightGenerationResult,
     TargetRoleProfileRequired,
     _clean_text,
     _source_hash,
@@ -23,6 +27,61 @@ from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
 
 LOW_VALUE_TERMS = {"and", "about", "target", "role", "using"}
+JOB_INSIGHT_WRITE_METHODS = {
+    "bulk_create",
+    "create",
+    "get_or_create",
+    "update_or_create",
+}
+
+
+def is_allowed_job_insight_write_path(path: Path) -> bool:
+    """Return whether a direct JobInsight write is allowed in a file."""
+    relative_path = path.as_posix()
+    return (
+        relative_path == "apps/insights/services.py"
+        or "/tests/" in f"/{relative_path}"
+        or path.name == "factories.py"
+    )
+
+
+def iter_job_insight_write_calls(path: Path):
+    """Yield direct JobInsight manager write calls found in a Python file."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+
+        function = node.func
+        if not (
+            isinstance(function, ast.Attribute)
+            and function.attr in JOB_INSIGHT_WRITE_METHODS
+            and isinstance(function.value, ast.Attribute)
+            and function.value.attr == "objects"
+            and isinstance(function.value.value, ast.Name)
+            and function.value.value.id == "JobInsight"
+        ):
+            continue
+
+        yield function.attr, node.lineno
+
+
+def collect_job_insight_write_violations(project_root: Path) -> list[str]:
+    """Return direct JobInsight manager writes outside allowed boundaries."""
+    violations = []
+
+    for path in (project_root / "apps").rglob("*.py"):
+        relative_path = path.relative_to(project_root)
+        if is_allowed_job_insight_write_path(relative_path):
+            continue
+
+        for method_name, line_number in iter_job_insight_write_calls(path):
+            violations.append(
+                f"{relative_path}:{line_number} JobInsight.objects.{method_name}"
+            )
+
+    return violations
 
 
 def assert_low_value_terms_excluded(terms: list[str]) -> None:
@@ -30,6 +89,35 @@ def assert_low_value_terms_excluded(terms: list[str]) -> None:
     for term in terms:
         assert term not in LOW_VALUE_TERMS
         assert LOW_VALUE_TERMS.isdisjoint(term.split())
+
+
+def test_job_insights_are_created_through_service_only() -> None:
+    """Production code should create JobInsight records through the service."""
+    project_root = Path(__file__).resolve().parents[3]
+
+    assert collect_job_insight_write_violations(project_root) == []
+
+
+def test_job_insight_write_scan_reports_direct_production_writes(tmp_path) -> None:
+    """The direct-write scan should report production JobInsight writes."""
+    app_path = tmp_path / "apps" / "example"
+    app_path.mkdir(parents=True)
+    source_file = app_path / "writer.py"
+    source_file.write_text(
+        "\n".join(
+            [
+                "from apps.insights.models import JobInsight",
+                "",
+                "def create_insight():",
+                "    return JobInsight.objects.create(similarity_score=0.5)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert collect_job_insight_write_violations(tmp_path) == [
+        "apps/example/writer.py:4 JobInsight.objects.create"
+    ]
 
 
 @pytest.mark.django_db
@@ -471,6 +559,55 @@ def test_generate_insight_updates_existing_unchanged_source() -> None:
         pipeline_version=second_insight.pipeline_version,
     )
     assert JobInsight.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_generate_insight_explicit_user_api_returns_created_state() -> None:
+    """Explicit user-scoped calls should expose the stored insight and created flag."""
+    owner = UserFactory(email="owner@example.com")
+    application = JobApplicationFactory(owner=owner)
+    target_profile = TargetRoleProfileFactory(owner=owner)
+
+    first_result = generate_job_insight(
+        user=owner,
+        application=application,
+        target_profile=target_profile,
+    )
+    second_result = generate_job_insight(
+        user=owner,
+        application=application,
+        target_profile=target_profile,
+    )
+
+    assert isinstance(first_result, InsightGenerationResult)
+    assert first_result.created is True
+    assert isinstance(second_result, InsightGenerationResult)
+    assert second_result.created is False
+    assert second_result.insight == first_result.insight
+    assert JobInsight.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_generate_insight_explicit_user_api_rejects_foreign_resources() -> None:
+    """Explicit user-scoped calls should not accept another user's resources."""
+    owner = UserFactory(email="owner@example.com")
+    other_user = UserFactory(email="other@example.com")
+    application = JobApplicationFactory(owner=owner)
+    foreign_profile = TargetRoleProfileFactory(owner=other_user)
+
+    with pytest.raises(PermissionDenied, match="another user's application"):
+        generate_job_insight(
+            user=other_user,
+            application=application,
+            target_profile=foreign_profile,
+        )
+
+    with pytest.raises(PermissionDenied, match="another user's target role profile"):
+        generate_job_insight(
+            user=owner,
+            application=application,
+            target_profile=foreign_profile,
+        )
 
 
 @pytest.mark.django_db
