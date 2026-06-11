@@ -1,4 +1,10 @@
-"""Business services for target-role job insight generation."""
+"""
+Business services for target-role job insight generation.
+
+Insight creation should go through generate_job_insight() so preprocessing,
+vectorisation, scoring, hashing, explanation, and persistence rules stay in one
+place. Callers should not create JobInsight records directly.
+"""
 
 from __future__ import annotations
 
