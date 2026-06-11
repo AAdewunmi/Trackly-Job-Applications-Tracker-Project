@@ -192,18 +192,58 @@
             </section>
 
             <section id="insights" class="tl-panel" aria-labelledby="insights-heading">
-                <div class="tl-panel-body">
+                <div class="tl-panel-body tl-stack">
                     <div class="tl-shot-header">
                         <div>
                             <p class="tl-eyebrow">AI/NLP insights</p>
-                            <h2 id="insights-heading">Review job-fit signals</h2>
+                            <h2 id="insights-heading">Generate explainable job-fit insights</h2>
                         </div>
-                        <span class="tl-badge tl-badge-muted">Planned</span>
+                        <span class="tl-badge tl-badge-success">Live</span>
                     </div>
 
                     <p class="tl-muted">
-                        Review structured keyword signals and explainable fit indicators as your application data grows.
+                        Compare job descriptions against target role profiles using TF-IDF similarity, overlap terms, missing target terms, and plain-English explanations.
                     </p>
+
+                    <div class="tl-metric-strip" aria-label="Insight metrics">
+                        <div>
+                            <strong>{{ target_profiles|length }}</strong>
+                            <span>Target Profiles</span>
+                        </div>
+                        <div>
+                            <strong>{{ recent_insights|length }}</strong>
+                            <span>Recent Insights</span>
+                        </div>
+                        <div>
+                            <strong>{{ metrics.total_applications }}</strong>
+                            <span>Eligible Applications</span>
+                        </div>
+                    </div>
+
+                    {% if recent_insights %}
+                        <div class="tl-definition-list">
+                            {% for insight in recent_insights %}
+                                <div class="tl-definition-row">
+                                    <dt>{{ insight.score_label }}</dt>
+                                    <dd>
+                                        <a class="tl-table-link" href="{{ insight.job_application.get_absolute_url }}">
+                                            {{ insight.job_application.title }}
+                                        </a>
+                                        <span class="tl-muted">matched against {{ insight.target_profile.title }}</span>
+                                    </dd>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="tl-muted">
+                            Create a target profile, open an application, and generate your first job-fit insight from the application detail page.
+                        </p>
+                    {% endif %}
+
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'insights:insight-list' %}">Open insights</a>
+                        <a class="tl-button tl-button-secondary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
+                    </div>
                 </div>
             </section>
 

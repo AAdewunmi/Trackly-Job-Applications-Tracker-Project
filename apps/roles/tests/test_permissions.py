@@ -6,7 +6,11 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 
 from apps.roles.models import Role
-from apps.roles.permissions import is_trackly_admin, user_has_role
+from apps.roles.permissions import (
+    can_access_user_workspace,
+    is_trackly_admin,
+    user_has_role,
+)
 from apps.users.factories import StaffUserFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -79,3 +83,26 @@ def test_is_trackly_admin_denies_standard_user() -> None:
     user = UserFactory()
 
     assert is_trackly_admin(user) is False
+
+
+def test_can_access_user_workspace_allows_standard_user() -> None:
+    """Standard authenticated users should access end-user workflows."""
+    user = UserFactory()
+
+    assert can_access_user_workspace(user) is True
+
+
+def test_can_access_user_workspace_denies_staff_user() -> None:
+    """Django staff users should not access end-user workflows."""
+    user = StaffUserFactory()
+
+    assert can_access_user_workspace(user) is False
+
+
+def test_can_access_user_workspace_denies_admin_role_user() -> None:
+    """Trackly admin-role users should not access end-user workflows."""
+    role = Role.objects.create(code=Role.Codes.ADMIN, name="Admin")
+    user = UserFactory()
+    user.roles.add(role)
+
+    assert can_access_user_workspace(user) is False

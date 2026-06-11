@@ -8,9 +8,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, TemplateView
 
+from apps.roles.permissions import is_trackly_admin
 from apps.users.forms import EmailAuthenticationForm, SignUpForm
 
 
@@ -35,6 +36,13 @@ class TracklyLoginView(LoginView):
     authentication_form = EmailAuthenticationForm
     template_name = "users/login.html"
     redirect_authenticated_user = True
+
+    def get_success_url(self) -> str:
+        """Redirect admins to admin surface and standard users to user dashboard."""
+        if is_trackly_admin(self.request.user):
+            return reverse("dashboard:admin")
+
+        return super().get_success_url()
 
     def form_valid(self, form: EmailAuthenticationForm) -> HttpResponse:
         """Show a friendly success message after login."""

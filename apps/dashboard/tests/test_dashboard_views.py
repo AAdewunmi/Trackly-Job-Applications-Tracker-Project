@@ -3,6 +3,7 @@
 import pytest
 from django.urls import reverse
 
+from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.models import JobApplication
 from apps.roles.factories import AdminRoleFactory
@@ -55,6 +56,30 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
 
 
 @pytest.mark.django_db
+def test_staff_user_cannot_access_user_dashboard(client) -> None:
+    """Django staff users should be kept out of end-user dashboard flows."""
+    user = StaffUserFactory(email="staff-dashboard@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("dashboard:user"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_user_with_admin_role_cannot_access_user_dashboard(client) -> None:
+    """Trackly admin-role users should be kept out of end-user dashboard flows."""
+    admin_role = AdminRoleFactory()
+    user = UserFactory(email="role-admin-dashboard@example.com")
+    user.roles.add(admin_role)
+    client.force_login(user)
+
+    response = client.get(reverse("dashboard:user"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
 def test_admin_dashboard_requires_login(client) -> None:
     """Anonymous visitors should be redirected before admin dashboard access."""
     response = client.get(reverse("dashboard:admin"))
@@ -67,6 +92,13 @@ def test_admin_dashboard_requires_login(client) -> None:
 def test_staff_user_can_access_admin_dashboard(client) -> None:
     """Django staff users should be allowed into the admin product surface."""
     user = StaffUserFactory(email="staff@example.com")
+    application = JobApplicationFactory(
+        owner=user,
+        status=JobApplication.Status.APPLIED,
+    )
+    ApplicationNoteFactory(application=application)
+    TargetRoleProfileFactory(owner=user)
+    JobInsightFactory(job_application=application)
     client.force_login(user)
 
     response = client.get(reverse("dashboard:admin"))
@@ -74,7 +106,19 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
     assert reverse("dashboard:admin").encode() in response.content
+    assert f'href="{reverse("dashboard:user")}"'.encode() not in response.content
+    assert f'href="{reverse("jobs:application_list")}"'.encode() not in response.content
     assert response.context["total_users"] == 1
+    assert response.context["admin_context"].total_applications == 1
+    assert response.context["admin_context"].total_notes == 1
+    assert response.context["admin_context"].total_target_profiles == 2
+    assert response.context["admin_context"].total_generated_insights == 1
+    assert response.context["admin_context"].application_page.paginator.count == 1
+    assert b"Applications by status" in response.content
+    assert b"Generated insights" in response.content
+    assert b"Control centre" in response.content
+    assert b"Title, company, or owner" in response.content
+    assert b"Applied" in response.content
 
 
 @pytest.mark.django_db

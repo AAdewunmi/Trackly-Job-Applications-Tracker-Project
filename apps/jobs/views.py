@@ -2,9 +2,12 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
+from apps.insights.forms import JobInsightGenerationForm
+from apps.insights.selectors import get_latest_insight_for_application
 from apps.jobs.forms import ApplicationNoteForm, JobApplicationForm
 from apps.jobs.models import JobApplication
 from apps.jobs.selectors import (
@@ -12,11 +15,20 @@ from apps.jobs.selectors import (
     get_user_application_or_404,
     get_user_note_or_404,
 )
+from apps.roles.permissions import can_access_user_workspace
+
+
+def _require_user_workspace_access(user) -> None:
+    """Block admin users from end-user job application workflows."""
+    if not can_access_user_workspace(user):
+        raise PermissionDenied("Admin users cannot access user applications.")
 
 
 @login_required
 def application_list(request: HttpRequest) -> HttpResponse:
     """Render the authenticated user's job application list."""
+    _require_user_workspace_access(request.user)
+
     applications = application_queryset_for_user(request.user)
 
     return render(
@@ -31,6 +43,8 @@ def application_list(request: HttpRequest) -> HttpResponse:
 @login_required
 def application_create(request: HttpRequest) -> HttpResponse:
     """Create a new job application owned by the authenticated user."""
+    _require_user_workspace_access(request.user)
+
     if request.method == "POST":
         form = JobApplicationForm(request.POST)
 
@@ -64,6 +78,8 @@ def application_create(request: HttpRequest) -> HttpResponse:
 @login_required
 def application_detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Render a user-owned application and handle inline note creation."""
+    _require_user_workspace_access(request.user)
+
     application = get_user_application_or_404(request.user, pk=pk)
 
     if request.method == "POST":
@@ -86,6 +102,8 @@ def application_detail(request: HttpRequest, pk: int) -> HttpResponse:
         "jobs/application_detail.html",
         {
             "application": application,
+            "insight_generation_form": JobInsightGenerationForm(user=request.user),
+            "latest_insight": get_latest_insight_for_application(application),
             "note_form": note_form,
             "notes": application.application_notes.all(),
         },
@@ -95,6 +113,8 @@ def application_detail(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def application_update(request: HttpRequest, pk: int) -> HttpResponse:
     """Update an existing user-owned job application."""
+    _require_user_workspace_access(request.user)
+
     application = get_user_application_or_404(request.user, pk=pk)
 
     if request.method == "POST":
@@ -125,6 +145,8 @@ def application_update(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
     """Delete a user-owned job application after confirmation."""
+    _require_user_workspace_access(request.user)
+
     application = get_user_application_or_404(request.user, pk=pk)
 
     if request.method == "POST":
@@ -145,6 +167,8 @@ def application_delete(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def note_update(request: HttpRequest, pk: int) -> HttpResponse:
     """Update a note attached to one of the authenticated user's applications."""
+    _require_user_workspace_access(request.user)
+
     note = get_user_note_or_404(request.user, pk=pk)
 
     if request.method == "POST":
@@ -174,6 +198,8 @@ def note_update(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
     """Delete a note attached to one of the authenticated user's applications."""
+    _require_user_workspace_access(request.user)
+
     note = get_user_note_or_404(request.user, pk=pk)
     application = note.application
 

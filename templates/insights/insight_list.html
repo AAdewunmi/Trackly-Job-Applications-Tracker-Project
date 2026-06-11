@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Insights | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout tl-account-layout-wide">
+    <div>
+        <p class="tl-eyebrow">AI/NLP insights</p>
+        <h1>Job-fit insights</h1>
+        <p class="tl-muted">
+            Review recent retrieval-style matches and manage the target role profiles used to compare job descriptions.
+        </p>
+        <div class="tl-actions">
+            <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
+            <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">Back to applications</a>
+        </div>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Target role profiles</h2>
+            {% if target_profiles %}
+                <div class="tl-definition-list">
+                    {% for profile in target_profiles %}
+                        <div class="tl-definition-row">
+                            <dt>{{ profile.title }}</dt>
+                            <dd>
+                                {% if profile.is_active %}
+                                    <span class="tl-badge tl-badge-success">Active</span>
+                                {% else %}
+                                    <span class="tl-badge tl-badge-muted">Inactive</span>
+                                {% endif %}
+                                {{ profile.keywords|join:", " }}
+                            </dd>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="tl-muted">No target role profiles have been created yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <h2>Recent insights</h2>
+            {% if recent_insights %}
+                {% for insight in recent_insights %}
+                    <article class="tl-card">
+                        <div class="tl-card-body tl-stack">
+                            <div>
+                                <h3>{{ insight.job_application.title }}</h3>
+                                <p class="tl-muted">{{ insight.job_application.company }} matched against {{ insight.target_profile.title }}</p>
+                            </div>
+                            <p>
+                                <span class="tl-badge tl-badge-success">{{ insight.score_label }}</span>
+                                {{ insight.similarity_score }}
+                            </p>
+                            <p>{{ insight.explanation }}</p>
+                            <div class="tl-actions">
+                                <a class="tl-button tl-button-secondary" href="{{ insight.job_application.get_absolute_url }}">View application</a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="tl-muted">No job insights have been generated yet.</p>
+            {% endif %}
+        </div>
+    </section>
+</section>
+{% endblock %}

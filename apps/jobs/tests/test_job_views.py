@@ -6,9 +6,11 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import JobApplicationFactory
 from apps.jobs.models import JobApplication
-from apps.users.factories import UserFactory
+from apps.roles.factories import AdminRoleFactory
+from apps.users.factories import StaffUserFactory, UserFactory
 
 
 def valid_application_data(**overrides: object) -> dict[str, object]:
@@ -60,6 +62,30 @@ def test_application_list_shows_only_current_user_records(client) -> None:
     assert response.status_code == 200
     assert own_application.title.encode() in response.content
     assert b"Other Role" not in response.content
+
+
+@pytest.mark.django_db
+def test_staff_user_cannot_access_application_list(client) -> None:
+    """Django staff users should not access end-user application workflows."""
+    user = StaffUserFactory(email="staff-applications@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_user_with_admin_role_cannot_access_application_list(client) -> None:
+    """Trackly admin-role users should not access end-user application workflows."""
+    admin_role = AdminRoleFactory()
+    user = UserFactory(email="role-admin-applications@example.com")
+    user.roles.add(admin_role)
+    client.force_login(user)
+
+    response = client.get(reverse("jobs:application_list"))
+
+    assert response.status_code == 403
 
 
 @pytest.mark.django_db
@@ -163,6 +189,70 @@ def test_application_detail_renders_for_owner(client) -> None:
     assert response.status_code == 200
     assert response.context["application"] == application
     assert b"Product Analyst" in response.content
+
+
+@pytest.mark.django_db
+def test_application_detail_renders_insight_generation_panel(client) -> None:
+    """Application detail should expose the user-scoped insight workflow."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Backend Engineer")
+    profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    TargetRoleProfileFactory(title="Foreign Target")
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert response.context["latest_insight"] is None
+    assert list(
+        response.context["insight_generation_form"].fields["target_profile"].queryset
+    ) == [profile]
+    assert b"Generate job insight" in response.content
+    assert (
+        reverse(
+            "insights:job-insight-generate",
+            kwargs={"application_pk": application.pk},
+        ).encode()
+        in response.content
+    )
+
+
+@pytest.mark.django_db
+def test_application_detail_renders_latest_insight_summary(client) -> None:
+    """Application detail should show the latest stored insight for the job."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Backend Engineer")
+    insight = JobInsightFactory(job_application=application)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert response.context["latest_insight"] == insight
+    assert insight.score_label.encode() in response.content
+    assert insight.explanation.encode() in response.content
+
+
+@pytest.mark.django_db
+def test_application_detail_links_to_target_profile_create_when_no_profiles(
+    client,
+) -> None:
+    """Users without active target profiles should get a clear next action."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("jobs:application_detail", kwargs={"pk": application.pk})
+    )
+
+    assert response.status_code == 200
+    assert b"Create target profile" in response.content
+    assert reverse("insights:target-profile-create").encode() in response.content
 
 
 @pytest.mark.django_db

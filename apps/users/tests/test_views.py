@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.urls import reverse
 
-from apps.users.factories import UserFactory
+from apps.users.factories import StaffUserFactory, UserFactory
 
 
 @pytest.mark.django_db
@@ -79,6 +79,36 @@ def test_login_uses_email_authentication_form(client) -> None:
     assert response["Location"] == reverse("dashboard:user")
     assert int(client.session["_auth_user_id"]) == user.pk
     assert "You are signed in." in messages
+
+
+@pytest.mark.django_db
+def test_admin_login_redirects_to_admin_dashboard(client) -> None:
+    """Admin users should not be redirected to the blocked user dashboard."""
+    user = StaffUserFactory(email="admin-login@example.com", password="password123")
+
+    response = client.post(
+        reverse("users:login"),
+        {
+            "username": user.email,
+            "password": "password123",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("dashboard:admin")
+    assert int(client.session["_auth_user_id"]) == user.pk
+
+
+@pytest.mark.django_db
+def test_authenticated_admin_login_page_redirects_to_admin_dashboard(client) -> None:
+    """Already-authenticated admins should be sent to the admin dashboard."""
+    user = StaffUserFactory(email="admin-redirect@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("users:login"))
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("dashboard:admin")
 
 
 @pytest.mark.django_db

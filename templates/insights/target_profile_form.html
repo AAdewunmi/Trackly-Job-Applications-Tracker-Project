@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Create target profile | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <a class="tl-back-link" href="{% url 'insights:insight-list' %}">&larr; Back to insights</a>
+        <p class="tl-eyebrow">Target role profile</p>
+        <h1>Create target profile</h1>
+        <p class="tl-muted">
+            Define the role title, description, and target keywords Trackly should use when generating job-fit insights.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body">
+            <form class="tl-form" method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="tl-alert tl-alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="tl-form-grid">
+                    <div class="tl-field">
+                        <label class="tl-label" for="{{ form.title.id_for_label }}">Target role title</label>
+                        {{ form.title }}
+                        {% for error in form.title.errors %}
+                            <div class="tl-field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="tl-field">
+                        <label class="tl-label" for="{{ form.is_active.id_for_label }}">Active profile</label>
+                        {{ form.is_active }}
+                        <div class="tl-help-text">Only active profiles can be selected for job insight generation.</div>
+                        {% for error in form.is_active.errors %}
+                            <div class="tl-field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="tl-field tl-field-full">
+                        <label class="tl-label" for="{{ form.description.id_for_label }}">Target role description</label>
+                        {{ form.description }}
+                        {% for error in form.description.errors %}
+                            <div class="tl-field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="tl-field tl-field-full">
+                        <label class="tl-label" for="{{ form.keywords_text.id_for_label }}">{{ form.keywords_text.label }}</label>
+                        {{ form.keywords_text }}
+                        {% if form.keywords_text.help_text %}
+                            <div class="tl-help-text">{{ form.keywords_text.help_text }}</div>
+                        {% endif %}
+                        {% for error in form.keywords_text.errors %}
+                            <div class="tl-field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">Create profile</button>
+                    <a class="tl-button tl-button-secondary" href="{% url 'insights:insight-list' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+{% endblock %}
