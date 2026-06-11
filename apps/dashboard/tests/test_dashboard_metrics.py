@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.dashboard.services import get_user_dashboard_context
+from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.models import JobApplication
 from apps.users.factories import UserFactory
@@ -62,6 +63,8 @@ def test_dashboard_context_counts_only_current_user_data() -> None:
     assert context.metrics["offers"] == 1
     assert context.metrics["rejections"] == 0
     assert context.metrics["notes"] == 2
+    assert list(context.recent_insights) == []
+    assert list(context.target_profiles) == []
 
 
 @pytest.mark.django_db
@@ -148,3 +151,30 @@ def test_user_dashboard_renders_status_grouped_pipeline_cards(client) -> None:
     assert saved_application.title.encode() in response.content
     assert applied_application.title.encode() in response.content
     assert interview_application.title.encode() in response.content
+
+
+@pytest.mark.django_db
+def test_user_dashboard_renders_live_insights_summary(client) -> None:
+    """The dashboard insight card should reflect available backend functionality."""
+    user = UserFactory()
+    profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    insight = JobInsightFactory(
+        job_application__owner=user,
+        job_application__title="Django API Engineer",
+        target_profile=profile,
+        score_label="Strong match",
+    )
+    JobInsightFactory()
+    client.force_login(user)
+
+    response = client.get(reverse("dashboard:user"))
+
+    assert response.status_code == 200
+    assert list(response.context["target_profiles"]) == [profile]
+    assert list(response.context["recent_insights"]) == [insight]
+    assert b"Generate explainable job-fit insights" in response.content
+    assert b"Live" in response.content
+    assert b"Strong match" in response.content
+    assert b"Django API Engineer" in response.content
+    assert reverse("insights:insight-list").encode() in response.content
+    assert reverse("insights:target-profile-create").encode() in response.content

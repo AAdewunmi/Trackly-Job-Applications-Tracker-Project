@@ -3,6 +3,10 @@
 from dataclasses import dataclass
 from typing import Any
 
+from apps.insights.selectors import (
+    get_recent_insights_for_user,
+    get_target_profiles_for_user,
+)
 from apps.jobs.models import JobApplication
 from apps.jobs.selectors import (
     get_recent_applications_for_user,
@@ -20,6 +24,8 @@ class DashboardContext:
     saved_applications: Any
     applied_applications: Any
     interviewing_applications: Any
+    recent_insights: Any
+    target_profiles: Any
 
 
 def get_user_dashboard_context(user) -> DashboardContext:
@@ -42,4 +48,6 @@ def get_user_dashboard_context(user) -> DashboardContext:
             JobApplication.Status.INTERVIEWING,
             limit=5,
         ),
+        recent_insights=get_recent_insights_for_user(user, limit=3),
+        target_profiles=get_target_profiles_for_user(user),
     )
