@@ -3,10 +3,14 @@
 import pytest
 from django.urls import reverse
 
-from apps.dashboard.services import get_user_dashboard_context
+from apps.dashboard.services import (
+    get_admin_dashboard_context,
+    get_user_dashboard_context,
+)
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.models import JobApplication
+from apps.roles.factories import AdminRoleFactory
 from apps.users.factories import UserFactory
 
 
@@ -65,6 +69,47 @@ def test_dashboard_context_counts_only_current_user_data() -> None:
     assert context.metrics["notes"] == 2
     assert list(context.recent_insights) == []
     assert list(context.target_profiles) == []
+
+
+@pytest.mark.django_db
+def test_admin_dashboard_context_returns_platform_metrics() -> None:
+    """Admin metrics should summarize records across the platform."""
+    AdminRoleFactory()
+    user = UserFactory()
+    saved_application = JobApplicationFactory(
+        owner=user,
+        status=JobApplication.Status.SAVED,
+    )
+    JobApplicationFactory(
+        owner=user,
+        status=JobApplication.Status.INTERVIEWING,
+    )
+    ApplicationNoteFactory(application=saved_application)
+    TargetRoleProfileFactory(owner=user, is_active=True)
+    TargetRoleProfileFactory(owner=user, is_active=False)
+    JobInsightFactory(job_application=saved_application)
+
+    context = get_admin_dashboard_context()
+
+    assert context.total_users == 1
+    assert context.total_roles == 1
+    assert context.total_applications == 2
+    assert context.total_notes == 1
+    assert context.total_target_profiles == 3
+    assert context.active_target_profiles == 2
+    assert context.total_generated_insights == 1
+    assert {
+        status_count.status: status_count.count
+        for status_count in context.application_status_counts
+    } == {
+        JobApplication.Status.SAVED: 1,
+        JobApplication.Status.APPLIED: 0,
+        JobApplication.Status.SCREENING: 0,
+        JobApplication.Status.INTERVIEWING: 1,
+        JobApplication.Status.OFFER: 0,
+        JobApplication.Status.REJECTED: 0,
+        JobApplication.Status.WITHDRAWN: 0,
+    }
 
 
 @pytest.mark.django_db

@@ -3,6 +3,7 @@
 import pytest
 from django.urls import reverse
 
+from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.jobs.factories import ApplicationNoteFactory, JobApplicationFactory
 from apps.jobs.models import JobApplication
 from apps.roles.factories import AdminRoleFactory
@@ -91,6 +92,13 @@ def test_admin_dashboard_requires_login(client) -> None:
 def test_staff_user_can_access_admin_dashboard(client) -> None:
     """Django staff users should be allowed into the admin product surface."""
     user = StaffUserFactory(email="staff@example.com")
+    application = JobApplicationFactory(
+        owner=user,
+        status=JobApplication.Status.APPLIED,
+    )
+    ApplicationNoteFactory(application=application)
+    TargetRoleProfileFactory(owner=user)
+    JobInsightFactory(job_application=application)
     client.force_login(user)
 
     response = client.get(reverse("dashboard:admin"))
@@ -101,6 +109,12 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
     assert f'href="{reverse("dashboard:user")}"'.encode() not in response.content
     assert f'href="{reverse("jobs:application_list")}"'.encode() not in response.content
     assert response.context["total_users"] == 1
+    assert response.context["admin_context"].total_applications == 1
+    assert response.context["admin_context"].total_notes == 1
+    assert response.context["admin_context"].total_target_profiles == 2
+    assert response.context["admin_context"].total_generated_insights == 1
+    assert b"Applications by status" in response.content
+    assert b"Generated insights" in response.content
 
 
 @pytest.mark.django_db

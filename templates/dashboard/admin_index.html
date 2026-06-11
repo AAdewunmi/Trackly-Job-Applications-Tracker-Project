@@ -8,7 +8,7 @@
         <p class="tl-eyebrow">Admin surface</p>
         <h1>Trackly admin dashboard</h1>
         <p class="tl-muted">
-            This protected surface is reserved for platform oversight, support workflows, and future SaaS-level metrics.
+            Review platform-wide usage across accounts, applications, target profiles, and generated insights.
         </p>
     </div>
 
@@ -16,7 +16,7 @@
         <article class="tl-card">
             <div class="tl-card-body">
                 <p class="tl-eyebrow">Users</p>
-                <strong class="tl-admin-metric-value">{{ total_users }}</strong>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_users }}</strong>
                 <p class="tl-muted">Registered accounts in this environment.</p>
             </div>
         </article>
@@ -24,18 +24,69 @@
         <article class="tl-card">
             <div class="tl-card-body">
                 <p class="tl-eyebrow">Roles</p>
-                <strong class="tl-admin-metric-value">{{ total_roles }}</strong>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_roles }}</strong>
                 <p class="tl-muted">Configured product roles for access control.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Applications</p>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_applications }}</strong>
+                <p class="tl-muted">Tracked job applications across all users.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Notes</p>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_notes }}</strong>
+                <p class="tl-muted">Application notes saved across the platform.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Target profiles</p>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_target_profiles }}</strong>
+                <p class="tl-muted">Saved target role profiles across all users.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Active target profiles</p>
+                <strong class="tl-admin-metric-value">{{ admin_context.active_target_profiles }}</strong>
+                <p class="tl-muted">Profiles currently available for insight generation.</p>
+            </div>
+        </article>
+
+        <article class="tl-card">
+            <div class="tl-card-body">
+                <p class="tl-eyebrow">Generated insights</p>
+                <strong class="tl-admin-metric-value">{{ admin_context.total_generated_insights }}</strong>
+                <p class="tl-muted">Persisted AI/NLP job-fit insight records.</p>
             </div>
         </article>
     </div>
 
     <section class="tl-panel tl-admin-readiness">
         <div class="tl-panel-body">
-            <h2>Admin readiness</h2>
+            <h2>Applications by status</h2>
             <p class="tl-muted">
-                Trackly keeps the admin dashboard separate from the standard user dashboard and protects it with explicit access rules.
+                Platform-wide workflow distribution across every tracked application.
             </p>
+            <div class="tl-feature-list">
+                {% for status_count in admin_context.application_status_counts %}
+                    <article class="tl-card">
+                        <div class="tl-card-body">
+                            <p class="tl-eyebrow">{{ status_count.label }}</p>
+                            <strong class="tl-admin-metric-value">{{ status_count.count }}</strong>
+                            <p class="tl-muted">{{ status_count.status }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
         </div>
     </section>
 </section>
