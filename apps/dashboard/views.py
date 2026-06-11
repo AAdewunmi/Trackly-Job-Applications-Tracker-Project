@@ -42,7 +42,12 @@ def admin_index(request: HttpRequest) -> HttpResponse:
     if not is_trackly_admin(request.user):
         raise PermissionDenied("You do not have permission to access this dashboard.")
 
-    admin_context = get_admin_dashboard_context()
+    admin_context = get_admin_dashboard_context(
+        application_search=request.GET.get("q", "").strip(),
+        application_status=request.GET.get("status", "").strip(),
+        application_sort=request.GET.get("sort", "-updated_at").strip(),
+        application_page=request.GET.get("page", 1),
+    )
 
     return render(
         request,

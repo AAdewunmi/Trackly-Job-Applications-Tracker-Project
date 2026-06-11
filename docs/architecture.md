@@ -21,8 +21,8 @@ Trackly uses a modular Django architecture:
 - `apps/roles/` owns product roles and permission helpers.
 - `apps/jobs/` owns job applications, notes, forms, selectors, services, and
   workflow views.
-- `apps/dashboard/` owns the user dashboard service context and dashboard
-  surfaces.
+- `apps/dashboard/` owns user and admin dashboard service contexts and
+  dashboard surfaces.
 - `apps/insights/` owns target role profiles, persisted job insights, NLP
   preprocessing, TF-IDF similarity scoring, and insight generation services.
 - `templates/` contains server-rendered Django templates.
@@ -88,9 +88,11 @@ The roles foundation supports:
 - `member`
 - `admin`
 
-The user dashboard at `/dashboard/` requires authentication. The admin dashboard
-at `/dashboard/admin/` requires authentication and passes users through the
-Trackly admin permission helper.
+The user dashboard at `/dashboard/` requires authentication and is reserved for
+non-admin user workspace flows. The admin dashboard at `/dashboard/admin/`
+requires authentication and passes users through the Trackly admin permission
+helper. Admin users are redirected to the admin dashboard after login and are
+blocked from end-user dashboard and application workflow routes.
 
 Job application list, detail, update, delete, and note creation flows require
 authentication. Detail-level operations fetch applications through an
@@ -110,7 +112,7 @@ Trackly implements:
 - Timeline-style `ApplicationNote` records owned through their parent
   application
 - Reusable selectors for user-scoped application and note reads
-- Service-layer dashboard metric aggregation
+- Service-layer user and admin dashboard metric aggregation
 
 See `docs/domain-model.md` for the complete contract.
 
@@ -147,12 +149,17 @@ surface includes:
 - Application list, create, detail, update, delete, and note creation flows
 - User dashboard with dynamic pipeline, progress metrics, and recent
   applications
-- Protected admin dashboard shell
+- Protected admin dashboard with platform metrics, recent activity, application
+  status visualisation, and searchable/filterable application management table
 
 The dashboard includes an AI/NLP Insights panel as a product surface. The
 backend insight persistence and generation services are implemented in
 `apps.insights`; full browser workflows for managing target profiles and
 displaying generated insight history remain a later UI integration boundary.
+
+Admin dashboard UI work should follow `docs/design-system.md`: preserve the
+approved asymmetric admin cockpit composition and verify visual changes with
+Playwright screenshots so browser-rendered CSS and template changes stay aligned.
 
 ## Testing Approach
 

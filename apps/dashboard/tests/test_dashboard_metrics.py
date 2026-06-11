@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.dashboard.services import (
+    get_admin_application_table_page,
     get_admin_dashboard_context,
     get_user_dashboard_context,
 )
@@ -110,6 +111,37 @@ def test_admin_dashboard_context_returns_platform_metrics() -> None:
         JobApplication.Status.REJECTED: 0,
         JobApplication.Status.WITHDRAWN: 0,
     }
+    assert {
+        status_count.status: status_count.percentage
+        for status_count in context.application_status_counts
+    }[JobApplication.Status.SAVED] == 50
+    assert context.application_page.paginator.count == 2
+
+
+@pytest.mark.django_db
+def test_admin_application_table_page_filters_search_status_and_sort() -> None:
+    """Admin application table data should support dashboard controls."""
+    user = UserFactory(email="owner@example.com")
+    saved_application = JobApplicationFactory(
+        owner=user,
+        title="Backend Engineer",
+        company="Acme",
+        status=JobApplication.Status.SAVED,
+    )
+    JobApplicationFactory(
+        title="Product Designer",
+        company="Beta",
+        status=JobApplication.Status.INTERVIEWING,
+    )
+
+    page = get_admin_application_table_page(
+        search="backend",
+        status=JobApplication.Status.SAVED,
+        sort="company",
+    )
+
+    assert page.paginator.count == 1
+    assert list(page.object_list) == [saved_application]
 
 
 @pytest.mark.django_db

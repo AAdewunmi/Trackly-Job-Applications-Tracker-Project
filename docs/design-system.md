@@ -317,6 +317,44 @@ colour for action, status, and emphasis.
 - On mobile, dashboard side navigation should stack above content and use compact
   grid links rather than hiding navigation.
 
+### Admin Dashboard
+
+The admin dashboard should feel like an operational cockpit, not a stack of
+equal metric cards. Use the current `templates/dashboard/admin_index.html` and
+`static/css/theme.css` admin classes as the source of truth.
+
+Preferred composition:
+
+- A local left sidebar with clear hierarchical admin links.
+- A dominant top-left analytics panel for platform overview and primary charting.
+- A right-side recent-records/activity panel.
+- Smaller supporting widgets beneath the main row for NLP usage, access control,
+  and system feedback.
+- Application management tables lower on the page as secondary workflow
+  surfaces, not the first visual priority.
+
+Admin surfaces should preserve Trackly's light Cool Mist background, white
+panels, green status/action accents, bold headings, rounded corners, and compact
+data density. Avoid rebuilding the admin dashboard as repeated equal cards in a
+plain grid; that loses the intended hierarchy and does not match the approved
+visual direction.
+
+Required admin dashboard capabilities:
+
+- Platform KPI widgets and chart-like status visualisation.
+- Recent records/activity preview.
+- Search, status filter, sorting, pagination, and badges for application tables.
+- Progress bars and feedback badges for live system status.
+
+For admin dashboard UI changes, verify in a browser with Playwright before
+considering the work done. At minimum, confirm:
+
+- the stylesheet cache-buster in `templates/base.html` has changed when
+  `theme.css` changes;
+- `.tl-admin-workspace` computes to a grid layout;
+- the rendered screenshot shows the asymmetric overview/activity/support-widget
+  composition rather than unstyled HTML or stacked cards.
+
 ### Forms
 
 - Forms should use `novalidate` and render field-level errors.

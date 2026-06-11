@@ -113,8 +113,12 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
     assert response.context["admin_context"].total_notes == 1
     assert response.context["admin_context"].total_target_profiles == 2
     assert response.context["admin_context"].total_generated_insights == 1
+    assert response.context["admin_context"].application_page.paginator.count == 1
     assert b"Applications by status" in response.content
     assert b"Generated insights" in response.content
+    assert b"Control centre" in response.content
+    assert b"Title, company, or owner" in response.content
+    assert b"Applied" in response.content
 
 
 @pytest.mark.django_db

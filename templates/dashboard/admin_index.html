@@ -3,91 +3,232 @@
 {% block title %}Admin Dashboard | Trackly{% endblock %}
 
 {% block content %}
-<section class="tl-section">
-    <div class="tl-section-heading">
-        <p class="tl-eyebrow">Admin surface</p>
-        <h1>Trackly admin dashboard</h1>
-        <p class="tl-muted">
-            Review platform-wide usage across accounts, applications, target profiles, and generated insights.
-        </p>
-    </div>
-
-    <div class="tl-admin-metric-grid">
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Users</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_users }}</strong>
-                <p class="tl-muted">Registered accounts in this environment.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Roles</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_roles }}</strong>
-                <p class="tl-muted">Configured product roles for access control.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Applications</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_applications }}</strong>
-                <p class="tl-muted">Tracked job applications across all users.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Notes</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_notes }}</strong>
-                <p class="tl-muted">Application notes saved across the platform.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Target profiles</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_target_profiles }}</strong>
-                <p class="tl-muted">Saved target role profiles across all users.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Active target profiles</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.active_target_profiles }}</strong>
-                <p class="tl-muted">Profiles currently available for insight generation.</p>
-            </div>
-        </article>
-
-        <article class="tl-card">
-            <div class="tl-card-body">
-                <p class="tl-eyebrow">Generated insights</p>
-                <strong class="tl-admin-metric-value">{{ admin_context.total_generated_insights }}</strong>
-                <p class="tl-muted">Persisted AI/NLP job-fit insight records.</p>
-            </div>
-        </article>
-    </div>
-
-    <section class="tl-panel tl-admin-readiness">
-        <div class="tl-panel-body">
-            <h2>Applications by status</h2>
-            <p class="tl-muted">
-                Platform-wide workflow distribution across every tracked application.
-            </p>
-            <div class="tl-feature-list">
-                {% for status_count in admin_context.application_status_counts %}
-                    <article class="tl-card">
-                        <div class="tl-card-body">
-                            <p class="tl-eyebrow">{{ status_count.label }}</p>
-                            <strong class="tl-admin-metric-value">{{ status_count.count }}</strong>
-                            <p class="tl-muted">{{ status_count.status }}</p>
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
+<section class="tl-admin-workspace">
+    <aside class="tl-admin-sidebar" aria-label="Admin navigation">
+        <div>
+            <p class="tl-eyebrow">Admin</p>
+            <h2>Control centre</h2>
         </div>
-    </section>
+        <nav>
+            <a href="#overview" aria-current="page">
+                <span class="tl-admin-nav-icon">O</span>
+                <span>Overview</span>
+            </a>
+            <a href="#activity">
+                <span class="tl-admin-nav-icon">R</span>
+                <span>Recent records</span>
+            </a>
+            <a href="#signals">
+                <span class="tl-admin-nav-icon">S</span>
+                <span>Signals</span>
+            </a>
+            <a href="#applications">
+                <span class="tl-admin-nav-icon">A</span>
+                <span>Applications</span>
+            </a>
+            <a href="{% url 'admin:index' %}">
+                <span class="tl-admin-nav-icon">D</span>
+                <span>Django admin</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="tl-admin-main">
+        <section class="tl-admin-dashboard-grid" id="overview">
+            <article class="tl-admin-overview">
+                <div class="tl-admin-overview-header">
+                    <div>
+                        <p class="tl-eyebrow">Platform overview</p>
+                        <h1>Trackly admin dashboard</h1>
+                        <p class="tl-muted">Live operational signals across users, applications, notes, and insights.</p>
+                    </div>
+                    <span class="tl-dashboard-status">Live metrics</span>
+                </div>
+
+                <div class="tl-admin-overview-metrics" aria-label="Platform totals">
+                    <div>
+                        <span>Users</span>
+                        <strong>{{ admin_context.total_users }}</strong>
+                    </div>
+                    <div>
+                        <span>Applications</span>
+                        <strong>{{ admin_context.total_applications }}</strong>
+                    </div>
+                    <div>
+                        <span>Notes</span>
+                        <strong>{{ admin_context.total_notes }}</strong>
+                    </div>
+                    <div>
+                        <span>Insights</span>
+                        <strong>{{ admin_context.total_generated_insights }}</strong>
+                    </div>
+                </div>
+
+                <div class="tl-admin-chart" aria-label="Applications by status">
+                    {% for status_count in admin_context.application_status_counts %}
+                        <div class="tl-admin-chart-column">
+                            <span class="tl-admin-chart-value">{{ status_count.count }}</span>
+                            <div class="tl-admin-chart-track">
+                                <span style="height: {{ status_count.percentage }}%"></span>
+                            </div>
+                            <span class="tl-admin-chart-label">{{ status_count.label }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <aside class="tl-admin-activity" id="activity">
+                <div class="tl-admin-panel-heading">
+                    <div>
+                        <p class="tl-eyebrow">Recent records</p>
+                        <h2>Applications</h2>
+                    </div>
+                    <a href="#applications">See all</a>
+                </div>
+
+                <div class="tl-admin-activity-list">
+                    {% for application in admin_context.application_page|slice:":4" %}
+                        <article class="tl-admin-activity-item">
+                            <div class="tl-admin-record-icon">{{ application.company|first }}</div>
+                            <div>
+                                <strong>{{ application.title }}</strong>
+                                <span>{{ application.company }} · {{ application.owner.email }}</span>
+                                <p>{{ application.note_count }} notes · {{ application.insight_count }} insights</p>
+                            </div>
+                            <span class="tl-badge tl-badge-muted">{{ application.get_status_display }}</span>
+                        </article>
+                    {% empty %}
+                        <p class="tl-muted">No applications have been created yet.</p>
+                    {% endfor %}
+                </div>
+            </aside>
+        </section>
+
+        <section class="tl-admin-support-grid" id="signals">
+            <article class="tl-admin-soft-panel">
+                <div class="tl-admin-panel-heading">
+                    <div>
+                        <p class="tl-eyebrow">NLP usage</p>
+                        <h2>Insight progress</h2>
+                    </div>
+                    <span class="tl-badge tl-badge-success">{{ admin_context.active_target_profiles }} active</span>
+                </div>
+                <div class="tl-admin-split-stat">
+                    <div>
+                        <span>Target profiles</span>
+                        <strong>{{ admin_context.total_target_profiles }}</strong>
+                    </div>
+                    <div>
+                        <span>Generated insights</span>
+                        <strong>{{ admin_context.total_generated_insights }}</strong>
+                    </div>
+                </div>
+                <div class="tl-admin-progress">
+                    <span style="width: {% widthratio admin_context.active_target_profiles admin_context.total_target_profiles 100 %}%"></span>
+                </div>
+                <p class="tl-muted">{{ admin_context.active_target_profiles }} of {{ admin_context.total_target_profiles }} target profiles are active.</p>
+            </article>
+
+            <article class="tl-admin-soft-panel">
+                <p class="tl-eyebrow">Access control</p>
+                <h2>{{ admin_context.total_roles }} roles</h2>
+                <p class="tl-muted">Configured product roles for staff/admin access separation.</p>
+                <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'admin:index' %}">Open Django admin</a>
+            </article>
+
+            <article class="tl-admin-soft-panel">
+                <p class="tl-eyebrow">System feedback</p>
+                <h2>Read-only overview</h2>
+                <p class="tl-muted">Filters, pagination, badges, and progress bars reflect current platform state.</p>
+                <div class="tl-admin-feedback-row">
+                    <span class="tl-badge tl-badge-success">Healthy</span>
+                    <span class="tl-badge tl-badge-muted">{{ admin_context.application_page.paginator.count }} matching</span>
+                </div>
+            </article>
+        </section>
+
+        <section class="tl-admin-table-panel" id="applications">
+            <div class="tl-admin-panel-heading">
+                <div>
+                    <p class="tl-eyebrow">Records</p>
+                    <h2>Application management</h2>
+                </div>
+                <span class="tl-badge tl-badge-muted">{{ admin_context.application_page.paginator.count }} matching</span>
+            </div>
+
+            <form class="tl-admin-table-controls" method="get">
+                <label>
+                    <span>Search</span>
+                    <input class="tl-input" type="search" name="q" value="{{ admin_context.application_search }}" placeholder="Title, company, or owner">
+                </label>
+                <label>
+                    <span>Status</span>
+                    <select class="tl-input" name="status">
+                        <option value="">All statuses</option>
+                        {% for status_count in admin_context.application_status_counts %}
+                            <option value="{{ status_count.status }}"{% if admin_context.application_status == status_count.status %} selected{% endif %}>{{ status_count.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Sort</span>
+                    <select class="tl-input" name="sort">
+                        <option value="-updated_at"{% if admin_context.application_sort == "-updated_at" %} selected{% endif %}>Newest updated</option>
+                        <option value="updated_at"{% if admin_context.application_sort == "updated_at" %} selected{% endif %}>Oldest updated</option>
+                        <option value="company"{% if admin_context.application_sort == "company" %} selected{% endif %}>Company</option>
+                        <option value="status"{% if admin_context.application_sort == "status" %} selected{% endif %}>Status</option>
+                        <option value="owner__email"{% if admin_context.application_sort == "owner__email" %} selected{% endif %}>Owner</option>
+                    </select>
+                </label>
+                <button class="tl-button tl-button-primary tl-button-small" type="submit">Apply</button>
+            </form>
+
+            <div class="tl-table-wrap">
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Application</th>
+                            <th scope="col">Owner</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Notes</th>
+                            <th scope="col">Insights</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in admin_context.application_page %}
+                            <tr>
+                                <td>
+                                    <strong>{{ application.title }}</strong>
+                                    <span>{{ application.company }}</span>
+                                </td>
+                                <td>{{ application.owner.email }}</td>
+                                <td><span class="tl-badge tl-badge-muted">{{ application.get_status_display }}</span></td>
+                                <td>{{ application.note_count }}</td>
+                                <td>{{ application.insight_count }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">No applications match the current filters.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tl-admin-pagination">
+                {% if admin_context.application_page.has_previous %}
+                    <a class="tl-button tl-button-secondary tl-button-small" href="?q={{ admin_context.application_search }}&status={{ admin_context.application_status }}&sort={{ admin_context.application_sort }}&page={{ admin_context.application_page.previous_page_number }}">Previous</a>
+                {% else %}
+                    <span class="tl-button tl-button-secondary tl-button-small" aria-disabled="true">Previous</span>
+                {% endif %}
+                <span>Page {{ admin_context.application_page.number }} of {{ admin_context.application_page.paginator.num_pages }}</span>
+                {% if admin_context.application_page.has_next %}
+                    <a class="tl-button tl-button-secondary tl-button-small" href="?q={{ admin_context.application_search }}&status={{ admin_context.application_status }}&sort={{ admin_context.application_sort }}&page={{ admin_context.application_page.next_page_number }}">Next</a>
+                {% else %}
+                    <span class="tl-button tl-button-secondary tl-button-small" aria-disabled="true">Next</span>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 </section>
 {% endblock %}
