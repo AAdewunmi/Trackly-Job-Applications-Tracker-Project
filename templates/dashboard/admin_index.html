@@ -41,6 +41,10 @@
                         <p class="tl-eyebrow">Platform overview</p>
                         <h1>Trackly admin dashboard</h1>
                         <p class="tl-muted">Live operational signals across users, applications, notes, and insights.</p>
+                        <div class="tl-dashboard-identity tl-dashboard-identity-admin" aria-label="Current dashboard session">
+                            <span>Logged in as {{ request.user.email }}</span>
+                            <strong>Admin dashboard</strong>
+                        </div>
                     </div>
                     <span class="tl-dashboard-status">Live metrics</span>
                 </div>

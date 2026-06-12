@@ -4,18 +4,24 @@ Browser views for Trackly insight workflows.
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
-from apps.insights.forms import JobInsightGenerationForm, TargetRoleProfileForm
+from apps.insights.forms import (
+    DashboardJobInsightGenerationForm,
+    JobInsightGenerationForm,
+    TargetRoleProfileForm,
+)
 from apps.insights.selectors import (
-    get_recent_insights_for_user,
+    INSIGHT_SORT_OPTIONS,
+    get_filtered_insights_for_user,
+    get_score_labels_for_user,
     get_target_profiles_for_user,
 )
-from apps.insights.services import generate_job_insight
+from apps.insights.services import TargetRoleProfileRequired, generate_job_insight
 from apps.jobs.models import JobApplication
 
 
@@ -27,8 +33,31 @@ class InsightListView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """Add user-scoped insight dashboard data."""
         context = super().get_context_data(**kwargs)
-        context["recent_insights"] = get_recent_insights_for_user(self.request.user)
+        target_profile_id = self.request.GET.get("target_profile", "")
+        score_label = self.request.GET.get("score_label", "")
+        sort = self.request.GET.get("sort", "recent")
+        if sort not in INSIGHT_SORT_OPTIONS:
+            sort = "recent"
+
+        insights = list(
+            get_filtered_insights_for_user(
+                self.request.user,
+                target_profile_id=target_profile_id,
+                score_label=score_label,
+                sort=sort,
+            )
+        )
+
+        context["recent_insights"] = insights
         context["target_profiles"] = get_target_profiles_for_user(self.request.user)
+        context["score_labels"] = get_score_labels_for_user(self.request.user)
+        context["insight_generation_form"] = DashboardJobInsightGenerationForm(
+            user=self.request.user,
+        )
+        context["selected_target_profile_id"] = target_profile_id
+        context["selected_score_label"] = score_label
+        context["selected_sort"] = sort
+        context["has_active_filters"] = bool(target_profile_id or score_label)
         return context
 
 
@@ -44,6 +73,38 @@ class TargetRoleProfileCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         messages.success(self.request, "Target role profile created.")
         return super().form_valid(form)
+
+
+class DashboardGenerateJobInsightView(LoginRequiredMixin, View):
+    """Generate a stored insight from the insights dashboard."""
+
+    def post(self, request):
+        """Generate or reuse an insight and redirect to the insights dashboard."""
+        form = DashboardJobInsightGenerationForm(request.POST, user=request.user)
+
+        if not form.is_valid():
+            messages.error(
+                request,
+                "Select one of your applications and an active target profile.",
+            )
+            return redirect("insights:insight-list")
+
+        try:
+            result = generate_job_insight(
+                user=request.user,
+                application=form.cleaned_data["application"],
+                target_profile=form.cleaned_data["target_profile"],
+            )
+        except (PermissionDenied, TargetRoleProfileRequired, ValidationError):
+            messages.error(request, "You cannot generate this insight.")
+            return redirect("insights:insight-list")
+
+        if result.created:
+            messages.success(request, "Job insight generated.")
+        else:
+            messages.info(request, "Existing insight reused for unchanged content.")
+
+        return redirect("insights:insight-list")
 
 
 class GenerateJobInsightView(LoginRequiredMixin, View):

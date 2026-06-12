@@ -5,6 +5,7 @@ Forms for Trackly target role and insight generation workflows.
 from django import forms
 
 from apps.insights.models import TargetRoleProfile
+from apps.jobs.models import JobApplication
 
 
 class TargetRoleProfileForm(forms.ModelForm):
@@ -69,6 +70,30 @@ class JobInsightGenerationForm(forms.Form):
     def __init__(self, *args, user, **kwargs):
         """Limit target profile choices to the logged-in user."""
         super().__init__(*args, **kwargs)
+        self.fields["target_profile"].queryset = TargetRoleProfile.objects.filter(
+            owner=user,
+            is_active=True,
+        ).order_by("title")
+
+
+class DashboardJobInsightGenerationForm(forms.Form):
+    """Form used to generate an insight from the insights dashboard."""
+
+    application = forms.ModelChoiceField(
+        queryset=JobApplication.objects.none(),
+        label="Job application",
+    )
+    target_profile = forms.ModelChoiceField(
+        queryset=TargetRoleProfile.objects.none(),
+        label="Target role profile",
+    )
+
+    def __init__(self, *args, user, **kwargs):
+        """Limit generation choices to records owned by the logged-in user."""
+        super().__init__(*args, **kwargs)
+        self.fields["application"].queryset = JobApplication.objects.filter(
+            owner=user,
+        ).order_by("title", "company")
         self.fields["target_profile"].queryset = TargetRoleProfile.objects.filter(
             owner=user,
             is_active=True,

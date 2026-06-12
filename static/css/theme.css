@@ -1535,6 +1535,42 @@ textarea:focus {
   max-width: 40rem;
 }
 
+.tl-dashboard-identity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 1.25rem auto 0;
+  border: 1px solid rgba(24, 160, 88, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(24, 160, 88, 0.12), transparent 55%),
+    #ffffff;
+  box-shadow: var(--tl-shadow-soft);
+  color: var(--tl-text);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.65rem 1rem;
+}
+
+.tl-dashboard-identity span {
+  color: var(--tl-text);
+}
+
+.tl-dashboard-identity strong {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--tl-accent-soft);
+  color: var(--tl-accent);
+  font-size: 0.82rem;
+  padding: 0.32rem 0.58rem;
+}
+
+.tl-dashboard-identity-admin {
+  margin-top: 1rem;
+}
+
 .tl-dashboard-empty-state {
   margin-top: 0;
 }

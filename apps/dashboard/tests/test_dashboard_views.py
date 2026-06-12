@@ -46,6 +46,8 @@ def test_user_dashboard_loads_for_authenticated_user(client) -> None:
     assert response.context["metrics"]["notes"] == 1
     assert list(response.context["recent_applications"]) == [application]
     assert b"Your job search command centre" in response.content
+    assert b"Logged in as dashboard@example.com" in response.content
+    assert b"User dashboard" in response.content
     assert reverse("jobs:application_create").encode() in response.content
     assert reverse("jobs:application_list").encode() in response.content
     content = response.content.decode()
@@ -105,6 +107,8 @@ def test_staff_user_can_access_admin_dashboard(client) -> None:
 
     assert response.status_code == 200
     assert b"Trackly admin dashboard" in response.content
+    assert b"Logged in as staff@example.com" in response.content
+    assert b"Admin dashboard" in response.content
     assert reverse("dashboard:admin").encode() in response.content
     assert f'href="{reverse("dashboard:user")}"'.encode() not in response.content
     assert f'href="{reverse("jobs:application_list")}"'.encode() not in response.content

@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Trackly{% endblock %}</title>
-    <link href="{% static 'css/theme.css' %}?v=20260611-admin-dashboard-01" rel="stylesheet">
+    <link href="{% static 'css/theme.css' %}?v=20260612-dashboard-identity-01" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
   </head>
   <body class="{% block body_class %}{% endblock %}">
@@ -25,6 +25,7 @@
               {% else %}
                 <a href="{% url 'dashboard:user' %}">Dashboard</a>
                 <a href="{% url 'jobs:application_list' %}">Applications</a>
+                <a href="{% url 'insights:insight-list' %}">Insights</a>
               {% endif %}
             {% else %}
               <a href="{% url 'home' %}#dashboard-preview">Preview</a>
@@ -36,11 +37,6 @@
 
           <div class="tl-nav-actions">
             {% if request.user.is_authenticated %}
-              {% if is_trackly_admin_user %}
-                <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'dashboard:admin' %}">Admin</a>
-              {% else %}
-                <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'dashboard:user' %}">Dashboard</a>
-              {% endif %}
               <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'users:profile' %}">Profile</a>
               <form method="post" action="{% url 'users:logout' %}">
                 {% csrf_token %}
@@ -97,6 +93,7 @@
                   {% else %}
                     <a href="{% url 'dashboard:user' %}">Dashboard</a>
                     <a href="{% url 'jobs:application_list' %}">Applications</a>
+                    <a href="{% url 'insights:insight-list' %}">Insights</a>
                   {% endif %}
                   <a href="{% url 'users:profile' %}">Profile</a>
                 {% else %}

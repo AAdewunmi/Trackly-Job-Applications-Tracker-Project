@@ -11,6 +11,14 @@ from django.db.models import QuerySet
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.jobs.models import JobApplication
 
+INSIGHT_SORT_OPTIONS = {
+    "recent": "-created_at",
+    "score_desc": "-similarity_score",
+    "score_asc": "similarity_score",
+    "role": "job_application__title",
+    "target_profile": "target_profile__title",
+}
+
 
 def _is_authenticated_user(user) -> bool:
     """Return whether a user can be used for ownership-scoped queries."""
@@ -58,6 +66,39 @@ def get_insights_for_user(user) -> QuerySet[JobInsight]:
         JobInsight.objects.select_related("job_application", "target_profile")
         .filter(job_application__owner=user)
         .order_by("-created_at")
+    )
+
+
+def get_filtered_insights_for_user(
+    user,
+    *,
+    target_profile_id: str = "",
+    score_label: str = "",
+    sort: str = "recent",
+) -> QuerySet[JobInsight]:
+    """Return user-owned insights filtered and ordered for the insights page."""
+    insights = get_insights_for_user(user)
+
+    if target_profile_id:
+        insights = insights.filter(target_profile_id=target_profile_id)
+
+    if score_label:
+        insights = insights.filter(score_label=score_label)
+
+    order_by = INSIGHT_SORT_OPTIONS.get(sort, INSIGHT_SORT_OPTIONS["recent"])
+    return insights.order_by(order_by, "-created_at")
+
+
+def get_score_labels_for_user(user) -> list[str]:
+    """Return distinct score labels available in a user's stored insights."""
+    if not _is_authenticated_user(user):
+        return []
+
+    return list(
+        get_insights_for_user(user)
+        .order_by("score_label")
+        .values_list("score_label", flat=True)
+        .distinct()
     )
 
 

@@ -9,9 +9,11 @@ from django.utils import timezone
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.selectors import (
     get_active_target_profiles_for_user,
+    get_filtered_insights_for_user,
     get_insights_for_user,
     get_latest_insight_for_application,
     get_recent_insights_for_user,
+    get_score_labels_for_user,
     get_target_profiles_for_user,
 )
 from apps.jobs.factories import JobApplicationFactory
@@ -114,11 +116,73 @@ def test_insights_for_user_returns_owned_insights_in_recent_order() -> None:
 
 
 @pytest.mark.django_db
+def test_filtered_insights_for_user_filters_by_profile_and_score_label() -> None:
+    """Insight filtering should stay scoped to the current user's records."""
+    owner = UserFactory(email="owner@example.com")
+    backend_profile = TargetRoleProfileFactory(owner=owner, title="Backend")
+    data_profile = TargetRoleProfileFactory(owner=owner, title="Data")
+    backend_insight = JobInsightFactory(
+        job_application__owner=owner,
+        target_profile=backend_profile,
+        score_label="Strong match",
+    )
+    JobInsightFactory(
+        job_application__owner=owner,
+        target_profile=data_profile,
+        score_label="Developing match",
+    )
+    JobInsightFactory(score_label="Strong match")
+
+    insights = get_filtered_insights_for_user(
+        owner,
+        target_profile_id=str(backend_profile.pk),
+        score_label="Strong match",
+    )
+
+    assert list(insights) == [backend_insight]
+
+
+@pytest.mark.django_db
+def test_filtered_insights_for_user_sorts_by_similarity_score() -> None:
+    """Insight sorting should support match strength ordering."""
+    owner = UserFactory()
+    lower_score = JobInsightFactory(
+        job_application__owner=owner,
+        similarity_score=0.24,
+    )
+    higher_score = JobInsightFactory(
+        job_application__owner=owner,
+        similarity_score=0.91,
+    )
+
+    insights = get_filtered_insights_for_user(owner, sort="score_desc")
+
+    assert list(insights) == [higher_score, lower_score]
+
+
+@pytest.mark.django_db
+def test_score_labels_for_user_returns_owned_distinct_labels() -> None:
+    """Score label options should be deduplicated and user scoped."""
+    owner = UserFactory()
+    JobInsightFactory(job_application__owner=owner, score_label="Strong match")
+    JobInsightFactory(job_application__owner=owner, score_label="Strong match")
+    JobInsightFactory(job_application__owner=owner, score_label="Developing match")
+    JobInsightFactory(score_label="Foreign")
+
+    assert get_score_labels_for_user(owner) == [
+        "Developing match",
+        "Strong match",
+    ]
+
+
+@pytest.mark.django_db
 def test_insight_selectors_return_empty_for_anonymous_user() -> None:
     """Anonymous users should not receive stored insights."""
     JobInsightFactory()
 
     assert list(get_insights_for_user(AnonymousUser())) == []
+    assert list(get_filtered_insights_for_user(AnonymousUser())) == []
+    assert get_score_labels_for_user(AnonymousUser()) == []
     assert get_recent_insights_for_user(AnonymousUser()) == []
 
 
