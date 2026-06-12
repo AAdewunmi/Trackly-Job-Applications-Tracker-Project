@@ -39,9 +39,6 @@
             {% if request.user.is_authenticated %}
               {% if is_trackly_admin_user %}
                 <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'dashboard:admin' %}">Admin</a>
-              {% else %}
-                <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'dashboard:user' %}">Dashboard</a>
-                <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'insights:insight-list' %}">Insights</a>
               {% endif %}
               <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'users:profile' %}">Profile</a>
               <form method="post" action="{% url 'users:logout' %}">
