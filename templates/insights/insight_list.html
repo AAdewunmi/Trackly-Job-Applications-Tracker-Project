@@ -30,7 +30,11 @@
                                 {% else %}
                                     <span class="tl-badge tl-badge-muted">Inactive</span>
                                 {% endif %}
-                                {{ profile.keywords|join:", " }}
+                                {% for keyword in profile.keywords %}
+                                    <span class="tl-badge tl-badge-muted">{{ keyword }}</span>
+                                {% empty %}
+                                    <span class="tl-muted">No keywords recorded.</span>
+                                {% endfor %}
                             </dd>
                         </div>
                     {% endfor %}
@@ -49,14 +53,60 @@
                     <article class="tl-card">
                         <div class="tl-card-body tl-stack">
                             <div>
-                                <h3>{{ insight.job_application.title }}</h3>
+                                <h3>
+                                    <a class="tl-table-link" href="{{ insight.job_application.get_absolute_url }}">
+                                        {{ insight.job_application.title }}
+                                    </a>
+                                </h3>
                                 <p class="tl-muted">{{ insight.job_application.company }} matched against {{ insight.target_profile.title }}</p>
                             </div>
                             <p>
                                 <span class="tl-badge tl-badge-success">{{ insight.score_label }}</span>
-                                {{ insight.similarity_score }}
+                                {{ insight.similarity_score|floatformat:2 }} TF-IDF cosine similarity
                             </p>
                             <p>{{ insight.explanation }}</p>
+
+                            <div class="tl-definition-list">
+                                <div class="tl-definition-row">
+                                    <dt>Extracted</dt>
+                                    <dd>
+                                        <div class="tl-actions">
+                                            {% for term in insight.extracted_terms %}
+                                                <span class="tl-badge tl-badge-muted">{{ term }}</span>
+                                            {% empty %}
+                                                <span class="tl-muted">No terms extracted.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </dd>
+                                </div>
+
+                                <div class="tl-definition-row">
+                                    <dt>Overlap</dt>
+                                    <dd>
+                                        <div class="tl-actions">
+                                            {% for term in insight.top_overlapping_terms %}
+                                                <span class="tl-badge tl-badge-success">{{ term }}</span>
+                                            {% empty %}
+                                                <span class="tl-muted">No high-value overlap found.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </dd>
+                                </div>
+
+                                <div class="tl-definition-row">
+                                    <dt>Missing</dt>
+                                    <dd>
+                                        <div class="tl-actions">
+                                            {% for term in insight.missing_target_terms %}
+                                                <span class="tl-badge tl-badge-primary">{{ term }}</span>
+                                            {% empty %}
+                                                <span class="tl-muted">No major missing target terms.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </dd>
+                                </div>
+                            </div>
+
                             <div class="tl-actions">
                                 <a class="tl-button tl-button-secondary" href="{{ insight.job_application.get_absolute_url }}">View application</a>
                             </div>
