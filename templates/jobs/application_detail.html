@@ -12,6 +12,7 @@
         <div class="tl-actions">
             <a class="tl-button tl-button-primary" href="{% url 'jobs:application_update' application.pk %}">Edit application</a>
             <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">All applications</a>
+            <a class="tl-button tl-button-secondary" href="{% url 'insights:insight-list' %}">Insights workspace</a>
             <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_delete' application.pk %}">Delete</a>
         </div>
     </div>
@@ -79,6 +80,7 @@
 
                     <div class="tl-actions">
                         <button class="tl-button tl-button-primary" type="submit">Generate insight</button>
+                        <a class="tl-button tl-button-secondary" href="{% url 'insights:insight-list' %}">View insight history</a>
                     </div>
                 </form>
             {% else %}

@@ -8,7 +8,7 @@
         <p class="tl-eyebrow">AI/NLP insights</p>
         <h1>Job-fit insights</h1>
         <p class="tl-muted">
-            Review recent retrieval-style matches and manage the target role profiles used to compare job descriptions.
+            Filter, sort, and review retrieval-style matches between job descriptions and target role profiles.
         </p>
         <div class="tl-actions">
             <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
@@ -40,14 +40,74 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="tl-muted">No target role profiles have been created yet.</p>
+                <p class="tl-muted">
+                    Target profiles define the skills, responsibilities, and keywords Trackly uses when comparing job descriptions.
+                </p>
+                <div class="tl-actions">
+                    <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create your first target profile</a>
+                </div>
             {% endif %}
         </div>
     </section>
 
     <section class="tl-panel">
         <div class="tl-panel-body tl-stack">
-            <h2>Recent insights</h2>
+            <div class="tl-shot-header">
+                <div>
+                    <h2>Insight workspace</h2>
+                    <p class="tl-muted">
+                        Narrow the list by target profile or score label, then sort by recency, match strength, role, or profile.
+                    </p>
+                </div>
+                <span class="tl-badge tl-badge-primary">{{ recent_insights|length }} shown</span>
+            </div>
+
+            <form class="tl-form" method="get">
+                <div class="tl-form-grid">
+                    <div class="tl-field">
+                        <label class="tl-label" for="target-profile-filter">Target profile</label>
+                        <select id="target-profile-filter" name="target_profile">
+                            <option value="">All target profiles</option>
+                            {% for profile in target_profiles %}
+                                <option value="{{ profile.pk }}"{% if selected_target_profile_id == profile.pk|stringformat:"s" %} selected{% endif %}>
+                                    {{ profile.title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="tl-field">
+                        <label class="tl-label" for="score-label-filter">Score label</label>
+                        <select id="score-label-filter" name="score_label">
+                            <option value="">All score labels</option>
+                            {% for label in score_labels %}
+                                <option value="{{ label }}"{% if selected_score_label == label %} selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="tl-field">
+                        <label class="tl-label" for="insight-sort">Sort by</label>
+                        <select id="insight-sort" name="sort">
+                            <option value="recent"{% if selected_sort == "recent" %} selected{% endif %}>Newest first</option>
+                            <option value="score_desc"{% if selected_sort == "score_desc" %} selected{% endif %}>Highest score</option>
+                            <option value="score_asc"{% if selected_sort == "score_asc" %} selected{% endif %}>Lowest score</option>
+                            <option value="role"{% if selected_sort == "role" %} selected{% endif %}>Role title</option>
+                            <option value="target_profile"{% if selected_sort == "target_profile" %} selected{% endif %}>Target profile</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tl-actions">
+                    <button class="tl-button tl-button-primary" type="submit">Apply filters</button>
+                    {% if has_active_filters or selected_sort != "recent" %}
+                        <a class="tl-button tl-button-secondary" href="{% url 'insights:insight-list' %}">Reset</a>
+                    {% endif %}
+                </div>
+            </form>
+
             {% if recent_insights %}
                 {% for insight in recent_insights %}
                     <article class="tl-card">
@@ -114,7 +174,36 @@
                     </article>
                 {% endfor %}
             {% else %}
-                <p class="tl-muted">No job insights have been generated yet.</p>
+                <div class="tl-stack">
+                    {% if has_active_filters %}
+                        <h3>No insights match these filters</h3>
+                        <p class="tl-muted">
+                            Try a different target profile or score label, or reset the view to see every stored job-fit insight.
+                        </p>
+                        <div class="tl-actions">
+                            <a class="tl-button tl-button-primary" href="{% url 'insights:insight-list' %}">Reset filters</a>
+                            <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">Open applications</a>
+                        </div>
+                    {% elif target_profiles %}
+                        <h3>No job insights yet</h3>
+                        <p class="tl-muted">
+                            Open an application with a job description, choose a target profile, and generate your first explainable match.
+                        </p>
+                        <div class="tl-actions">
+                            <a class="tl-button tl-button-primary" href="{% url 'jobs:application_list' %}">Choose an application</a>
+                            <a class="tl-button tl-button-secondary" href="{% url 'insights:target-profile-create' %}">Add another target profile</a>
+                        </div>
+                    {% else %}
+                        <h3>Set up AI/NLP insights</h3>
+                        <p class="tl-muted">
+                            Create a target role profile first. Then Trackly can compare job descriptions against the skills and terms you care about.
+                        </p>
+                        <div class="tl-actions">
+                            <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
+                            <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">Review applications</a>
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </section>

@@ -38,6 +38,115 @@ def test_insight_list_renders_user_scoped_profiles_and_insights(client) -> None:
 
 
 @pytest.mark.django_db
+def test_insight_list_renders_filter_and_sort_controls(client) -> None:
+    """The insight workspace should expose browser filters and sorting."""
+    user = UserFactory()
+    profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    JobInsightFactory(
+        job_application__owner=user,
+        target_profile=profile,
+        score_label="Strong match",
+    )
+    client.force_login(user)
+
+    response = client.get(reverse("insights:insight-list"))
+
+    assert response.status_code == 200
+    assert b"Insight workspace" in response.content
+    assert b'name="target_profile"' in response.content
+    assert b'name="score_label"' in response.content
+    assert b'name="sort"' in response.content
+    assert b"Highest score" in response.content
+    assert b"Strong match" in response.content
+
+
+@pytest.mark.django_db
+def test_insight_list_filters_by_target_profile_and_score_label(client) -> None:
+    """Filtering should narrow the visible insight list."""
+    user = UserFactory()
+    backend_profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    data_profile = TargetRoleProfileFactory(owner=user, title="Data Target")
+    backend_insight = JobInsightFactory(
+        job_application__owner=user,
+        job_application__title="Backend Engineer",
+        target_profile=backend_profile,
+        score_label="Strong match",
+    )
+    JobInsightFactory(
+        job_application__owner=user,
+        job_application__title="Data Analyst",
+        target_profile=data_profile,
+        score_label="Developing match",
+    )
+    client.force_login(user)
+
+    response = client.get(
+        reverse("insights:insight-list"),
+        {
+            "target_profile": str(backend_profile.pk),
+            "score_label": "Strong match",
+        },
+    )
+
+    assert response.status_code == 200
+    assert list(response.context["recent_insights"]) == [backend_insight]
+    assert b"Backend Engineer" in response.content
+    assert b"Data Analyst" not in response.content
+    assert response.context["has_active_filters"] is True
+
+
+@pytest.mark.django_db
+def test_insight_list_sorts_by_highest_score(client) -> None:
+    """Sorting by score should put the strongest match first."""
+    user = UserFactory()
+    lower_score = JobInsightFactory(
+        job_application__owner=user,
+        job_application__title="Lower Match",
+        similarity_score=0.21,
+    )
+    higher_score = JobInsightFactory(
+        job_application__owner=user,
+        job_application__title="Higher Match",
+        similarity_score=0.88,
+    )
+    client.force_login(user)
+
+    response = client.get(
+        reverse("insights:insight-list"),
+        {"sort": "score_desc"},
+    )
+
+    assert response.status_code == 200
+    assert list(response.context["recent_insights"]) == [higher_score, lower_score]
+    assert response.content.find(b"Higher Match") < response.content.find(
+        b"Lower Match"
+    )
+
+
+@pytest.mark.django_db
+def test_insight_list_renders_filtered_empty_state(client) -> None:
+    """No-match filter results should give users clear recovery actions."""
+    user = UserFactory()
+    profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    JobInsightFactory(
+        job_application__owner=user,
+        target_profile=profile,
+        score_label="Strong match",
+    )
+    client.force_login(user)
+
+    response = client.get(
+        reverse("insights:insight-list"),
+        {"target_profile": str(profile.pk), "score_label": "Developing match"},
+    )
+
+    assert response.status_code == 200
+    assert list(response.context["recent_insights"]) == []
+    assert b"No insights match these filters" in response.content
+    assert reverse("insights:insight-list").encode() in response.content
+
+
+@pytest.mark.django_db
 def test_target_profile_create_renders_form(client) -> None:
     """Authenticated users should be able to load the target profile form."""
     user = UserFactory()
