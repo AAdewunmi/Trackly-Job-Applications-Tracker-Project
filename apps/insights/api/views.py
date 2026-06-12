@@ -60,7 +60,9 @@ class GenerateJobInsightAPIView(APIView):
             target_profile=target_profile,
         )
 
-        response_status = status.HTTP_201_CREATED if result.created else status.HTTP_200_OK
+        response_status = (
+            status.HTTP_201_CREATED if result.created else status.HTTP_200_OK
+        )
         return Response(
             {
                 "created": result.created,

@@ -3,15 +3,13 @@ API tests for secured Trackly insight generation.
 """
 
 import pytest
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APIClient
-
 from apps.insights.factories import JobInsightFactory, TargetRoleProfileFactory
 from apps.insights.models import JobInsight
 from apps.jobs.factories import JobApplicationFactory
 from apps.users.factories import UserFactory
-
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
 
 pytestmark = pytest.mark.django_db
 
