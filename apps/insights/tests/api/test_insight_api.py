@@ -53,6 +53,11 @@ def test_authenticated_user_can_generate_insight() -> None:
     assert response.data["created"] is True
     assert response.data["insight"]["job_application"] == application.pk
     assert response.data["insight"]["top_overlapping_terms"]
+    assert "python django" not in response.data["insight"]["top_overlapping_terms"]
+    assert any(
+        term["term"] == "python django"
+        for term in response.data["insight"]["top_overlapping_weighted_terms"]
+    )
     assert JobInsight.objects.filter(job_application=application).exists()
 
 

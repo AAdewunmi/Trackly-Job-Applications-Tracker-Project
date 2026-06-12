@@ -278,15 +278,15 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "api",
         "backend",
         "python",
-        "api python",
-        "api service",
-        "backend backend",
         "build",
-        "build python",
-        "engineer example",
         "example",
-        "example ltd",
         "experience",
+        "ltd",
+        "prefer",
+        "service",
+        "backend engineer",
+        "django",
+        "engineer",
     ]
     assert insight.similarity_score > 0
     assert insight.score_label == "Partial match"
@@ -295,13 +295,10 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
         "python",
         "backend",
         "django",
-        "django api",
-        "python django",
         "backend engineer",
         "engineer",
-    ]
-    assert insight.top_overlapping_terms == [
-        str(item["term"]) for item in insight.top_overlapping_weighted_terms
+        "postgresql",
+        "test",
     ]
     assert insight.top_overlapping_weighted_terms == [
         {
@@ -352,18 +349,20 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
             "target_weight": 0.1647,
             "overlap_weight": 0.0223,
         },
+        {
+            "term": "postgresql",
+            "job_weight": 0.1354,
+            "target_weight": 0.1647,
+            "overlap_weight": 0.0223,
+        },
+        {
+            "term": "test",
+            "job_weight": 0.1354,
+            "target_weight": 0.1647,
+            "overlap_weight": 0.0223,
+        },
     ]
-    assert insight.missing_target_terms == [
-        "api delivery",
-        "api postgresql",
-        "delivery",
-        "delivery python",
-        "engineer python",
-        "postgresql test",
-    ]
-    assert insight.missing_target_terms == [
-        str(item["term"]) for item in insight.missing_weighted_target_terms
-    ]
+    assert insight.missing_target_terms == ["delivery"]
     assert insight.missing_weighted_target_terms == [
         {"term": "api delivery", "target_weight": 0.2315},
         {"term": "api postgresql", "target_weight": 0.2315},
@@ -374,10 +373,8 @@ def test_generate_insight_stores_cleaned_text_terms_and_explanation() -> None:
     ]
     assert insight.explanation == (
         "Partial match: this job description overlaps with your target profile "
-        "on api, python, backend, django, django api, python django, "
-        "backend engineer, engineer. Missing or weaker target terms include "
-        "api delivery, api postgresql, delivery, delivery python, "
-        "engineer python, postgresql test."
+        "on api, python, backend, django, backend engineer, engineer, "
+        "postgresql, test. Missing or weaker target terms include delivery."
     )
 
 

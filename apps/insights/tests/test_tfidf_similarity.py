@@ -9,6 +9,8 @@ from apps.insights.nlp.similarity import (
     PIPELINE_VERSION,
     analyse_text_similarity,
     build_target_profile_text,
+    is_user_facing_term,
+    presentation_terms_from_ranked_names,
     score_label_for,
     target_terms_from_text,
 )
@@ -61,10 +63,7 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
         explanation_term_limit=10,
     )
 
-    assert result.top_overlapping_terms == ["alpha", "alpha beta", "beta"]
-    assert result.top_overlapping_terms == [
-        str(item["term"]) for item in result.top_overlapping_weighted_terms
-    ]
+    assert result.top_overlapping_terms == ["alpha", "beta"]
     assert result.top_overlapping_weighted_terms == [
         {
             "term": "alpha",
@@ -85,15 +84,7 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
             "overlap_weight": 0.1749,
         },
     ]
-    assert result.missing_target_terms == [
-        "beta gamma",
-        "delta",
-        "gamma",
-        "gamma delta",
-    ]
-    assert result.missing_target_terms == [
-        str(item["term"]) for item in result.missing_weighted_target_terms
-    ]
+    assert result.missing_target_terms == ["delta", "gamma"]
     assert result.missing_weighted_target_terms == [
         {"term": "beta gamma", "target_weight": 0.4257},
         {"term": "delta", "target_weight": 0.4257},
@@ -102,9 +93,29 @@ def test_similarity_result_ranks_explanation_terms_deterministically() -> None:
     ]
     assert result.explanation == (
         "Strong match: this job description overlaps with your target profile "
-        "on alpha, alpha beta, beta. Missing or weaker target terms include "
-        "beta gamma, delta, gamma, gamma delta."
+        "on alpha, beta. Missing or weaker target terms include delta, gamma."
     )
+
+
+def test_presentation_policy_keeps_single_terms_and_approved_phrases() -> None:
+    """User-facing terms should suppress mechanical generated bigrams."""
+    ranked_terms = [
+        "api postgresql",
+        "python",
+        "backend engineer",
+        "delivery python",
+        "docker",
+    ]
+
+    assert is_user_facing_term("python") is True
+    assert is_user_facing_term("backend engineer") is True
+    assert is_user_facing_term("api postgresql") is False
+    assert is_user_facing_term("delivery python") is False
+    assert presentation_terms_from_ranked_names(ranked_terms, limit=3) == [
+        "python",
+        "backend engineer",
+        "docker",
+    ]
 
 
 def test_simple_term_extractors_derive_names_from_weighted_evidence(

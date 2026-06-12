@@ -95,6 +95,12 @@ The response body includes:
 - `insight`: the stored retrieval-style insight output.
 
 Insight output includes the related application and target profile IDs/titles,
-pipeline version, source hash, extracted terms, overlapping terms, missing
-target terms, weighted TF-IDF evidence, similarity score, score label,
-plain-English explanation, and creation timestamp.
+pipeline version, source hash, filtered user-facing extracted terms,
+overlapping terms, missing target terms, weighted TF-IDF evidence, similarity
+score, score label, plain-English explanation, and creation timestamp.
+
+The simple term lists follow the same presentation policy as the browser UI:
+readable single terms and approved useful phrases are shown, while mechanical
+TF-IDF bigrams are suppressed. Complete weighted evidence remains available in
+`top_overlapping_weighted_terms` and `missing_weighted_target_terms` for API
+consumers that need audit/detail data.
