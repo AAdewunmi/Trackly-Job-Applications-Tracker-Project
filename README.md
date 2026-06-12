@@ -163,30 +163,48 @@ compatibility:
 ```text
 .
 ├── apps/
-│   ├── dashboard/
-│   ├── insights/
-│   ├── jobs/
-│   ├── roles/
-│   └── users/
+│   ├── dashboard/          # User/admin dashboard views, metrics services, tests
+│   ├── insights/           # Target profiles, job insights, NLP pipeline, UI workflow
+│   │   ├── nlp/            # Text preprocessing and TF-IDF similarity helpers
+│   │   └── tests/
+│   ├── jobs/               # Application tracking domain, browser views, notes
+│   │   ├── api/            # DRF serializers, views, and API routes
+│   │   └── tests/
+│   ├── roles/              # Product roles, permissions, context processors
+│   └── users/              # Email-first user model, auth forms, account views
 ├── config/
-│   ├── settings/
+│   ├── settings/           # base, local, test, and production settings
+│   ├── tests/
 │   ├── urls.py
+│   ├── views.py
 │   ├── asgi.py
 │   └── wsgi.py
 ├── docs/
+│   ├── ai-nlp-contract.md
+│   ├── api-contract.md
 │   ├── architecture.md
 │   ├── design-system.md
 │   ├── domain-model.md
 │   ├── local-setup.md
 │   └── sprint-runbook/
-├── .env.example
-├── static/
 ├── templates/
+│   ├── dashboard/
+│   ├── insights/
+│   ├── jobs/
+│   ├── users/
+│   ├── base.html
+│   └── home.html
+├── static/
+│   └── css/
+│       └── theme.css
+├── .env.example
+├── codecov.yml
 ├── docker-compose.yml
 ├── Dockerfile
 ├── Makefile
 ├── manage.py
 ├── pyproject.toml
+├── pytest.ini
 ├── RUNBOOK.md
 └── requirements.txt
 ```

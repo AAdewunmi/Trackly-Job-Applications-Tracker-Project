@@ -209,7 +209,7 @@ def test_application_detail_renders_insight_generation_panel(client) -> None:
     assert list(
         response.context["insight_generation_form"].fields["target_profile"].queryset
     ) == [profile]
-    assert b"Generate job insight" in response.content
+    assert b"Generate TF-IDF job insight" in response.content
     assert (
         reverse(
             "insights:job-insight-generate",

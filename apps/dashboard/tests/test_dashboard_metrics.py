@@ -249,7 +249,7 @@ def test_user_dashboard_renders_live_insights_summary(client) -> None:
     assert response.status_code == 200
     assert list(response.context["target_profiles"]) == [profile]
     assert list(response.context["recent_insights"]) == [insight]
-    assert b"Generate explainable job-fit insights" in response.content
+    assert b"Review TF-IDF job-fit insights" in response.content
     assert b"Live" in response.content
     assert b"Strong match" in response.content
     assert b"Django API Engineer" in response.content

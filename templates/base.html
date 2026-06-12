@@ -54,7 +54,7 @@
         {% if messages %}
           <div id="flash-messages" class="tl-message-list">
             {% for message in messages %}
-              <div class="tl-alert tl-alert-{{ message.tags|default:'info' }}">
+              <div class="tl-alert tl-alert-{{ message.tags|default:'info' }}" role="alert">
                 {{ message }}
               </div>
             {% endfor %}

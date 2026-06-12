@@ -58,9 +58,9 @@
         <div class="tl-panel-body tl-stack">
             <div>
                 <p class="tl-eyebrow">AI/NLP insights</p>
-                <h2>Generate job insight</h2>
+                <h2>Generate TF-IDF job insight</h2>
                 <p class="tl-muted">
-                    Compare this application against an active target role profile and store an explainable job-fit summary.
+                    Compare this application against an active target role profile and store an explainable TF-IDF similarity summary.
                 </p>
             </div>
 
@@ -86,7 +86,7 @@
             {% else %}
                 <div class="tl-stack">
                     <p class="tl-muted">
-                        Create an active target role profile before generating job-fit insights.
+                        Create an active target role profile before generating TF-IDF job-fit insights.
                     </p>
                     <div class="tl-actions">
                         <a class="tl-button tl-button-primary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>

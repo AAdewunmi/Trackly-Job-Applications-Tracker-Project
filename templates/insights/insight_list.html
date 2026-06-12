@@ -21,12 +21,12 @@
             <div class="tl-shot-header">
                 <div>
                     <p class="tl-eyebrow">Generate insight</p>
-                    <h2>Create a job-fit match</h2>
+                    <h2>Create a retrieval-style match</h2>
                     <p class="tl-muted">
-                        Select one tracked application and one active target role profile to generate a stored retrieval-style insight.
+                        Select one tracked application and one active target role profile to generate a stored TF-IDF similarity insight.
                     </p>
                 </div>
-                <span class="tl-badge tl-badge-success">AI/NLP</span>
+                <span class="tl-badge tl-badge-success">TF-IDF</span>
             </div>
 
             {% if insight_generation_form.fields.application.queryset.exists and insight_generation_form.fields.target_profile.queryset.exists %}
@@ -251,14 +251,14 @@
                     {% elif target_profiles %}
                         <h3>No job insights yet</h3>
                         <p class="tl-muted">
-                            Open an application with a job description, choose a target profile, and generate your first explainable match.
+                            Open an application with a job description, choose a target profile, and generate your first TF-IDF similarity match.
                         </p>
                         <div class="tl-actions">
                             <a class="tl-button tl-button-primary" href="{% url 'jobs:application_list' %}">Choose an application</a>
                             <a class="tl-button tl-button-secondary" href="{% url 'insights:target-profile-create' %}">Add another target profile</a>
                         </div>
                     {% else %}
-                        <h3>Set up AI/NLP insights</h3>
+                        <h3>Set up retrieval-style insights</h3>
                         <p class="tl-muted">
                             Create a target role profile first. Then Trackly can compare job descriptions against the skills and terms you care about.
                         </p>
