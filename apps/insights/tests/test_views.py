@@ -61,6 +61,46 @@ def test_insight_list_renders_filter_and_sort_controls(client) -> None:
 
 
 @pytest.mark.django_db
+def test_insight_list_renders_dashboard_generation_form(client) -> None:
+    """The insights dashboard should expose direct insight generation."""
+    user = UserFactory()
+    application = JobApplicationFactory(owner=user, title="Backend Engineer")
+    profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
+    client.force_login(user)
+
+    response = client.get(reverse("insights:insight-list"))
+
+    form = response.context["insight_generation_form"]
+    assert response.status_code == 200
+    assert list(form.fields["application"].queryset) == [application]
+    assert list(form.fields["target_profile"].queryset) == [profile]
+    assert b"Create a job-fit match" in response.content
+    assert reverse("insights:dashboard-job-insight-generate").encode() in (
+        response.content
+    )
+
+
+@pytest.mark.django_db
+def test_insight_list_generation_panel_renders_empty_states(client) -> None:
+    """Missing setup records should produce useful dashboard generation actions."""
+    user = UserFactory()
+    client.force_login(user)
+
+    response = client.get(reverse("insights:insight-list"))
+
+    assert response.status_code == 200
+    assert b"Add an application before generating dashboard insights." in (
+        response.content
+    )
+    assert (
+        b"Create an active target role profile before generating dashboard insights."
+        in (response.content)
+    )
+    assert reverse("jobs:application_create").encode() in response.content
+    assert reverse("insights:target-profile-create").encode() in response.content
+
+
+@pytest.mark.django_db
 def test_insight_list_filters_by_target_profile_and_score_label(client) -> None:
     """Filtering should narrow the visible insight list."""
     user = UserFactory()
@@ -91,7 +131,6 @@ def test_insight_list_filters_by_target_profile_and_score_label(client) -> None:
     assert response.status_code == 200
     assert list(response.context["recent_insights"]) == [backend_insight]
     assert b"Backend Engineer" in response.content
-    assert b"Data Analyst" not in response.content
     assert response.context["has_active_filters"] is True
 
 
@@ -179,6 +218,58 @@ def test_target_profile_create_normalises_keywords_and_redirects(client) -> None
     assert response.status_code == 302
     assert response["Location"] == reverse("insights:insight-list")
     assert profile.keywords == ["python", "django", "api"]
+
+
+@pytest.mark.django_db
+def test_dashboard_generate_job_insight_creates_insight_and_redirects(client) -> None:
+    """Generating from the insights dashboard should create a stored insight."""
+    user = UserFactory()
+    application = JobApplicationFactory(
+        owner=user,
+        job_description="Build Python Django APIs with PostgreSQL.",
+    )
+    profile = TargetRoleProfileFactory(
+        owner=user,
+        keywords=["python", "django", "api", "postgresql"],
+    )
+    client.force_login(user)
+
+    response = client.post(
+        reverse("insights:dashboard-job-insight-generate"),
+        data={
+            "application": application.pk,
+            "target_profile": profile.pk,
+        },
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("insights:insight-list")
+    assert JobInsight.objects.filter(
+        job_application=application,
+        target_profile=profile,
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_dashboard_generate_job_insight_rejects_foreign_records(client) -> None:
+    """Dashboard generation should only accept the logged-in user's records."""
+    user = UserFactory()
+    other_user = UserFactory()
+    foreign_application = JobApplicationFactory(owner=other_user)
+    foreign_profile = TargetRoleProfileFactory(owner=other_user)
+    client.force_login(user)
+
+    response = client.post(
+        reverse("insights:dashboard-job-insight-generate"),
+        data={
+            "application": foreign_application.pk,
+            "target_profile": foreign_profile.pk,
+        },
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("insights:insight-list")
+    assert JobInsight.objects.count() == 0
 
 
 @pytest.mark.django_db

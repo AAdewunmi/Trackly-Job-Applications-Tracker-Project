@@ -5,6 +5,7 @@ URL routes for Trackly insight browser workflows.
 from django.urls import path
 
 from apps.insights.views import (
+    DashboardGenerateJobInsightView,
     GenerateJobInsightView,
     InsightListView,
     TargetRoleProfileCreateView,
@@ -18,6 +19,11 @@ urlpatterns = [
         "target-profiles/new/",
         TargetRoleProfileCreateView.as_view(),
         name="target-profile-create",
+    ),
+    path(
+        "generate/",
+        DashboardGenerateJobInsightView.as_view(),
+        name="dashboard-job-insight-generate",
     ),
     path(
         "applications/<int:application_pk>/generate/",

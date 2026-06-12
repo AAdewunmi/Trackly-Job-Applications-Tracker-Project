@@ -18,6 +18,70 @@
 
     <section class="tl-panel">
         <div class="tl-panel-body tl-stack">
+            <div class="tl-shot-header">
+                <div>
+                    <p class="tl-eyebrow">Generate insight</p>
+                    <h2>Create a job-fit match</h2>
+                    <p class="tl-muted">
+                        Select one tracked application and one active target role profile to generate a stored retrieval-style insight.
+                    </p>
+                </div>
+                <span class="tl-badge tl-badge-success">AI/NLP</span>
+            </div>
+
+            {% if insight_generation_form.fields.application.queryset.exists and insight_generation_form.fields.target_profile.queryset.exists %}
+                <form class="tl-form" method="post" action="{% url 'insights:dashboard-job-insight-generate' %}" novalidate>
+                    {% csrf_token %}
+
+                    <div class="tl-form-grid">
+                        <div class="tl-field">
+                            <label class="tl-label" for="{{ insight_generation_form.application.id_for_label }}">
+                                {{ insight_generation_form.application.label }}
+                            </label>
+                            {{ insight_generation_form.application }}
+                            {% for error in insight_generation_form.application.errors %}
+                                <div class="tl-field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="tl-field">
+                            <label class="tl-label" for="{{ insight_generation_form.target_profile.id_for_label }}">
+                                {{ insight_generation_form.target_profile.label }}
+                            </label>
+                            {{ insight_generation_form.target_profile }}
+                            {% for error in insight_generation_form.target_profile.errors %}
+                                <div class="tl-field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="tl-actions">
+                        <button class="tl-button tl-button-primary" type="submit">Generate insight</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="tl-stack">
+                    {% if not insight_generation_form.fields.application.queryset.exists %}
+                        <p class="tl-muted">
+                            Add an application before generating dashboard insights.
+                        </p>
+                    {% endif %}
+                    {% if not insight_generation_form.fields.target_profile.queryset.exists %}
+                        <p class="tl-muted">
+                            Create an active target role profile before generating dashboard insights.
+                        </p>
+                    {% endif %}
+                    <div class="tl-actions">
+                        <a class="tl-button tl-button-primary" href="{% url 'jobs:application_create' %}">Add application</a>
+                        <a class="tl-button tl-button-secondary" href="{% url 'insights:target-profile-create' %}">Create target profile</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
             <h2>Target role profiles</h2>
             {% if target_profiles %}
                 <div class="tl-definition-list">
