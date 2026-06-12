@@ -74,7 +74,7 @@ def test_insight_list_renders_dashboard_generation_form(client) -> None:
     assert response.status_code == 200
     assert list(form.fields["application"].queryset) == [application]
     assert list(form.fields["target_profile"].queryset) == [profile]
-    assert b"Create a job-fit match" in response.content
+    assert b"Create a retrieval-style match" in response.content
     assert reverse("insights:dashboard-job-insight-generate").encode() in (
         response.content
     )
