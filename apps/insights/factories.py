@@ -38,21 +38,11 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
     pipeline_version = JobInsight.PipelineVersion.NLTK_TFIDF_COSINE_V1
     clean_job_text = "python django api test"
     clean_target_text = "python django api postgresql docker test"
-    extracted_terms = [
-        "api test",
-        "api",
-        "django",
-        "django api",
-        "python",
-        "python django",
-        "test",
-    ]
+    extracted_terms = ["api", "django", "python", "test"]
     top_overlapping_terms = [
         "api",
         "django",
-        "django api",
         "python",
-        "python django",
         "test",
     ]
     top_overlapping_weighted_terms = [
@@ -94,11 +84,8 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
         },
     ]
     missing_target_terms = [
-        "api postgresql",
         "docker",
-        "docker test",
         "postgresql",
-        "postgresql docker",
     ]
     missing_weighted_target_terms = [
         {"term": "api postgresql", "target_weight": 0.3527},
@@ -111,7 +98,6 @@ class JobInsightFactory(factory.django.DjangoModelFactory):
     score_label = "Strong match"
     explanation = (
         "Strong match: this job description overlaps with your target profile on "
-        "api, django, django api, python, python django, test. Missing or weaker "
-        "target terms include api postgresql, docker, docker test, postgresql, "
-        "postgresql docker."
+        "api, django, python, test. Missing or weaker target terms include docker, "
+        "postgresql."
     )

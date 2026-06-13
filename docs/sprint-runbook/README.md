@@ -7,19 +7,21 @@ specific sprint day.
 
 ## Current Completion Check
 
-Sprint 3 Day 3 is the current completed NLP pipeline checkpoint. Run the Sprint
-3 Day 3 script for the current end-to-end verification path:
+Sprint 3 Day 5 is the current completed Sprint 3 checkpoint. Run the Sprint 3
+Day 5 script for the current end-to-end verification path:
 
 ```bash
-./docs/sprint-runbook/sprint-3/sprint-3-day-3.sh
+./docs/sprint-runbook/sprint-3/sprint-3-day-5.sh
 ```
 
 The script uses the Docker Compose project name
 `trackly-job-applications-tracker-project`, expects the web container prefix
 `trackly-job-applications-tracker-project-web`, and verifies the
-`postgres:16-alpine` database image. It also verifies NLTK runtime data,
-preprocessing, TF-IDF cosine scoring, explainability terms, missing target
-terms, and deterministic similarity output.
+`postgres:16-alpine` database image. It also verifies the insight browser
+workspace, secured insights API endpoints, authentication and ownership
+boundaries, NLTK preprocessing, TF-IDF cosine scoring, explainability terms,
+weighted evidence, idempotent generation, style checks, and the full regression
+suite.
 
 ## Historical Checkpoints
 
@@ -35,6 +37,10 @@ The earlier scripts remain executable delivery receipts:
   checkpoint.
 - `sprint-3/sprint-3-day-2.sh` records the insights persistence, model,
   service, migration, and idempotency checkpoint.
+- `sprint-3/sprint-3-day-3.sh` records the deterministic NLTK/TF-IDF/cosine NLP
+  pipeline checkpoint.
+- `sprint-3/sprint-3-day-4.sh` records the browser insight generation workflow
+  and dashboard/admin verification checkpoint.
 
 Use those scripts when reviewing the corresponding historical checkpoint. Use
-Sprint 3 Day 3 when validating the current completed NLP pipeline state.
+Sprint 3 Day 5 when validating the current completed Sprint 3 state.

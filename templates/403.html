@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Access restricted | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Access control</p>
+        <h1>Access restricted</h1>
+        <p class="tl-muted">
+            This workspace is protected because Trackly keeps applications, notes, dashboards, and insights scoped to the right account.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <div>
+                <span class="tl-badge tl-badge-primary">403</span>
+                <h2>You do not have permission to view this page.</h2>
+                <p class="tl-muted">
+                    Return to a workspace you can access, or sign in with the account that owns this job-search data.
+                </p>
+            </div>
+
+            <div class="tl-actions">
+                <a class="tl-button tl-button-primary" href="{% url 'home' %}">Go home</a>
+                <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}

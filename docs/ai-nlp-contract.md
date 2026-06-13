@@ -141,23 +141,42 @@ Implemented:
 - Missing target terms.
 - Missing weighted target evidence containing term and target TF-IDF weight.
 - Explanation text derived from the similarity score and term analysis.
+- A user-facing presentation policy that keeps readable single terms and
+  approved useful phrases while suppressing mechanically generated bigrams from
+  simple display fields and explanation text.
 
 Deterministic ranking rules:
 
-- `top_overlapping_terms` are generated from terms with non-zero TF-IDF weight
-  in both the job and target vectors.
+- Weighted overlapping evidence is generated from terms with non-zero TF-IDF
+  weight in both the job and target vectors.
 - Overlap ranking uses `job_tfidf_weight * target_tfidf_weight`, descending.
-- `missing_target_terms` are generated from terms with non-zero target TF-IDF
+- Weighted missing evidence is generated from terms with non-zero target TF-IDF
   weight and zero job TF-IDF weight.
 - Missing-term ranking uses target TF-IDF weight, descending.
 - Equal weights are ordered alphabetically, so repeated generation for the same
   cleaned input produces the same term order.
-- `top_overlapping_terms` and `missing_target_terms` contain ranked term names
-  for simple display.
 - `top_overlapping_weighted_terms` and `missing_weighted_target_terms` contain
   the numeric TF-IDF evidence used to produce those rankings.
+- `top_overlapping_terms` and `missing_target_terms` are filtered from the
+  ranked weighted evidence for user-facing display and explanation text.
 - Stored weights are rounded to four decimal places to avoid noisy floating
   point output while preserving enough precision for explanation and audit.
+
+User-facing presentation policy:
+
+- Single terms are allowed when they pass preprocessing and TF-IDF ranking.
+- Two-word phrases are allowed only when they are approved useful phrases such
+  as `backend engineer`, `software engineer`, `data analyst`, `data engineer`,
+  `machine learning`, `rest api`, `unit test`, `integration test`, `product
+  manager`, `product management`, `project management`, `customer success`,
+  `cloud platform`, or `ci cd`.
+- Mechanically generated bigrams such as `api postgresql`, `delivery python`,
+  or `postgresql test` are suppressed from `extracted_terms`,
+  `top_overlapping_terms`, `missing_target_terms`, and `explanation`.
+- Suppressed bigrams remain available in `top_overlapping_weighted_terms` and
+  `missing_weighted_target_terms` for auditability and API/detail consumers.
+- The browser insights dashboard displays the filtered simple term lists. The
+  API returns both filtered simple term lists and complete weighted evidence.
 
 ## Stored Output
 

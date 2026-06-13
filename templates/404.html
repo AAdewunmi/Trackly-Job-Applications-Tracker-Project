@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Missing page</p>
+        <h1>Page not found</h1>
+        <p class="tl-muted">
+            The page may have moved, or the item may not be available in your Trackly workspace.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <div>
+                <span class="tl-badge tl-badge-muted">404</span>
+                <h2>We could not find that page.</h2>
+                <p class="tl-muted">
+                    Use the main navigation to return to your dashboard, applications, or insights.
+                </p>
+            </div>
+
+            <div class="tl-actions">
+                <a class="tl-button tl-button-primary" href="{% url 'home' %}">Go home</a>
+                <a class="tl-button tl-button-secondary" href="{% url 'jobs:application_list' %}">Open applications</a>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}

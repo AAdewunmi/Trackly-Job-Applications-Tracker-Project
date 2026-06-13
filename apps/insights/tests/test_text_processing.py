@@ -149,6 +149,7 @@ def test_fallback_lemmatise_reduces_common_inflections() -> None:
     """Fallback lemmatisation should handle common role-description forms."""
     assert fallback_lemmatise("testing") == "test"
     assert fallback_lemmatise("tested") == "test"
+    assert fallback_lemmatise("preferred") == "prefer"
     assert fallback_lemmatise("applications") == "application"
     assert fallback_lemmatise("policies") == "policy"
     assert fallback_lemmatise("api") == "api"

@@ -134,7 +134,10 @@ def fallback_lemmatise(token: str) -> str:
         return token[:-3]
 
     if token.endswith("ed") and len(token) > 4:
-        return token[:-2]
+        stem = token[:-2]
+        if len(stem) > 3 and stem[-1] == stem[-2]:
+            stem = stem[:-1]
+        return stem
 
     if token.endswith("s") and len(token) > 3 and not token.endswith("ss"):
         return token[:-1]

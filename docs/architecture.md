@@ -24,7 +24,8 @@ Trackly uses a modular Django architecture:
 - `apps/dashboard/` owns user and admin dashboard service contexts and
   dashboard surfaces.
 - `apps/insights/` owns target role profiles, persisted job insights, NLP
-  preprocessing, TF-IDF similarity scoring, and insight generation services.
+  preprocessing, TF-IDF similarity scoring, browser insight workflows, and
+  secured insight API endpoints.
 - `templates/` contains server-rendered Django templates.
 - `static/` contains Trackly CSS and other lightweight assets.
 - `docs/` contains architecture, setup, domain, design, and operational notes.
@@ -131,6 +132,11 @@ Sprint 3 implements:
   terms, and weighted TF-IDF evidence.
 - Idempotent insight generation using a source hash derived from cleaned job
   text, cleaned target text, and pipeline version.
+- Browser workflows for creating target profiles, generating insights from an
+  application or the insights workspace, filtering stored insights, and reviewing
+  recent explanation output.
+- Secured API endpoints under `/api/v1/insights/` for listing current-user
+  insights and generating or reusing an insight for user-owned records.
 
 The insight service requires an active target role profile and enforces that
 the selected job application and target profile share the same owner.
@@ -151,11 +157,14 @@ surface includes:
   applications
 - Protected admin dashboard with platform metrics, recent activity, application
   status visualisation, and searchable/filterable application management table
+- Insights workspace for target profiles, insight generation, filtering, score
+  labels, extracted terms, overlap terms, missing target terms, and explanations
+- Custom `403`, `404`, and `500` error templates that reuse the Trackly base
+  shell and design system
 
 The dashboard includes an AI/NLP Insights panel as a product surface. The
-backend insight persistence and generation services are implemented in
-`apps.insights`; full browser workflows for managing target profiles and
-displaying generated insight history remain a later UI integration boundary.
+browser workflow and API-backed insight persistence are implemented in
+`apps.insights`.
 
 Admin dashboard UI work should follow `docs/design-system.md`: preserve the
 approved asymmetric admin cockpit composition and verify visual changes with
@@ -180,11 +189,11 @@ Current coverage includes:
 - Target role profiles, persisted job insights, NLTK preprocessing, TF-IDF
   cosine scoring, weighted explainability evidence, source-hash idempotency,
   and NLTK runtime-data failure handling
+- Insight browser views, secured insight API endpoints, API ownership
+  boundaries, idempotent API generation, and custom error templates
 
 ## Later Sprint Boundaries
 
 The following remain planned:
 
-- Insights API endpoints and browser workflows for target profile management
-  and generated insight history
 - Production deployment to Render

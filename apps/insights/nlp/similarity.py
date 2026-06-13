@@ -11,6 +11,26 @@ from apps.insights.nlp.text_processing import preprocess_text, preprocess_tokens
 
 PIPELINE_VERSION = "nltk-tfidf-cosine-v1"
 
+APPROVED_PRESENTATION_PHRASES = frozenset(
+    {
+        "backend engineer",
+        "ci cd",
+        "cloud platform",
+        "customer success",
+        "data analyst",
+        "data engineer",
+        "frontend engineer",
+        "integration test",
+        "machine learning",
+        "product management",
+        "product manager",
+        "project management",
+        "rest api",
+        "software engineer",
+        "unit test",
+    }
+)
+
 
 @dataclass(frozen=True)
 class TextSimilarityResult:
@@ -65,7 +85,41 @@ def extract_weighted_terms(
         if weight > 0
     ]
     ranked_terms = sorted(weighted_terms, key=lambda item: (-item[1], item[0]))
-    return [term for term, _weight in ranked_terms[:limit]]
+    return presentation_terms_from_ranked_names(
+        [term for term, _weight in ranked_terms],
+        limit=limit,
+    )
+
+
+def is_user_facing_term(term: str) -> bool:
+    """Return whether a TF-IDF term is readable enough for user display."""
+    parts = term.split()
+
+    if len(parts) == 1:
+        return True
+
+    if len(parts) == 2:
+        return term in APPROVED_PRESENTATION_PHRASES
+
+    return False
+
+
+def presentation_terms_from_ranked_names(
+    terms: list[str],
+    *,
+    limit: int,
+) -> list[str]:
+    """Return ranked user-facing terms while suppressing mechanical n-grams."""
+    presentation_terms: list[str] = []
+
+    for term in terms:
+        if is_user_facing_term(term):
+            presentation_terms.append(term)
+
+        if len(presentation_terms) == limit:
+            break
+
+    return presentation_terms
 
 
 def extract_top_overlapping_terms(
@@ -82,7 +136,10 @@ def extract_top_overlapping_terms(
         target_vector=target_vector,
         limit=limit,
     )
-    return [str(item["term"]) for item in weighted_terms]
+    return presentation_terms_from_ranked_names(
+        [str(item["term"]) for item in weighted_terms],
+        limit=limit,
+    )
 
 
 def extract_top_overlapping_weighted_terms(
@@ -136,7 +193,10 @@ def extract_missing_target_terms(
         target_vector=target_vector,
         limit=limit,
     )
-    return [str(item["term"]) for item in weighted_terms]
+    return presentation_terms_from_ranked_names(
+        [str(item["term"]) for item in weighted_terms],
+        limit=limit,
+    )
 
 
 def extract_missing_weighted_target_terms(
@@ -242,18 +302,22 @@ def analyse_text_similarity(
         feature_names=feature_names,
         job_vector=job_vector,
         target_vector=target_vector,
+        limit=explanation_term_limit * 3,
+    )
+    top_overlapping_terms = presentation_terms_from_ranked_names(
+        [str(item["term"]) for item in top_overlapping_weighted_terms],
         limit=explanation_term_limit,
     )
-    top_overlapping_terms = [
-        str(item["term"]) for item in top_overlapping_weighted_terms
-    ]
     missing_weighted_target_terms = extract_missing_weighted_target_terms(
         feature_names=feature_names,
         job_vector=job_vector,
         target_vector=target_vector,
+        limit=explanation_term_limit * 3,
+    )
+    missing_target_terms = presentation_terms_from_ranked_names(
+        [str(item["term"]) for item in missing_weighted_target_terms],
         limit=explanation_term_limit,
     )
-    missing_target_terms = [str(item["term"]) for item in missing_weighted_target_terms]
     explanation = build_explanation(
         score_label=score_label,
         top_overlapping_terms=top_overlapping_terms,

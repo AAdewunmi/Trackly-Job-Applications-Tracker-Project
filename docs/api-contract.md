@@ -11,8 +11,9 @@ Trackly's role and staff permission checks.
 
 ## Current API Surface
 
-The configured API surface currently includes JWT authentication endpoints and
-user-owned job application endpoints:
+The configured API surface currently includes JWT authentication endpoints,
+user-owned job application endpoints, application note endpoints, and
+retrieval-style insight endpoints:
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -30,6 +31,8 @@ user-owned job application endpoints:
 | `PUT` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Replace one note on a user-owned job application. |
 | `PATCH` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Partially update one note on a user-owned job application. |
 | `DELETE` | `/api/v1/jobs/applications/<id>/notes/<note_id>/` | Delete one note on a user-owned job application. |
+| `GET` | `/api/v1/insights/` | List stored job insights for the authenticated user. |
+| `POST` | `/api/v1/insights/generate/` | Generate or reuse a job insight for one user-owned application and active target profile. |
 
 ## Authentication
 
@@ -57,6 +60,7 @@ The current browser application routes remain:
 | `/applications/notes/<id>/edit/` | Job application note update workflow. |
 | `/applications/notes/<id>/delete/` | Job application note delete workflow. |
 | `/dashboard/` | Authenticated user dashboard. |
+| `/insights/` | Browser insights dashboard and generation workflow. |
 | `/admin/` | Django admin. |
 
 ## API Resource Notes
@@ -66,7 +70,37 @@ Application note API endpoints are nested under their parent application. Both
 resource groups use the same user ownership boundary as the browser job
 application workflow.
 
-Insights API endpoints are also planned work. The project includes an
-`apps.insights` Django app for target-role profile persistence, stored
-`JobInsight` records, admin support, and service-layer insight generation, but
-no insights API routes are registered yet.
+Insight API endpoints are registered under `/api/v1/insights/`. The list
+endpoint returns only stored insights connected to applications owned by the
+authenticated user.
+
+The generation endpoint accepts this JSON payload:
+
+```json
+{
+  "job_application_id": 1,
+  "target_profile_id": 2
+}
+```
+
+Both IDs must reference records owned by the authenticated user, and the target
+profile must be active. Foreign applications or target profiles return `404` so
+ownership boundaries are not exposed.
+
+The generation response returns `201 Created` when a new `JobInsight` record is
+created and `200 OK` when unchanged source content reuses an existing insight.
+The response body includes:
+
+- `created`: whether this request created a new stored insight.
+- `insight`: the stored retrieval-style insight output.
+
+Insight output includes the related application and target profile IDs/titles,
+pipeline version, source hash, filtered user-facing extracted terms,
+overlapping terms, missing target terms, weighted TF-IDF evidence, similarity
+score, score label, plain-English explanation, and creation timestamp.
+
+The simple term lists follow the same presentation policy as the browser UI:
+readable single terms and approved useful phrases are shown, while mechanical
+TF-IDF bigrams are suppressed. Complete weighted evidence remains available in
+`top_overlapping_weighted_terms` and `missing_weighted_target_terms` for API
+consumers that need audit/detail data.

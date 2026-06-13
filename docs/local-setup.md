@@ -134,7 +134,7 @@ production deploy check, and pytest.
 To run the current Sprint 3 insights verification script:
 
 ```bash
-./docs/sprint-runbook/sprint-3/sprint-3-day-2.sh
+./docs/sprint-runbook/sprint-3/sprint-3-day-5.sh
 ```
 
 Earlier sprint scripts are incremental checkpoint runbooks. See
