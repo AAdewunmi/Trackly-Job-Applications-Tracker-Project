@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Something went wrong | Trackly{% endblock %}
+
+{% block content %}
+<section class="tl-account-layout">
+    <div>
+        <p class="tl-eyebrow">Service error</p>
+        <h1>Something went wrong</h1>
+        <p class="tl-muted">
+            Trackly could not complete this request. Your job-search data remains protected while the issue is handled.
+        </p>
+    </div>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <div>
+                <span class="tl-badge tl-badge-primary">500</span>
+                <h2>The application hit an unexpected error.</h2>
+                <p class="tl-muted">
+                    Try returning to the main workspace. If the problem continues, retry the action after a short pause.
+                </p>
+            </div>
+
+            <div class="tl-actions">
+                <a class="tl-button tl-button-primary" href="{% url 'home' %}">Go home</a>
+                <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}
