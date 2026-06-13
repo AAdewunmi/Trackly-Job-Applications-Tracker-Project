@@ -172,6 +172,11 @@ Trackly currently supports:
 8. Users can persist target-role profiles for retrieval-style matching.
 9. Users can generate persisted job insights from the NLTK + TF-IDF + cosine
    similarity pipeline.
-10. Selectors, services, insights, API endpoints, and ownership boundaries are
-    covered by database-backed tests.
-11. Permission tests prove cross-user access is blocked.
+10. Users can review stored insights in the browser insights workspace with
+    score labels, extracted terms, overlap terms, missing terms, and explanation
+    text.
+11. Authenticated API users can list only their own insights and generate or
+    reuse insights for user-owned applications and active target profiles.
+12. Selectors, services, browser workflows, insight API endpoints, and ownership
+    boundaries are covered by database-backed tests.
+13. Permission tests prove cross-user access is blocked.

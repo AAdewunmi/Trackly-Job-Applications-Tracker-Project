@@ -171,17 +171,18 @@ make nltk-data
 ## Sprint Verification
 
 The executable scripts under `docs/sprint-runbook/` capture incremental sprint
-checkpoints. Use the Sprint 3 Day 2 script as the current insights completion
+checkpoints. Use the Sprint 3 Day 5 script as the current Sprint 3 completion
 check:
 
 ```bash
-./docs/sprint-runbook/sprint-3/sprint-3-day-2.sh
+./docs/sprint-runbook/sprint-3/sprint-3-day-5.sh
 ```
 
 It verifies the Docker Compose project name, the web container, PostgreSQL,
-migrations, formatting, linting, insight models, NLTK preprocessing, TF-IDF
-cosine scoring, explainability fields, idempotency, focused insights tests, and
-the full regression suite.
+migrations, insight browser routes, secured insight API routes, authentication
+and ownership boundaries, NLTK preprocessing, TF-IDF cosine scoring,
+explainability fields, idempotency, formatting, linting, focused insight tests,
+and the full regression suite.
 
 See `docs/sprint-runbook/README.md` before running an earlier checkpoint script.
 

@@ -21,10 +21,11 @@ job descriptions and stored target-role profiles.
 
 The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The implemented matching workflow uses NLTK-backed text normalisation, scikit-learn TF-IDF vectorisation, cosine similarity scoring, and explainable overlapping and missing target terms.
 
-Sprint 3 adds the retrieval-style insights pipeline on top of the completed
-core job-tracking workflow: user-owned applications, status validation, notes,
+Sprint 3 completes the retrieval-style insights workflow on top of the core
+job-tracking product: user-owned applications, status validation, notes,
 ownership-protected CRUD routes, reusable selectors, service-layer dashboard
-metrics, and recent application activity. Sprint 1 established the Django,
+metrics, recent activity, secured API endpoints, target role profiles, and
+stored explainable job-fit insights. Sprint 1 established the Django,
 PostgreSQL, identity, role, authentication, and UI foundation.
 
 ## Core MVP Direction
@@ -68,8 +69,12 @@ Trackly currently includes:
   terms, and weighted TF-IDF evidence
 - Idempotent insight generation for unchanged cleaned inputs and pipeline
   version
+- Browser insight workspace for generating and reviewing stored insights
+- Secured insights API endpoints for listing and generating/reusing insights
+- Custom `403`, `404`, and `500` error templates matching the Trackly design
+  system
 
-Insights API endpoints and Render deployment remain planned work.
+Render deployment remains planned work.
 
 ## Quick Start
 
@@ -164,7 +169,8 @@ compatibility:
 .
 ├── apps/
 │   ├── dashboard/          # User/admin dashboard views, metrics services, tests
-│   ├── insights/           # Target profiles, job insights, NLP pipeline, UI workflow
+│   ├── insights/           # Target profiles, job insights, NLP pipeline, UI/API workflow
+│   │   ├── api/            # DRF serializers, views, and API routes
 │   │   ├── nlp/            # Text preprocessing and TF-IDF similarity helpers
 │   │   └── tests/
 │   ├── jobs/               # Application tracking domain, browser views, notes
@@ -192,6 +198,9 @@ compatibility:
 │   ├── insights/
 │   ├── jobs/
 │   ├── users/
+│   ├── 403.html
+│   ├── 404.html
+│   ├── 500.html
 │   ├── base.html
 │   └── home.html
 ├── static/
