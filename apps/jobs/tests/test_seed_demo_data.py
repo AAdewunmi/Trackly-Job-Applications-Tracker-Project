@@ -27,10 +27,21 @@ def test_seed_demo_data_creates_demo_records():
 
     assert User.objects.filter(email="admin.demo@trackly.local").exists()
     assert User.objects.filter(email="user.demo@trackly.local").exists()
-    assert JobApplication.objects.count() == 3
-    assert ApplicationNote.objects.count() == 3
-    assert TargetRoleProfile.objects.count() == 1
-    assert JobInsight.objects.count() == 3
+    assert User.objects.filter(email="analyst.demo@trackly.local").exists()
+    assert User.objects.filter(email="empty.demo@trackly.local").exists()
+    assert JobApplication.objects.count() == 10
+    assert ApplicationNote.objects.count() == 10
+    assert TargetRoleProfile.objects.count() == 4
+    assert JobInsight.objects.count() == 10
+    assert set(JobApplication.objects.values_list("status", flat=True)) == {
+        JobApplication.Status.APPLIED,
+        JobApplication.Status.INTERVIEWING,
+        JobApplication.Status.SAVED,
+        JobApplication.Status.SCREENING,
+        JobApplication.Status.OFFER,
+        JobApplication.Status.REJECTED,
+        JobApplication.Status.WITHDRAWN,
+    }
 
 
 @pytest.mark.django_db
@@ -41,11 +52,11 @@ def test_seed_demo_data_is_idempotent():
 
     User = get_user_model()
 
-    assert User.objects.filter(email__endswith="@trackly.local").count() == 2
-    assert Role.objects.filter(
-        code__in=[Role.Codes.ADMIN, Role.Codes.MEMBER]
-    ).count() == 2
-    assert JobApplication.objects.count() == 3
-    assert ApplicationNote.objects.count() == 3
-    assert TargetRoleProfile.objects.count() == 1
-    assert JobInsight.objects.count() == 3
+    assert User.objects.filter(email__endswith="@trackly.local").count() == 4
+    assert (
+        Role.objects.filter(code__in=[Role.Codes.ADMIN, Role.Codes.MEMBER]).count() == 2
+    )
+    assert JobApplication.objects.count() == 10
+    assert ApplicationNote.objects.count() == 10
+    assert TargetRoleProfile.objects.count() == 4
+    assert JobInsight.objects.count() == 10
