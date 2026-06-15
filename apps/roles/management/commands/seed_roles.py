@@ -12,13 +12,13 @@ class Command(BaseCommand):
 
     DEFAULT_ROLES = [
         {
-            "slug": "admin",
+            "code": Role.Codes.ADMIN,
             "name": "Admin",
             "description": "Can access administrative product surfaces.",
         },
         {
-            "slug": "user",
-            "name": "User",
+            "code": Role.Codes.MEMBER,
+            "name": "Member",
             "description": "Can manage personal job applications and insights.",
         },
     ]
@@ -30,19 +30,20 @@ class Command(BaseCommand):
 
         for role_data in self.DEFAULT_ROLES:
             role, created = Role.objects.update_or_create(
-                slug=role_data["slug"],
+                code=role_data["code"],
                 defaults={
                     "name": role_data["name"],
                     "description": role_data["description"],
+                    "is_active": True,
                 },
             )
 
             if created:
                 created_count += 1
-                self.stdout.write(self.style.SUCCESS(f"Created role: {role.slug}"))
+                self.stdout.write(self.style.SUCCESS(f"Created role: {role.code}"))
             else:
                 updated_count += 1
-                self.stdout.write(f"Updated role: {role.slug}")
+                self.stdout.write(f"Updated role: {role.code}")
 
         self.stdout.write(
             self.style.SUCCESS(

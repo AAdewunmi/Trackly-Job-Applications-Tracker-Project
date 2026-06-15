@@ -4,20 +4,18 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
-from apps.insights.models import JobInsight
-from apps.insights.models import TargetRoleProfile
-from apps.jobs.models import ApplicationNote
-from apps.jobs.models import JobApplication
+from apps.insights.models import JobInsight, TargetRoleProfile
+from apps.jobs.models import ApplicationNote, JobApplication
 from apps.roles.models import Role
 
 
 @pytest.mark.django_db
 def test_seed_roles_creates_required_roles():
-    """seed_roles creates the baseline admin and user roles."""
+    """seed_roles creates the baseline admin and member roles."""
     call_command("seed_roles")
 
-    assert Role.objects.filter(slug="admin").exists()
-    assert Role.objects.filter(slug="user").exists()
+    assert Role.objects.filter(code=Role.Codes.ADMIN).exists()
+    assert Role.objects.filter(code=Role.Codes.MEMBER).exists()
 
 
 @pytest.mark.django_db
@@ -44,7 +42,9 @@ def test_seed_demo_data_is_idempotent():
     User = get_user_model()
 
     assert User.objects.filter(email__endswith="@trackly.local").count() == 2
-    assert Role.objects.filter(slug__in=["admin", "user"]).count() == 2
+    assert Role.objects.filter(
+        code__in=[Role.Codes.ADMIN, Role.Codes.MEMBER]
+    ).count() == 2
     assert JobApplication.objects.count() == 3
     assert ApplicationNote.objects.count() == 3
     assert TargetRoleProfile.objects.count() == 1
