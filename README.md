@@ -11,13 +11,19 @@
 ![PostgreSQL](https://img.shields.io/badge/database-postgresql-336791)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-A Django SaaS MVP for tracking job applications and matching job descriptions against target-role profiles using explainable NLP.
+A production-minded Django SaaS MVP for tracking job applications and matching
+job descriptions against target-role profiles using explainable NLP.
 
 GitHub repository: <https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project>
 
 Trackly helps users register, manage job applications, track application status,
 maintain notes, review personal progress, and generate role-fit insights from
 job descriptions and stored target-role profiles.
+
+This repository is designed as a realistic SaaS MVP build rather than a toy
+CRUD example. It combines Django-rendered templates, Django REST Framework,
+PostgreSQL, Docker Compose, GitHub Actions CI, production settings, and
+deployment-readiness documentation.
 
 The platform framing is intentional: job application tracking keeps the core SaaS workflow clear, while NLP-based role matching describes the text-processing layer more precisely than a generic AI label. The implemented matching workflow uses NLTK-backed text normalisation, scikit-learn TF-IDF vectorisation, cosine similarity scoring, and explainable overlapping and missing target terms.
 
@@ -37,10 +43,12 @@ Trackly is designed as a credible early SaaS product, not a toy example. The del
 - Database: PostgreSQL
 - Testing: pytest, pytest-django, factory_boy
 - Development workflow: Docker and Docker Compose
+- CI: GitHub Actions
 - API layer: Django REST Framework under `/api/v1/` with JWT token endpoints
 - NLP layer: NLTK preprocessing, TF-IDF cosine comparison, and explainable
   job-fit scoring
-- Deployment target: Render
+- Deployment readiness: production settings, WhiteNoise/Gunicorn dependencies,
+  and Render-oriented documentation
 
 ## Implemented Through Sprint 3
 
@@ -49,6 +57,7 @@ Trackly currently includes:
 - Dockerised Django app and PostgreSQL service
 - Environment-driven settings
 - Split settings modules for local, test, and production environments
+- GitHub Actions CI
 - Custom email-first user model
 - Role model and role assignment support
 - Signup, login, logout, and profile pages
@@ -74,7 +83,9 @@ Trackly currently includes:
 - Custom `403`, `404`, and `500` error templates matching the Trackly design
   system
 
-Render deployment remains planned work.
+Hosted Render deployment remains planned work. The repository already includes
+the production settings and deployment-readiness documentation needed to support
+that work.
 
 ## Quick Start
 
@@ -141,6 +152,7 @@ or deployment-specific values.
 | `DJANGO_DEBUG` | `True` | `False` |
 | `DJANGO_ALLOWED_HOSTS` | `localhost,127.0.0.1,0.0.0.0` | Comma-separated deployed hostnames |
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | `http://localhost:8000,http://127.0.0.1:8000` | Comma-separated HTTPS origins, including scheme |
+| `WEB_PORT` | `8000` | Local Docker Compose host port |
 | `POSTGRES_DB` | `trackly` | Production database name |
 | `POSTGRES_USER` | `trackly_user` | Production database user |
 | `POSTGRES_PASSWORD` | Local-only password | Required database password from the deployment secret store |
