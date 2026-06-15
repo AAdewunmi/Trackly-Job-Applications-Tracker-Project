@@ -30,8 +30,8 @@
             {% else %}
               <a href="{% url 'home' %}#dashboard-preview">Preview</a>
               <a href="{% url 'home' %}#features">Features</a>
-              <a href="{% url 'home' %}#job-map">Map</a>
-              <a href="{% url 'home' %}#pricing">Pricing</a>
+              <a href="{% url 'home' %}#insights-preview">Insights</a>
+              <a href="{% url 'home' %}#plans">Plans</a>
             {% endif %}
           </div>
 
@@ -43,7 +43,7 @@
                 <button class="tl-button tl-button-primary tl-button-small" type="submit">Sign out</button>
               </form>
             {% else %}
-              <a class="tl-button tl-button-primary tl-button-small" href="{% url 'users:signup' %}">Create account</a>
+              <a class="tl-button tl-button-primary tl-button-small" href="{% url 'users:signup' %}">Start tracking for free</a>
               <a class="tl-button tl-button-secondary tl-button-small" href="{% url 'users:login' %}">Sign in</a>
             {% endif %}
           </div>
@@ -80,8 +80,8 @@
               <div class="tl-footer-links">
                 <a href="{% url 'home' %}#dashboard-preview">Dashboard preview</a>
                 <a href="{% url 'home' %}#features">Features</a>
-                <a href="{% url 'home' %}#job-map">Map view</a>
-                <a href="{% url 'home' %}#pricing">Pricing</a>
+                <a href="{% url 'home' %}#insights-preview">Insights preview</a>
+                <a href="{% url 'home' %}#plans">Plans</a>
               </div>
             </div>
             <div>
@@ -97,7 +97,7 @@
                   {% endif %}
                   <a href="{% url 'users:profile' %}">Profile</a>
                 {% else %}
-                  <a href="{% url 'users:signup' %}">Create account</a>
+                  <a href="{% url 'users:signup' %}">Start tracking for free</a>
                   <a href="{% url 'users:login' %}">Sign in</a>
                 {% endif %}
               </div>

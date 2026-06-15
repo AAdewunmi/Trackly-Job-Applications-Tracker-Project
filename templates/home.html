@@ -6,10 +6,10 @@
 {% block content %}
 <section class="tl-landing-hero">
     <div class="tl-hero-copy-block">
-        <p class="tl-pill">Job tracker for focused applicants</p>
-        <h1 class="tl-hero-title">Keep your job search organised.</h1>
+        <p class="tl-pill">Job tracker with explainable role-fit insights</p>
+        <h1 class="tl-hero-title">Track every application and understand which roles fit best.</h1>
         <p class="tl-hero-copy">
-            Track roles, applications, interviews, contacts, notes, and follow-ups from one clean workspace built around your next move.
+            Track applications, notes, interviews, and follow-ups in one workspace, then use explainable job-fit insights to compare roles against your target profile.
         </p>
 
         {% if request.user.is_authenticated %}
@@ -19,8 +19,8 @@
             </div>
         {% else %}
             <div class="tl-actions tl-actions-center">
-                <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Create account</a>
-                <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
+                <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Start tracking for free</a>
+                <a class="tl-button tl-button-secondary" href="#dashboard-preview">View product preview</a>
             </div>
         {% endif %}
     </div>
@@ -46,62 +46,62 @@
     <div class="tl-feature-grid">
         <article class="tl-feature-card">
             <span class="tl-feature-icon">01</span>
-            <h3>Pipeline tracking</h3>
-            <p>Move opportunities through saved, applied, interview, offer, and closed stages.</p>
+            <h3>Application pipeline</h3>
+            <p>Track saved, applied, screening, interview, offer, rejected, and withdrawn roles.</p>
         </article>
         <article class="tl-feature-card">
             <span class="tl-feature-icon">02</span>
-            <h3>Follow-up rhythm</h3>
-            <p>Keep reminders, notes, and next actions attached to the role they belong to.</p>
+            <h3>Follow-up notes</h3>
+            <p>Keep recruiter updates, next actions, and application context attached to each role.</p>
         </article>
         <article class="tl-feature-card">
             <span class="tl-feature-icon">03</span>
-            <h3>Contact memory</h3>
-            <p>Record recruiters, hiring managers, and referral context before details get lost.</p>
+            <h3>Progress dashboard</h3>
+            <p>See application counts, stage movement, and job-search momentum in one view.</p>
         </article>
         <article class="tl-feature-card">
             <span class="tl-feature-icon">04</span>
-            <h3>Document readiness</h3>
-            <p>Know which CV, cover letter, and notes are prepared for each opportunity.</p>
+            <h3>Target role profiles</h3>
+            <p>Define the skills, responsibilities, and keywords that matter for the roles you want.</p>
         </article>
         <article class="tl-feature-card">
             <span class="tl-feature-icon">05</span>
-            <h3>Dashboard signals</h3>
-            <p>Turn job-search activity into visible metrics for momentum and decision-making.</p>
+            <h3>Explainable job-fit insights</h3>
+            <p>Compare job descriptions against target profiles using overlapping and missing terms.</p>
         </article>
         <article class="tl-feature-card">
             <span class="tl-feature-icon">06</span>
-            <h3>Account foundation</h3>
-            <p>Keep ownership, profile details, and job-fit insight history tied to your identity.</p>
+            <h3>Secure workspace</h3>
+            <p>Keep applications, notes, profiles, and insights scoped to your own account.</p>
         </article>
     </div>
 </section>
 
 <section class="tl-split-section">
     <div>
-        <p class="tl-eyebrow">Search with context</p>
-        <h2>See where your search is concentrated.</h2>
+        <p class="tl-eyebrow">Explainable matching</p>
+        <h2>Understand why a role fits before you invest more time.</h2>
         <p class="tl-muted">
-            The future Trackly map view will help you compare remote, hybrid, and local opportunities so your search feels less scattered.
+            Trackly compares job descriptions against your target role profile and keeps the result understandable: similarity score, matched terms, missing target terms, and a plain-English explanation.
         </p>
         <div class="tl-check-list">
-            <span>Location-aware opportunity planning</span>
-            <span>Remote and hybrid role visibility</span>
-            <span>Pipeline counts by search area</span>
+            <span>TF-IDF similarity score for each generated insight</span>
+            <span>Overlapping terms that explain where the role aligns</span>
+            <span>Missing target terms that show what may need attention</span>
         </div>
     </div>
 
-    <div id="job-map" class="tl-map-preview" aria-label="Search map preview">
+    <div id="insights-preview" class="tl-map-preview" aria-label="Job-fit insight preview">
         <div class="tl-map-grid"></div>
-        <span class="tl-map-pin tl-map-pin-primary"></span>
-        <span class="tl-map-pin tl-map-pin-secondary"></span>
-        <span class="tl-map-pin tl-map-pin-tertiary"></span>
         <div class="tl-map-card">
-            <strong>London search</strong>
-            <span>14 roles · 5 active applications</span>
+            <strong>Partial match</strong>
+            <span>0.42 TF-IDF cosine similarity</span>
         </div>
         <div class="tl-map-search">
-            <span>Search roles by city, company, or work style</span>
+            <span>Matched: python · django · api</span>
+        </div>
+        <div class="tl-map-search">
+            <span>Missing: docker · ci/cd · aws</span>
         </div>
     </div>
 </section>
@@ -137,10 +137,10 @@
     </div>
 </section>
 
-<section id="pricing" class="tl-pricing-section">
+<section id="plans" class="tl-pricing-section">
     <div class="tl-pricing-shell">
         <div class="tl-section-heading">
-            <p class="tl-eyebrow">Pricing</p>
+            <p class="tl-eyebrow">Plans</p>
             <h2>Choose the plan that fits your search.</h2>
             <p class="tl-muted">
                 Start free while you build your job-search habit, then upgrade when you want richer tracking and insight-ready workflow support.
@@ -183,7 +183,7 @@
             <article class="tl-price-card tl-price-card-featured">
                 <div>
                     <p class="tl-price-plan">Pro</p>
-                    <p class="tl-muted">For an active search with deeper tracking, smarter preparation, and explainable job-fit insights.</p>
+                    <p class="tl-muted">For active applicants who want deeper tracking, dashboard analytics, and explainable job-fit insights.</p>
                 </div>
 
                 <div class="tl-price">
@@ -194,7 +194,7 @@
                 {% if request.user.is_authenticated %}
                     <a class="tl-button tl-button-primary tl-button-full" href="{% url 'dashboard:user' %}">Go to dashboard</a>
                 {% else %}
-                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'users:signup' %}">Create account</a>
+                    <a class="tl-button tl-button-primary tl-button-full" href="{% url 'users:signup' %}">Start tracking for free</a>
                 {% endif %}
 
                 <div class="tl-price-features">
@@ -211,10 +211,10 @@
 </section>
 
 <section class="tl-final-cta">
-    <p class="tl-eyebrow">Start with the account journey</p>
-    <h2>Build the job-search workspace one step at a time.</h2>
+    <p class="tl-eyebrow">Start with clarity</p>
+    <h2>Start tracking your job search with more clarity.</h2>
     <p class="tl-muted">
-        Create your Trackly account now, then use the dashboard and profile surfaces as the foundation for the application tracker.
+        Create a free account, add your first application, and start building a clearer view of your pipeline and role fit.
     </p>
     {% if request.user.is_authenticated %}
         <div class="tl-actions tl-actions-center">
@@ -223,7 +223,7 @@
         </div>
     {% else %}
         <div class="tl-actions tl-actions-center">
-            <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Create account</a>
+            <a class="tl-button tl-button-primary" href="{% url 'users:signup' %}">Start tracking for free</a>
             <a class="tl-button tl-button-secondary" href="{% url 'users:login' %}">Sign in</a>
         </div>
     {% endif %}
