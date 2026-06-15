@@ -5,8 +5,10 @@ Selectors centralise query behaviour so templates, services, and tests do not
 duplicate ownership filtering rules.
 """
 
+from dataclasses import dataclass
+
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import QuerySet
+from django.db.models import Avg, Count, Max, QuerySet
 
 from apps.insights.models import JobInsight, TargetRoleProfile
 from apps.jobs.models import JobApplication
@@ -18,6 +20,26 @@ INSIGHT_SORT_OPTIONS = {
     "role": "job_application__title",
     "target_profile": "target_profile__title",
 }
+
+
+@dataclass(frozen=True)
+class InsightScoreBucket:
+    """Chart-ready count for one TF-IDF score range."""
+
+    label: str
+    count: int
+    percentage: int
+
+
+@dataclass(frozen=True)
+class TargetProfileMatchSummary:
+    """Chart-ready match summary for one target role profile."""
+
+    title: str
+    insight_count: int
+    average_score: float
+    best_score: float
+    percentage: int
 
 
 def _is_authenticated_user(user) -> bool:
@@ -105,3 +127,66 @@ def get_score_labels_for_user(user) -> list[str]:
 def get_recent_insights_for_user(user, limit: int = 10) -> list[JobInsight]:
     """Return a bounded list of recent insights owned by a user."""
     return list(get_insights_for_user(user)[:limit])
+
+
+def _percentage(part: int | float, total: int | float) -> int:
+    """Return a whole-number percentage while avoiding division by zero."""
+    if total == 0:
+        return 0
+
+    return round((part / total) * 100)
+
+
+def get_insight_score_histogram_for_user(user) -> list[InsightScoreBucket]:
+    """Return user-owned insight score distribution buckets."""
+    buckets = [
+        ("Low match", 0.0, 0.25),
+        ("Partial match", 0.25, 0.5),
+        ("Strong match", 0.5, 0.75),
+        ("Excellent match", 0.75, 1.01),
+    ]
+    insights = get_insights_for_user(user)
+    total_insights = insights.count()
+    score_counts = [
+        insights.filter(
+            similarity_score__gte=lower_bound,
+            similarity_score__lt=upper_bound,
+        ).count()
+        for _, lower_bound, upper_bound in buckets
+    ]
+
+    return [
+        InsightScoreBucket(
+            label=label,
+            count=count,
+            percentage=_percentage(count, total_insights),
+        )
+        for count, (label, _, _) in zip(score_counts, buckets, strict=True)
+    ]
+
+
+def get_target_profile_match_summaries_for_user(
+    user,
+) -> list[TargetProfileMatchSummary]:
+    """Return average and best insight scores grouped by target profile."""
+    rows = (
+        get_insights_for_user(user)
+        .values("target_profile__title")
+        .annotate(
+            insight_count=Count("id"),
+            average_score=Avg("similarity_score"),
+            best_score=Max("similarity_score"),
+        )
+        .order_by("-average_score", "target_profile__title")
+    )
+
+    return [
+        TargetProfileMatchSummary(
+            title=row["target_profile__title"],
+            insight_count=row["insight_count"],
+            average_score=round(row["average_score"] or 0, 2),
+            best_score=round(row["best_score"] or 0, 2),
+            percentage=_percentage(row["average_score"] or 0, 1),
+        )
+        for row in rows
+    ]

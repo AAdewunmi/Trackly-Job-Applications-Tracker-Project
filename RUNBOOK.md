@@ -101,6 +101,25 @@ Create a superuser:
 make superuser
 ```
 
+Seed deterministic showcase demo data:
+
+```bash
+make seed
+```
+
+The seed command creates baseline roles, demo users, applications across every
+workflow status, application notes, target role profiles, and persisted
+retrieval-style insights generated through the current NLP service. It is
+idempotent and intended only for local development, screenshots, manual QA, and
+reviewer walkthroughs.
+
+Demo accounts use the password `TracklyDemoPass123`:
+
+- `admin.demo@trackly.local`
+- `user.demo@trackly.local`
+- `analyst.demo@trackly.local`
+- `empty.demo@trackly.local`
+
 ## Application Shell
 
 Open the Django shell:
@@ -257,6 +276,12 @@ If tests fail because services are not running, start them first:
 
 ```bash
 make up
+```
+
+If local screenshots or manual QA need representative records, run:
+
+```bash
+make seed
 ```
 
 Then run tests from another terminal:

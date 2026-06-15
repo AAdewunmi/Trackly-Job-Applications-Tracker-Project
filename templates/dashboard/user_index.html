@@ -20,12 +20,30 @@
         <aside class="tl-dashboard-side-nav" aria-label="Dashboard navigation">
             <strong>Trackly</strong>
             <nav>
-                <a class="tl-dashboard-side-link tl-dashboard-side-link-active" href="#pipeline">Application Pipeline</a>
-                <a class="tl-dashboard-side-link" href="#applications">Application Tracker</a>
-                <a class="tl-dashboard-side-link" href="#metrics">Progress Metrics</a>
-                <a class="tl-dashboard-side-link" href="#insights">AI/NLP Insights</a>
-                <a class="tl-dashboard-side-link" href="{% url 'insights:insight-list' %}">Insights Workspace</a>
-                <a class="tl-dashboard-side-link" href="#profile">Profile</a>
+                <a class="tl-dashboard-side-link tl-dashboard-side-link-active" href="#pipeline">
+                    <span class="tl-dashboard-nav-icon">A</span>
+                    <span>Application Pipeline</span>
+                </a>
+                <a class="tl-dashboard-side-link" href="#applications">
+                    <span class="tl-dashboard-nav-icon">A</span>
+                    <span>Application Tracker</span>
+                </a>
+                <a class="tl-dashboard-side-link" href="#metrics">
+                    <span class="tl-dashboard-nav-icon">P</span>
+                    <span>Progress Metrics</span>
+                </a>
+                <a class="tl-dashboard-side-link" href="#insights">
+                    <span class="tl-dashboard-nav-icon">A</span>
+                    <span>AI/NLP Insights</span>
+                </a>
+                <a class="tl-dashboard-side-link" href="{% url 'insights:insight-list' %}">
+                    <span class="tl-dashboard-nav-icon">I</span>
+                    <span>Insights Workspace</span>
+                </a>
+                <a class="tl-dashboard-side-link" href="#profile">
+                    <span class="tl-dashboard-nav-icon">P</span>
+                    <span>Profile</span>
+                </a>
             </nav>
         </aside>
 
@@ -193,6 +211,44 @@
                             <span>Notes</span>
                         </div>
                     </div>
+
+                    <div class="tl-chart-grid" aria-label="Job search visualisations">
+                        <section class="tl-chart-panel" aria-labelledby="job-search-funnel-heading">
+                            <div class="tl-chart-heading">
+                                <h3 id="job-search-funnel-heading">Job-search funnel</h3>
+                                <span>Current stage counts</span>
+                            </div>
+                            <div class="tl-funnel-chart">
+                                {% for stage in funnel_chart %}
+                                    <div class="tl-funnel-row">
+                                        <span>{{ stage.label }}</span>
+                                        <div class="tl-funnel-track">
+                                            <span style="width: {{ stage.percentage }}%"></span>
+                                        </div>
+                                        <strong>{{ stage.count }}</strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+
+                        <section class="tl-chart-panel" aria-labelledby="application-status-chart-heading">
+                            <div class="tl-chart-heading">
+                                <h3 id="application-status-chart-heading">Application status</h3>
+                                <span>Share of tracked roles</span>
+                            </div>
+                            <div class="tl-horizontal-chart">
+                                {% for status in status_chart %}
+                                    <div class="tl-horizontal-chart-row">
+                                        <span>{{ status.label }}</span>
+                                        <div class="tl-horizontal-chart-track">
+                                            <span style="width: {{ status.percentage }}%"></span>
+                                        </div>
+                                        <strong>{{ status.count }}</strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </section>
 
@@ -210,7 +266,7 @@
                         Compare job descriptions against target role profiles using TF-IDF cosine similarity, overlap terms, missing target terms, and plain-English explanations.
                     </p>
 
-                    <div class="tl-metric-strip" aria-label="Insight metrics">
+                    <div class="tl-metric-strip tl-insight-metric-strip" aria-label="Insight metrics">
                         <div>
                             <strong>{{ target_profiles|length }}</strong>
                             <span>Target Profiles</span>

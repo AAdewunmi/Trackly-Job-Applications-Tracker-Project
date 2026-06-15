@@ -8,7 +8,7 @@ MANAGE_T := $(WEB_T) python manage.py
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build up down restart logs shell dbshell migrate migrations superuser nltk-data test lint format format-check migrations-check check deploy-check clean
+.PHONY: help build up down restart logs shell dbshell migrate migrations seed superuser nltk-data test lint format format-check migrations-check check deploy-check clean
 
 help:
 	@echo "Trackly development commands"
@@ -22,6 +22,7 @@ help:
 	@echo "  make dbshell       Open Django database shell"
 	@echo "  make migrate       Apply database migrations"
 	@echo "  make migrations    Create Django migrations"
+	@echo "  make seed          Seed deterministic showcase demo data"
 	@echo "  make superuser     Create a Django superuser"
 	@echo "  make nltk-data     Download NLTK runtime data inside the web container"
 	@echo "  make test          Run pytest"
@@ -58,6 +59,9 @@ migrate:
 
 migrations:
 	$(MANAGE) makemigrations
+
+seed:
+	$(MANAGE_T) seed_demo_data
 
 superuser:
 	$(MANAGE) createsuperuser

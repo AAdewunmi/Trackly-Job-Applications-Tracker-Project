@@ -12,8 +12,15 @@ def test_root_renders_landing_page_for_anonymous_users(client) -> None:
     response = client.get("/")
 
     assert response.status_code == 200
-    assert b"Keep your job search organised." in response.content
-    assert b"Create account" in response.content
+    assert b"Track every application and understand which roles fit best." in (
+        response.content
+    )
+    assert b"Start tracking for free" in response.content
+    assert b"View product preview" in response.content
+    assert b"Explainable job-fit insights" in response.content
+    assert b"Plain-English explanation" in response.content
+    assert b"Backend Engineer" in response.content
+    assert b"Plans" in response.content
     assert b"Sign in" in response.content
     assert b"img/user-dashboard-preview.png" in response.content
 

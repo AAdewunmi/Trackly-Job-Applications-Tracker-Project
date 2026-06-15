@@ -32,6 +32,8 @@ def user_index(request: HttpRequest) -> HttpResponse:
             "interviewing_applications": dashboard_context.interviewing_applications,
             "recent_insights": dashboard_context.recent_insights,
             "target_profiles": dashboard_context.target_profiles,
+            "status_chart": dashboard_context.status_chart,
+            "funnel_chart": dashboard_context.funnel_chart,
         },
     )
 

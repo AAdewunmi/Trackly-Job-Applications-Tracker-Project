@@ -32,6 +32,15 @@ def test_dashboard_context_returns_empty_metrics_for_new_user() -> None:
         "rejections": 0,
         "notes": 0,
     }
+    assert [stage.label for stage in context.funnel_chart] == [
+        "Saved",
+        "Applied",
+        "Screening",
+        "Interviewing",
+        "Offer",
+    ]
+    assert all(stage.count == 0 for stage in context.funnel_chart)
+    assert all(status.count == 0 for status in context.status_chart)
 
 
 @pytest.mark.django_db
@@ -70,6 +79,16 @@ def test_dashboard_context_counts_only_current_user_data() -> None:
     assert context.metrics["notes"] == 2
     assert list(context.recent_insights) == []
     assert list(context.target_profiles) == []
+    assert {stage.label: stage.count for stage in context.funnel_chart} == {
+        "Saved": 0,
+        "Applied": 1,
+        "Screening": 0,
+        "Interviewing": 1,
+        "Offer": 1,
+    }
+    assert {status.label: status.count for status in context.status_chart}[
+        "Applied"
+    ] == 1
 
 
 @pytest.mark.django_db
@@ -115,6 +134,16 @@ def test_admin_dashboard_context_returns_platform_metrics() -> None:
         status_count.status: status_count.percentage
         for status_count in context.application_status_counts
     }[JobApplication.Status.SAVED] == 50
+    platform_activity_counts = {
+        metric.label: metric.count for metric in context.platform_activity_counts
+    }
+    assert platform_activity_counts == {
+        "Users": 1,
+        "Applications": 2,
+        "Notes": 1,
+        "Target profiles": 3,
+        "Insights": 1,
+    }
     assert context.application_page.paginator.count == 2
 
 
@@ -194,6 +223,9 @@ def test_user_dashboard_renders_metrics(client) -> None:
     assert b"Offers" in response.content
     assert b"Rejections" in response.content
     assert b"Notes" in response.content
+    assert b"Job-search funnel" in response.content
+    assert b"Application status" in response.content
+    assert b"Share of tracked roles" in response.content
 
 
 @pytest.mark.django_db

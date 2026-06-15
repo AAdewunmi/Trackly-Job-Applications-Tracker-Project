@@ -68,16 +68,42 @@
                     </div>
                 </div>
 
-                <div class="tl-admin-chart" aria-label="Applications by status">
-                    {% for status_count in admin_context.application_status_counts %}
-                        <div class="tl-admin-chart-column">
-                            <span class="tl-admin-chart-value">{{ status_count.count }}</span>
-                            <div class="tl-admin-chart-track">
-                                <span style="height: {{ status_count.percentage }}%"></span>
-                            </div>
-                            <span class="tl-admin-chart-label">{{ status_count.label }}</span>
+                <div class="tl-admin-chart-grid">
+                    <section class="tl-admin-chart-panel" aria-labelledby="admin-activity-chart-heading">
+                        <div class="tl-chart-heading">
+                            <h2 id="admin-activity-chart-heading">Platform activity</h2>
+                            <span>Current record totals</span>
                         </div>
-                    {% endfor %}
+                        <div class="tl-horizontal-chart">
+                            {% for metric in admin_context.platform_activity_counts %}
+                                <div class="tl-horizontal-chart-row">
+                                    <span>{{ metric.label }}</span>
+                                    <div class="tl-horizontal-chart-track">
+                                        <span style="width: {{ metric.percentage }}%"></span>
+                                    </div>
+                                    <strong>{{ metric.count }}</strong>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+
+                    <section class="tl-admin-chart-panel" aria-labelledby="admin-status-chart-heading">
+                        <div class="tl-chart-heading">
+                            <h2 id="admin-status-chart-heading">Applications by status</h2>
+                            <span>Platform pipeline distribution</span>
+                        </div>
+                        <div class="tl-admin-chart" aria-label="Applications by status">
+                            {% for status_count in admin_context.application_status_counts %}
+                                <div class="tl-admin-chart-column">
+                                    <span class="tl-admin-chart-value">{{ status_count.count }}</span>
+                                    <div class="tl-admin-chart-track">
+                                        <span style="height: {{ status_count.percentage }}%"></span>
+                                    </div>
+                                    <span class="tl-admin-chart-label">{{ status_count.label }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
                 </div>
             </article>
 

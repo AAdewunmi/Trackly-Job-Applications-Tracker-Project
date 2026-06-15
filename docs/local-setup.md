@@ -103,7 +103,36 @@ make shell
 make dbshell
 make migrate
 make migrations
+make seed
 make superuser
+```
+
+## Demo Data
+
+After applying migrations, seed deterministic showcase data when you want a
+populated local app for screenshots, manual QA, or reviewer walkthroughs:
+
+```bash
+make seed
+```
+
+The seed command creates:
+
+- Baseline `admin` and `member` roles
+- Demo admin, populated member, analyst member, and empty-state member accounts
+- Applications across all workflow statuses
+- Application notes
+- Target role profiles
+- Persisted retrieval-style job insights generated through the current NLP
+  service
+
+The command is idempotent, so repeated runs update the same deterministic demo
+records instead of duplicating them.
+
+All demo accounts use:
+
+```text
+TracklyDemoPass123
 ```
 
 ## Quality Checks

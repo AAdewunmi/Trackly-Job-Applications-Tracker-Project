@@ -18,7 +18,9 @@ from apps.insights.forms import (
 from apps.insights.selectors import (
     INSIGHT_SORT_OPTIONS,
     get_filtered_insights_for_user,
+    get_insight_score_histogram_for_user,
     get_score_labels_for_user,
+    get_target_profile_match_summaries_for_user,
     get_target_profiles_for_user,
 )
 from apps.insights.services import TargetRoleProfileRequired, generate_job_insight
@@ -51,6 +53,12 @@ class InsightListView(LoginRequiredMixin, TemplateView):
         context["recent_insights"] = insights
         context["target_profiles"] = get_target_profiles_for_user(self.request.user)
         context["score_labels"] = get_score_labels_for_user(self.request.user)
+        context["score_histogram"] = get_insight_score_histogram_for_user(
+            self.request.user
+        )
+        context["target_profile_match_summaries"] = (
+            get_target_profile_match_summaries_for_user(self.request.user)
+        )
         context["insight_generation_form"] = DashboardJobInsightGenerationForm(
             user=self.request.user,
         )

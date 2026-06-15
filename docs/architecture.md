@@ -20,7 +20,8 @@ Trackly uses a modular Django architecture:
 - `apps/users/` owns identity, account forms, and authentication views.
 - `apps/roles/` owns product roles and permission helpers.
 - `apps/jobs/` owns job applications, notes, forms, selectors, services, and
-  workflow views.
+  workflow views. It also contains the deterministic showcase seed command used
+  for local demos and reviewer walkthroughs.
 - `apps/dashboard/` owns user and admin dashboard service contexts and
   dashboard surfaces.
 - `apps/insights/` owns target role profiles, persisted job insights, NLP
@@ -142,6 +143,19 @@ The insight service requires an active target role profile and enforces that
 the selected job application and target profile share the same owner.
 
 See `docs/ai-nlp-contract.md` for the complete NLP contract.
+
+## Demo Data Workflow
+
+Local development includes a deterministic `seed_demo_data` management command.
+It creates baseline roles, four demo users, applications across every workflow
+status, notes, target role profiles, and persisted job insights generated
+through the current insight service.
+
+The command is intentionally idempotent. It updates deterministic records on
+repeated runs and avoids creating duplicate showcase data. This keeps
+screenshots, manual QA, and reviewer walkthroughs repeatable while still
+exercising the dashboard, application tracker, insights workspace, admin
+dashboard, and cross-user isolation behaviours.
 
 ## UI Surface
 
