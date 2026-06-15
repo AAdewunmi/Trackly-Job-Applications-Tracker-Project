@@ -118,6 +118,63 @@
         <div class="tl-panel-body tl-stack">
             <div class="tl-shot-header">
                 <div>
+                    <p class="tl-eyebrow">Insight analytics</p>
+                    <h2>Match quality visualisations</h2>
+                    <p class="tl-muted">
+                        Review score distribution and compare target profiles using stored TF-IDF job-fit insights.
+                    </p>
+                </div>
+                <span class="tl-badge tl-badge-success">{{ recent_insights|length }} shown</span>
+            </div>
+
+            <div class="tl-chart-grid" aria-label="Insight visualisations">
+                <section class="tl-chart-panel" aria-labelledby="score-histogram-heading">
+                    <div class="tl-chart-heading">
+                        <h3 id="score-histogram-heading">Insight score histogram</h3>
+                        <span>Stored match quality</span>
+                    </div>
+                    <div class="tl-histogram">
+                        {% for bucket in score_histogram %}
+                            <div class="tl-histogram-column">
+                                <span class="tl-histogram-value">{{ bucket.count }}</span>
+                                <div class="tl-histogram-track">
+                                    <span style="height: {{ bucket.percentage }}%"></span>
+                                </div>
+                                <span class="tl-histogram-label">{{ bucket.label }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="tl-chart-panel" aria-labelledby="target-profile-match-heading">
+                    <div class="tl-chart-heading">
+                        <h3 id="target-profile-match-heading">Target profile comparison</h3>
+                        <span>Average TF-IDF score</span>
+                    </div>
+                    {% if target_profile_match_summaries %}
+                        <div class="tl-horizontal-chart">
+                            {% for profile in target_profile_match_summaries %}
+                                <div class="tl-horizontal-chart-row">
+                                    <span>{{ profile.title }}</span>
+                                    <div class="tl-horizontal-chart-track">
+                                        <span style="width: {{ profile.percentage }}%"></span>
+                                    </div>
+                                    <strong>{{ profile.average_score|floatformat:2 }}</strong>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="tl-muted">Generate insights to compare target profile match quality.</p>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </section>
+
+    <section class="tl-panel">
+        <div class="tl-panel-body tl-stack">
+            <div class="tl-shot-header">
+                <div>
                     <h2>Insight workspace</h2>
                     <p class="tl-muted">
                         Narrow the list by target profile or score label, then sort by recency, match strength, role, or profile.

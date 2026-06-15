@@ -518,6 +518,141 @@ textarea {
   margin-bottom: 1rem;
 }
 
+.tl-chart-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tl-chart-panel {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  border: 1px solid var(--tl-border);
+  border-radius: 1rem;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.tl-chart-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tl-chart-heading h2,
+.tl-chart-heading h3 {
+  margin: 0;
+  color: var(--tl-text);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.tl-chart-heading span {
+  color: var(--tl-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.tl-horizontal-chart,
+.tl-funnel-chart {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.tl-horizontal-chart-row,
+.tl-funnel-row {
+  display: grid;
+  align-items: center;
+  gap: 0.65rem;
+  grid-template-columns: minmax(7.5rem, 0.8fr) minmax(0, 1fr) 2rem;
+}
+
+.tl-horizontal-chart-row > span,
+.tl-funnel-row > span,
+.tl-histogram-label {
+  overflow: hidden;
+  color: var(--tl-muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tl-horizontal-chart-row strong,
+.tl-funnel-row strong {
+  color: var(--tl-text);
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-align: right;
+}
+
+.tl-horizontal-chart-track,
+.tl-funnel-track {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8e0;
+}
+
+.tl-horizontal-chart-track span,
+.tl-funnel-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tl-primary);
+}
+
+.tl-funnel-track span {
+  background: #246bfe;
+}
+
+.tl-histogram {
+  display: grid;
+  min-height: 12rem;
+  align-items: end;
+  gap: 0.8rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tl-histogram-column {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.tl-histogram-value {
+  display: inline-flex;
+  min-height: 1.55rem;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--tl-text);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 0 0.52rem;
+}
+
+.tl-histogram-track {
+  display: flex;
+  width: 100%;
+  max-width: 2.8rem;
+  height: 7.25rem;
+  align-items: end;
+  border-radius: 0.75rem;
+  background: #e2e8e0;
+}
+
+.tl-histogram-track span {
+  display: block;
+  width: 100%;
+  border-radius: inherit;
+  background: #6fa4cf;
+}
+
 .tl-kanban-preview {
   display: grid;
   gap: 0.8rem;
@@ -927,6 +1062,22 @@ textarea:focus {
   font-size: clamp(1.75rem, 3vw, 2.55rem);
   font-weight: 900;
   line-height: 1;
+}
+
+.tl-admin-chart-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.tl-admin-chart-panel {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  border: 1px solid var(--tl-border);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 1rem;
 }
 
 .tl-admin-chart {
@@ -2105,6 +2256,7 @@ textarea:focus {
 
   .tl-admin-workspace,
   .tl-admin-dashboard-grid,
+  .tl-admin-chart-grid,
   .tl-admin-support-grid,
   .tl-admin-overview-metrics,
   .tl-admin-split-stat,
@@ -2147,6 +2299,7 @@ textarea:focus {
   }
 
   .tl-shot-layout,
+  .tl-chart-grid,
   .tl-kanban-preview,
   .tl-metric-strip,
   .tl-admin-metric-grid,
@@ -2158,6 +2311,11 @@ textarea:focus {
   .tl-pricing-grid,
   .tl-footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tl-horizontal-chart-row,
+  .tl-funnel-row {
+    grid-template-columns: minmax(6rem, 0.9fr) minmax(0, 1fr) 1.75rem;
   }
 
   .tl-user-dashboard-body .tl-shell {

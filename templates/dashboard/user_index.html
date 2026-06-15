@@ -211,6 +211,44 @@
                             <span>Notes</span>
                         </div>
                     </div>
+
+                    <div class="tl-chart-grid" aria-label="Job search visualisations">
+                        <section class="tl-chart-panel" aria-labelledby="job-search-funnel-heading">
+                            <div class="tl-chart-heading">
+                                <h3 id="job-search-funnel-heading">Job-search funnel</h3>
+                                <span>Current stage counts</span>
+                            </div>
+                            <div class="tl-funnel-chart">
+                                {% for stage in funnel_chart %}
+                                    <div class="tl-funnel-row">
+                                        <span>{{ stage.label }}</span>
+                                        <div class="tl-funnel-track">
+                                            <span style="width: {{ stage.percentage }}%"></span>
+                                        </div>
+                                        <strong>{{ stage.count }}</strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+
+                        <section class="tl-chart-panel" aria-labelledby="application-status-chart-heading">
+                            <div class="tl-chart-heading">
+                                <h3 id="application-status-chart-heading">Application status</h3>
+                                <span>Share of tracked roles</span>
+                            </div>
+                            <div class="tl-horizontal-chart">
+                                {% for status in status_chart %}
+                                    <div class="tl-horizontal-chart-row">
+                                        <span>{{ status.label }}</span>
+                                        <div class="tl-horizontal-chart-track">
+                                            <span style="width: {{ status.percentage }}%"></span>
+                                        </div>
+                                        <strong>{{ status.count }}</strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </section>
 

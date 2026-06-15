@@ -17,7 +17,7 @@ from apps.jobs.selectors import (
     get_recent_applications_for_user,
     get_recent_applications_for_user_by_status,
 )
-from apps.jobs.services import get_user_pipeline_metrics
+from apps.jobs.services import get_application_status_counts, get_user_pipeline_metrics
 from apps.roles.models import Role
 
 
@@ -32,6 +32,8 @@ class DashboardContext:
     interviewing_applications: Any
     recent_insights: Any
     target_profiles: Any
+    status_chart: list["ChartMetric"]
+    funnel_chart: list["ChartMetric"]
 
 
 @dataclass(frozen=True)
@@ -39,6 +41,15 @@ class ApplicationStatusCount:
     """Application count for one workflow status."""
 
     status: str
+    label: str
+    count: int
+    percentage: int
+
+
+@dataclass(frozen=True)
+class ChartMetric:
+    """Chart-ready metric with a label, count, and display percentage."""
+
     label: str
     count: int
     percentage: int
@@ -60,6 +71,7 @@ class AdminDashboardContext:
     application_search: str
     application_status: str
     application_sort: str
+    platform_activity_counts: list[ChartMetric]
 
 
 def get_user_dashboard_context(user) -> DashboardContext:
@@ -84,6 +96,8 @@ def get_user_dashboard_context(user) -> DashboardContext:
         ),
         recent_insights=get_recent_insights_for_user(user, limit=3),
         target_profiles=get_target_profiles_for_user(user),
+        status_chart=get_user_application_status_chart(user),
+        funnel_chart=get_user_job_search_funnel(user),
     )
 
 
@@ -93,6 +107,65 @@ def _percentage(part: int, total: int) -> int:
         return 0
 
     return round((part / total) * 100)
+
+
+def _relative_chart_metrics(metrics: list[tuple[str, int]]) -> list[ChartMetric]:
+    """Return chart metrics scaled against the largest current value."""
+    max_count = max((count for _, count in metrics), default=0)
+
+    return [
+        ChartMetric(
+            label=label,
+            count=count,
+            percentage=_percentage(count, max_count),
+        )
+        for label, count in metrics
+    ]
+
+
+def get_user_application_status_chart(user) -> list[ChartMetric]:
+    """Return user application status distribution for dashboard charts."""
+    status_counts = get_application_status_counts(user)
+    total_applications = sum(status_counts.values())
+
+    return [
+        ChartMetric(
+            label=label,
+            count=status_counts[status],
+            percentage=_percentage(status_counts[status], total_applications),
+        )
+        for status, label in JobApplication.Status.choices
+    ]
+
+
+def get_user_job_search_funnel(user) -> list[ChartMetric]:
+    """Return current user pipeline stages as a funnel-shaped chart."""
+    status_counts = get_application_status_counts(user)
+
+    return _relative_chart_metrics(
+        [
+            ("Saved", status_counts[JobApplication.Status.SAVED]),
+            ("Applied", status_counts[JobApplication.Status.APPLIED]),
+            ("Screening", status_counts[JobApplication.Status.SCREENING]),
+            ("Interviewing", status_counts[JobApplication.Status.INTERVIEWING]),
+            ("Offer", status_counts[JobApplication.Status.OFFER]),
+        ]
+    )
+
+
+def get_admin_platform_activity_counts() -> list[ChartMetric]:
+    """Return platform activity totals scaled for an admin overview chart."""
+    user_model = get_user_model()
+
+    return _relative_chart_metrics(
+        [
+            ("Users", user_model.objects.count()),
+            ("Applications", JobApplication.objects.count()),
+            ("Notes", ApplicationNote.objects.count()),
+            ("Target profiles", TargetRoleProfile.objects.count()),
+            ("Insights", JobInsight.objects.count()),
+        ]
+    )
 
 
 def get_application_status_counts_for_admin(
@@ -188,4 +261,5 @@ def get_admin_dashboard_context(
         application_search=application_search,
         application_status=application_status,
         application_sort=application_sort,
+        platform_activity_counts=get_admin_platform_activity_counts(),
     )

@@ -24,7 +24,12 @@ def test_insight_list_renders_user_scoped_profiles_and_insights(client) -> None:
     user = UserFactory()
     other_user = UserFactory()
     profile = TargetRoleProfileFactory(owner=user, title="Backend Target")
-    insight = JobInsightFactory(job_application__owner=user, target_profile=profile)
+    insight = JobInsightFactory(
+        job_application__owner=user,
+        target_profile=profile,
+        similarity_score=0.53,
+        score_label="Strong match",
+    )
     TargetRoleProfileFactory(owner=other_user, title="Foreign Target")
     JobInsightFactory(job_application__owner=other_user)
     client.force_login(user)
@@ -35,6 +40,16 @@ def test_insight_list_renders_user_scoped_profiles_and_insights(client) -> None:
     assert b"Backend Target" in response.content
     assert insight.job_application.title.encode() in response.content
     assert b"Foreign Target" not in response.content
+    assert b"Insight score histogram" in response.content
+    assert b"Target profile comparison" in response.content
+    score_histogram = {
+        bucket.label: bucket.count for bucket in response.context["score_histogram"]
+    }
+    assert score_histogram["Strong match"] == 1
+    assert [
+        summary.title for summary in response.context["target_profile_match_summaries"]
+    ] == ["Backend Target"]
+    assert response.context["target_profile_match_summaries"][0].average_score == 0.53
 
 
 @pytest.mark.django_db
@@ -58,6 +73,7 @@ def test_insight_list_renders_filter_and_sort_controls(client) -> None:
     assert b'name="sort"' in response.content
     assert b"Highest score" in response.content
     assert b"Strong match" in response.content
+    assert b"Match quality visualisations" in response.content
 
 
 @pytest.mark.django_db
