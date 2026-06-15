@@ -1228,23 +1228,39 @@ textarea:focus {
   display: flex;
   min-height: 2.45rem;
   align-items: center;
+  gap: 0.65rem;
   border-radius: 0.8rem;
   color: var(--tl-muted);
   font-size: 0.92rem;
   font-weight: 850;
   padding: 0 0.72rem;
+  text-decoration: none;
 }
 
 .tl-dashboard-side-link:hover,
 .tl-dashboard-side-link:focus {
-  background: rgba(255, 255, 255, 0.68);
+  background: #ffffff;
   color: var(--tl-text);
+  box-shadow: inset 0 0 0 1px var(--tl-border);
 }
 
 .tl-dashboard-side-link-active {
   background: #ffffff;
-  box-shadow: var(--tl-shadow-soft);
+  box-shadow: inset 0 0 0 1px var(--tl-border);
   color: var(--tl-text);
+}
+
+.tl-dashboard-nav-icon {
+  display: inline-grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: var(--tl-accent-soft);
+  color: #0b6b3b;
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .tl-user-dashboard-body {
