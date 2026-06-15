@@ -149,6 +149,33 @@ Demo accounts use the password `TracklyDemoPass123`:
 The showcase dataset is intended for local development, screenshots, manual QA,
 and reviewer walkthroughs. Do not run it against production data.
 
+## Future Extensions
+
+After the MVP is complete, Trackly could be extended with:
+
+- LLM-assisted CV and cover letter tailoring based on a selected job
+  application, target profile, and stored job-fit insight.
+- LLM-generated interview preparation packs with likely questions, company
+  research prompts, STAR story suggestions, and follow-up email drafts.
+- Semantic search using embeddings so users can search across job descriptions,
+  notes, target profiles, and generated insights by meaning rather than keyword
+  matching alone.
+- Hybrid matching that combines the current deterministic TF-IDF evidence with
+  optional embedding similarity or LLM reasoning while preserving explainable
+  source terms.
+- Contact and recruiter tracking with relationship history, follow-up reminders,
+  and communication notes.
+- Calendar and email integrations for interview scheduling, deadline reminders,
+  and automatic follow-up tasks.
+- Analytics for job-search conversion rates, time in each pipeline stage,
+  company response patterns, and target-role fit over time.
+- Team or mentor review workflows where a user can share selected applications
+  and insights for feedback without exposing the whole account.
+- Browser extension or job-board import flow to save roles directly into
+  Trackly from external job listings.
+- Subscription, billing, and account-plan features if Trackly evolves from MVP
+  into a multi-tenant SaaS product.
+
 ## Environment Settings
 
 Trackly keeps environment behaviour isolated through dedicated settings modules:
