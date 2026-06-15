@@ -272,6 +272,8 @@ class Command(BaseCommand):
             self._assign_role(user, user_data["role_code"])
             users_by_email[user.email] = user
 
+        self._delete_stale_demo_records()
+
         profiles_by_owner_and_title = {}
         for profile_data in self.TARGET_PROFILES:
             profile = self._upsert_target_profile(
@@ -300,6 +302,46 @@ class Command(BaseCommand):
         for user_data in self.DEMO_USERS:
             self.stdout.write(f"  {user_data['email']} / {user_data['password']}")
         self.stdout.write(f"Demo applications available: {len(created_applications)}")
+
+    def _delete_stale_demo_records(self):
+        """Remove old deterministic demo records that no longer belong to the seed."""
+        demo_member_emails = {
+            user_data["email"]
+            for user_data in self.DEMO_USERS
+            if user_data["role_code"] == Role.Codes.MEMBER
+        }
+        expected_application_keys = {
+            (
+                application_data["owner_email"],
+                application_data["company"],
+                application_data["title"],
+            )
+            for application_data in self.APPLICATIONS
+        }
+        expected_profile_keys = {
+            (profile_data["owner_email"], profile_data["title"])
+            for profile_data in self.TARGET_PROFILES
+        }
+
+        demo_applications = JobApplication.objects.filter(
+            owner__email__in=demo_member_emails,
+        )
+        for application in demo_applications:
+            application_key = (
+                application.owner.email,
+                application.company,
+                application.title,
+            )
+            if application_key not in expected_application_keys:
+                application.delete()
+
+        demo_profiles = TargetRoleProfile.objects.filter(
+            owner__email__in=demo_member_emails,
+        )
+        for profile in demo_profiles:
+            profile_key = (profile.owner.email, profile.title)
+            if profile_key not in expected_profile_keys:
+                profile.delete()
 
     def _upsert_user(self, user_data):
         """Create or update a demo user and set a deterministic password."""

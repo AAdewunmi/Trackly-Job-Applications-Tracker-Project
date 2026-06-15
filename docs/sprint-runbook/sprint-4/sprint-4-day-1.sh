@@ -86,7 +86,7 @@ assert_file_contains() {
   local expected_text="$2"
   local label="$3"
 
-  if ! grep -Fq "$expected_text" "$file_path"; then
+  if ! grep -Fq -- "$expected_text" "$file_path"; then
     printf 'Missing expected %s in %s:\n%s\n' "$label" "$file_path" "$expected_text" >&2
     exit 1
   fi
