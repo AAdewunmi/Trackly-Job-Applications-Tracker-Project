@@ -61,7 +61,7 @@ migrations:
 	$(MANAGE) makemigrations
 
 seed:
-	$(MANAGE) seed_demo_data
+	$(MANAGE_T) seed_demo_data
 
 superuser:
 	$(MANAGE) createsuperuser
