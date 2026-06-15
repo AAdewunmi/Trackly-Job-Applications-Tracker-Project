@@ -18,6 +18,8 @@ def test_root_renders_landing_page_for_anonymous_users(client) -> None:
     assert b"Start tracking for free" in response.content
     assert b"View product preview" in response.content
     assert b"Explainable job-fit insights" in response.content
+    assert b"Plain-English explanation" in response.content
+    assert b"Backend Engineer" in response.content
     assert b"Plans" in response.content
     assert b"Sign in" in response.content
     assert b"img/user-dashboard-preview.png" in response.content

@@ -91,17 +91,37 @@
         </div>
     </div>
 
-    <div id="insights-preview" class="tl-map-preview" aria-label="Job-fit insight preview">
-        <div class="tl-map-grid"></div>
-        <div class="tl-map-card">
-            <strong>Partial match</strong>
-            <span>0.42 TF-IDF cosine similarity</span>
+    <div id="insights-preview" class="tl-insight-preview" aria-label="Job-fit insight preview">
+        <div class="tl-insight-preview-header">
+            <span>Target profile</span>
+            <strong>Backend Engineer</strong>
         </div>
-        <div class="tl-map-search">
-            <span>Matched: python · django · api</span>
+
+        <div class="tl-insight-score-card">
+            <div>
+                <span>Partial match</span>
+                <strong>0.42</strong>
+            </div>
+            <p>TF-IDF cosine similarity</p>
+            <div class="tl-insight-score-track">
+                <span style="width: 42%"></span>
+            </div>
         </div>
-        <div class="tl-map-search">
-            <span>Missing: docker · ci/cd · aws</span>
+
+        <div class="tl-insight-term-grid">
+            <div>
+                <span>Matched terms</span>
+                <strong>python · django · api</strong>
+            </div>
+            <div>
+                <span>Missing target terms</span>
+                <strong>docker · ci/cd · aws</strong>
+            </div>
+        </div>
+
+        <div class="tl-insight-explanation-card">
+            <span>Plain-English explanation</span>
+            <p>This role overlaps with your target profile on backend API delivery, but the posting shows weaker evidence for deployment and cloud workflow terms.</p>
         </div>
     </div>
 </section>
