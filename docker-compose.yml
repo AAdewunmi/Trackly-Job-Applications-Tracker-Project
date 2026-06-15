@@ -1,11 +1,13 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000 --settings=config.settings.local
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "${WEB_PORT:-8000}:8000"
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.local
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-dev-secret-key}
@@ -15,11 +17,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-trackly_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackly_password}
       POSTGRES_HOST: db
+      # Container-to-container traffic uses the database container's internal port.
       POSTGRES_PORT: 5432
       NLTK_DATA: ${NLTK_DATA:-/usr/local/share/nltk_data}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16-alpine
@@ -28,9 +32,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-trackly_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackly_password}
     ports:
-      - "5432:5432"
+      # POSTGRES_PORT controls the host port only; PostgreSQL listens on 5432 inside the container.
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - trackly_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trackly_user} -d ${POSTGRES_DB:-trackly}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   trackly_postgres_data:

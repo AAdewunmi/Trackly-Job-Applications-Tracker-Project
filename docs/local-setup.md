@@ -1,4 +1,4 @@
-# Local Setup
+# Trackly Local Setup
 
 ## Purpose
 
@@ -11,6 +11,7 @@ Install:
 
 - Docker
 - Docker Compose
+- Git
 - Make, optional but recommended
 
 No local Python or PostgreSQL installation is required when using the container
@@ -34,6 +35,7 @@ DJANGO_SETTINGS_MODULE=config.settings.local
 DJANGO_DEBUG=True
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+WEB_PORT=8000
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 ```
@@ -65,7 +67,9 @@ The Django app runs at:
 http://localhost:8000
 ```
 
-The local PostgreSQL container exposes port `5432`.
+The local PostgreSQL container exposes host port `5432` by default. Override it
+with `POSTGRES_PORT` in `.env` when another local service already uses that
+port.
 
 ## Database Setup
 

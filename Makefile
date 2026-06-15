@@ -8,7 +8,7 @@ MANAGE_T := $(WEB_T) python manage.py
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build up down restart logs shell dbshell migrate migrations superuser nltk-data test lint format format-check check deploy-check clean
+.PHONY: help build up down restart logs shell dbshell migrate migrations superuser nltk-data test lint format format-check migrations-check check deploy-check clean
 
 help:
 	@echo "Trackly development commands"
@@ -28,6 +28,7 @@ help:
 	@echo "  make lint          Run Ruff"
 	@echo "  make format        Format with Black and Ruff"
 	@echo "  make format-check  Check formatting"
+	@echo "  make migrations-check Check for missing migrations"
 	@echo "  make check         Run lint, format-check, migrations check, deploy check, and tests"
 	@echo "  make clean         Remove Python and test cache files"
 
