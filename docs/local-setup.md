@@ -67,7 +67,9 @@ The Django app runs at:
 http://localhost:8000
 ```
 
-The local PostgreSQL container exposes port `5432`.
+The local PostgreSQL container exposes host port `5432` by default. Override it
+with `POSTGRES_PORT` in `.env` when another local service already uses that
+port.
 
 ## Database Setup
 

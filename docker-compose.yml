@@ -17,6 +17,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-trackly_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackly_password}
       POSTGRES_HOST: db
+      # Container-to-container traffic uses the database container's internal port.
       POSTGRES_PORT: 5432
       NLTK_DATA: ${NLTK_DATA:-/usr/local/share/nltk_data}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
@@ -31,6 +32,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-trackly_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackly_password}
     ports:
+      # POSTGRES_PORT controls the host port only; PostgreSQL listens on 5432 inside the container.
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - trackly_postgres_data:/var/lib/postgresql/data
