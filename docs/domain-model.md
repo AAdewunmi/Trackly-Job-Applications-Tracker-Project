@@ -158,6 +158,25 @@ Insight generation requires the job application and target profile to share an
 owner. Repeated generation for unchanged cleaned inputs and the same pipeline
 version reuses the same persisted insight record.
 
+## Deterministic Demo Data
+
+Trackly includes a deterministic `seed_demo_data` management command for local
+showcase and reviewer workflows. The command seeds baseline roles, demo users,
+job applications, notes, target role profiles, and persisted job insights using
+the current service layer.
+
+The dataset is intentionally broad enough to exercise the main product
+surfaces:
+
+- Applications cover every status in the workflow.
+- Multiple member accounts demonstrate user scoping and cross-user isolation.
+- One empty-state account preserves setup and onboarding screens for review.
+- Multiple target profiles support insight filtering and comparison.
+- Generated insights use `generate_job_insight()` so seeded records follow the
+  same NLTK, TF-IDF, source-hash, and ownership rules as user-generated output.
+
+The command is idempotent and should be treated as local/demo data only.
+
 ## Current Completion Status
 
 Trackly currently supports:
@@ -180,3 +199,5 @@ Trackly currently supports:
 12. Selectors, services, browser workflows, insight API endpoints, and ownership
     boundaries are covered by database-backed tests.
 13. Permission tests prove cross-user access is blocked.
+14. Deterministic showcase seed data supports local demos, screenshots, manual
+    QA, and reviewer walkthroughs.

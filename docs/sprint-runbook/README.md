@@ -23,6 +23,17 @@ boundaries, NLTK preprocessing, TF-IDF cosine scoring, explainability terms,
 weighted evidence, idempotent generation, style checks, and the full regression
 suite.
 
+For local demos, screenshots, or manual reviewer walkthroughs, run the
+deterministic showcase seed command after migrations:
+
+```bash
+make seed
+```
+
+The seed command is separate from the sprint verification scripts. It creates
+repeatable demo accounts, applications across every workflow status, notes,
+target profiles, and persisted insights for product walkthroughs.
+
 ## Historical Checkpoints
 
 The earlier scripts remain executable delivery receipts:

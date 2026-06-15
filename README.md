@@ -82,6 +82,8 @@ Trackly currently includes:
 - Secured insights API endpoints for listing and generating/reusing insights
 - Custom `403`, `404`, and `500` error templates matching the Trackly design
   system
+- Deterministic showcase seed data for local review, screenshots, and manual
+  QA
 
 Hosted Render deployment remains planned work. The repository already includes
 the production settings and deployment-readiness documentation needed to support
@@ -96,6 +98,7 @@ cp .env.example .env
 make build
 make up
 make migrate
+make seed
 make test
 ```
 
@@ -119,6 +122,32 @@ Use these docs for the full reviewer path:
   standard.
 - [Sprint runbooks](docs/sprint-runbook/README.md) for historical checkpoint
   scripts and the current Sprint 3 completion check.
+
+## Demo Data
+
+Trackly includes deterministic showcase seed data for local review:
+
+```bash
+make seed
+```
+
+The seed command creates repeatable demo accounts, baseline roles, job
+applications across every workflow status, application notes, target role
+profiles, and persisted retrieval-style insights generated through the current
+NLP service. It is idempotent, so repeated runs update the same deterministic
+records instead of duplicating them.
+
+Demo accounts use the password `TracklyDemoPass123`:
+
+| Account | Purpose |
+| --- | --- |
+| `admin.demo@trackly.local` | Admin dashboard and platform metrics |
+| `user.demo@trackly.local` | Populated job-search workspace with applications, notes, target profiles, and insights |
+| `analyst.demo@trackly.local` | Second member account for cross-user isolation and alternate profile data |
+| `empty.demo@trackly.local` | Empty-state account for setup and onboarding screens |
+
+The showcase dataset is intended for local development, screenshots, manual QA,
+and reviewer walkthroughs. Do not run it against production data.
 
 ## Environment Settings
 
