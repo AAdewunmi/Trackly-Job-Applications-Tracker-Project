@@ -514,6 +514,10 @@ textarea {
   font-weight: 700;
 }
 
+.tl-insight-metric-strip {
+  margin-bottom: 1rem;
+}
+
 .tl-kanban-preview {
   display: grid;
   gap: 0.8rem;
