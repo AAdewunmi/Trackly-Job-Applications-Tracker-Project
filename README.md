@@ -116,6 +116,8 @@ Use these docs for the full reviewer path:
 - [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
 - [Architecture](docs/architecture.md) for settings modules, app boundaries,
   database choices, and CI expectations.
+- [CI pipeline](docs/ci.md) for GitHub Actions triggers, PostgreSQL setup,
+  Django startup checks, migrations, linting, formatting, tests, and coverage.
 - [Domain model](docs/domain-model.md) for applications, notes, selectors,
   services, metrics, insights, and ownership rules.
 - [Design system](docs/design-system.md) for the Trackly template and CSS
@@ -155,6 +157,19 @@ Demo accounts use the password `TracklyDemoPass123`:
 
 The showcase dataset is intended for local development, screenshots, manual QA,
 and reviewer walkthroughs. Do not run it against production data.
+
+## CI Pipeline
+
+Trackly uses GitHub Actions as the repository quality gate. The required check
+is `CI Pipeline / Lint, format, and test`.
+
+The pipeline installs dependencies, provisions PostgreSQL 16, verifies Django
+startup settings and database connectivity, runs Ruff and Black checks, validates
+and applies migrations, verifies the prepared schema, runs production deploy
+checks, executes pytest against `config.settings.test`, and uploads coverage to
+Codecov.
+
+See [CI pipeline](docs/ci.md) for the full reviewer and contributor reference.
 
 ## Future Extensions
 
