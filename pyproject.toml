@@ -5,14 +5,16 @@ target-version = ["py312"]
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-src = ["apps", "config", "tests"]
+src = ["apps", "config"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "DJ"]
 ignore = []
 
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings.test"
-python_files = ["test_*.py", "*_test.py", "tests.py"]
-testpaths = ["apps"]
-addopts = "-ra"
+[tool.coverage.run]
+branch = true
+source = ["apps"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true

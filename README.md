@@ -137,6 +137,13 @@ profiles, and persisted retrieval-style insights generated through the current
 NLP service. It is idempotent, so repeated runs update the same deterministic
 records instead of duplicating them.
 
+If you need to load a Django fixture instead of the deterministic showcase
+dataset, use the Makefile wrapper around Django's `loaddata` command:
+
+```bash
+make loaddata FIXTURE=path/to/fixture.json
+```
+
 Demo accounts use the password `TracklyDemoPass123`:
 
 | Account | Purpose |
