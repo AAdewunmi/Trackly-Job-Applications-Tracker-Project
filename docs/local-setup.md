@@ -104,6 +104,7 @@ make dbshell
 make migrate
 make migrations
 make seed
+make loaddata FIXTURE=path/to/fixture.json
 make superuser
 ```
 
@@ -128,6 +129,13 @@ The seed command creates:
 
 The command is idempotent, so repeated runs update the same deterministic demo
 records instead of duplicating them.
+
+To load a Django fixture directly, pass the fixture path through the Makefile
+wrapper:
+
+```bash
+make loaddata FIXTURE=path/to/fixture.json
+```
 
 All demo accounts use:
 
