@@ -60,6 +60,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Verify Django startup and database connection
+        run: >
+          python manage.py shell
+          --settings=config.settings.test
+          -c "from django.db import connection; connection.ensure_connection(); print(connection.vendor)"
+
       - name: Run Ruff
         run: python -m ruff check .
 
@@ -78,6 +84,12 @@ jobs:
 
       - name: Run migrations
         run: python manage.py migrate --noinput --settings=config.settings.test
+
+      - name: Verify prepared database schema
+        run: >
+          python manage.py shell
+          --settings=config.settings.test
+          -c "from django.db import connection; assert 'jobs_jobapplication' in connection.introspection.table_names()"
 
       - name: Check production settings
         env:
