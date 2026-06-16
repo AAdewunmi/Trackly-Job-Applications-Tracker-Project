@@ -1,9 +1,10 @@
-name: CI
+name: CI Pipeline
 
 on:
   pull_request:
     branches:
       - main
+      - develop
   push:
     branches:
       - main
@@ -12,7 +13,7 @@ on:
 
 jobs:
   test:
-    name: Lint, format, and test
+    name: Django checks, linting, formatting, and tests
     runs-on: ubuntu-latest
 
     services:
@@ -41,9 +42,11 @@ jobs:
       POSTGRES_PASSWORD: trackly_password
       POSTGRES_HOST: localhost
       POSTGRES_PORT: "5432"
+      DATABASE_URL: postgres://trackly_user:trackly_password@localhost:5432/trackly
+      RELEASE_VERSION: ci
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -63,12 +66,18 @@ jobs:
       - name: Check Black formatting
         run: python -m black . --check
 
+      - name: Run Django system check
+        run: python manage.py check --settings=config.settings.test
+
       - name: Check migrations
         run: >
           python manage.py makemigrations
           --check
           --dry-run
           --settings=config.settings.test
+
+      - name: Run migrations
+        run: python manage.py migrate --noinput --settings=config.settings.test
 
       - name: Check production settings
         env:
