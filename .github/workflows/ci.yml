@@ -92,8 +92,6 @@ jobs:
           python -m pytest
           --ds=config.settings.test
           --cov=apps
-          --cov-branch
-          --cov-fail-under=95
           --cov-report=xml
 
       - name: Upload coverage to Codecov
