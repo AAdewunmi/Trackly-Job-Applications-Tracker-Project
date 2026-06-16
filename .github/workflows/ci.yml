@@ -60,24 +60,36 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Verify Django startup settings and database connection
+        run: >
+          python manage.py shell
+          --settings=config.settings.test
+          -c "from django.db import connection; connection.ensure_connection(); print(connection.vendor)"
+
       - name: Run Ruff
         run: python -m ruff check .
 
       - name: Check Black formatting
         run: python -m black . --check
 
-      - name: Run Django system check
+      - name: Run Django system check for startup expectations
         run: python manage.py check --settings=config.settings.test
 
-      - name: Check migrations
+      - name: Check migration files match models
         run: >
           python manage.py makemigrations
           --check
           --dry-run
           --settings=config.settings.test
 
-      - name: Run migrations
+      - name: Apply migrations to prepare schema
         run: python manage.py migrate --noinput --settings=config.settings.test
+
+      - name: Verify prepared database schema
+        run: >
+          python manage.py shell
+          --settings=config.settings.test
+          -c "from django.db import connection; assert 'jobs_jobapplication' in connection.introspection.table_names()"
 
       - name: Check production settings
         env:
