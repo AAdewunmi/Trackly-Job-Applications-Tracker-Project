@@ -1,15 +1,15 @@
 # Trackly: Job Application Tracking and NLP-Based Role Matching Platform
 
-[![CI](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml)
+[![Build](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-pytest-blue)
-[![codecov](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project/branch/main/graph/badge.svg)](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project)
-![Code Style](https://img.shields.io/badge/code%20style-black-000000)
-![Linting](https://img.shields.io/badge/linting-ruff-purple)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![Django](https://img.shields.io/badge/django-5.1-green)
 ![Docker](https://img.shields.io/badge/docker-compose-blue)
+![Code Style](https://img.shields.io/badge/code%20style-black-000000)
+![Licence](https://img.shields.io/badge/licence-MIT-lightgrey)
+[![codecov](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project/branch/main/graph/badge.svg)](https://codecov.io/gh/AAdewunmi/Trackly-Job-Applications-Tracker-Project)
+![Linting](https://img.shields.io/badge/linting-ruff-purple)
 ![PostgreSQL](https://img.shields.io/badge/database-postgresql-336791)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 A production-minded Django SaaS MVP for tracking job applications and matching
 job descriptions against target-role profiles using explainable NLP.
@@ -116,6 +116,8 @@ Use these docs for the full reviewer path:
 - [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
 - [Architecture](docs/architecture.md) for settings modules, app boundaries,
   database choices, and CI expectations.
+- [CI pipeline](docs/ci.md) for GitHub Actions triggers, PostgreSQL setup,
+  Django startup checks, migrations, linting, formatting, tests, and coverage.
 - [Domain model](docs/domain-model.md) for applications, notes, selectors,
   services, metrics, insights, and ownership rules.
 - [Design system](docs/design-system.md) for the Trackly template and CSS
@@ -155,6 +157,24 @@ Demo accounts use the password `TracklyDemoPass123`:
 
 The showcase dataset is intended for local development, screenshots, manual QA,
 and reviewer walkthroughs. Do not run it against production data.
+
+## CI Pipeline
+
+Trackly uses GitHub Actions as the repository quality gate. The required check
+is `CI Pipeline / Lint, format, and test`.
+
+The pipeline installs dependencies, provisions PostgreSQL 16, verifies Django
+startup settings and database connectivity, runs Ruff and Black checks, validates
+and applies migrations, verifies the prepared schema, runs production deploy
+checks, executes pytest against `config.settings.test`, and uploads coverage to
+Codecov.
+
+Reviewers should expect a passing pipeline to prove that the project can install
+from a clean checkout, boot Django with test settings, prepare the PostgreSQL
+schema, satisfy lint and format rules, pass regression tests, and meet the
+configured coverage gate.
+
+See [CI pipeline](docs/ci.md) for the full reviewer and contributor reference.
 
 ## Future Extensions
 
