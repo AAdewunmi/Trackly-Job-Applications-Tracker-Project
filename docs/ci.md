@@ -53,6 +53,20 @@ The CI job verifies:
 - Production deploy checks pass with `config.settings.production`
 - Pytest passes against the PostgreSQL-backed test settings
 
+## Pipeline Expectations
+
+Reviewers and contributors should treat a passing pipeline as proof that a
+change can:
+
+- Install the project from a clean checkout
+- Start Django with the test settings module
+- Connect to PostgreSQL instead of relying on an in-memory or local-only setup
+- Keep model changes and migration files in sync
+- Apply migrations and prepare the database schema
+- Pass linting and formatting checks
+- Pass the regression test suite with the configured coverage gate
+- Satisfy the production deploy check for required security settings
+
 ## Test And Coverage Configuration
 
 Pytest configuration is owned by `pytest.ini`. Test discovery includes:
