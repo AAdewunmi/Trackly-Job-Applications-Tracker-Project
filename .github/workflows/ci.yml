@@ -13,7 +13,7 @@ on:
 
 jobs:
   test:
-    name: Django checks, linting, formatting, and tests
+    name: Lint, format, and test
     runs-on: ubuntu-latest
 
     services:
