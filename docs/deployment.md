@@ -16,6 +16,22 @@ uses that file to create:
 Local Docker Compose remains a development runtime. Render deployment should use
 `render.yaml` and `config.settings.production`.
 
+## Render GitHub Deployment Workflow
+
+Use Render's Blueprint flow for deployment:
+
+1. Push the current branch to GitHub.
+2. In Render, create a Blueprint from the GitHub repository.
+3. Select the root `render.yaml` file.
+4. Let Render create `trackly-web` and `trackly-db`.
+5. Confirm the generated environment variables, especially `DJANGO_SECRET_KEY`
+   and `DATABASE_URL`.
+6. Trigger the first deploy from Render, then review the build and deploy logs.
+7. After deployment, check `/health/` and confirm the reported `release`.
+
+Future deploys should come from GitHub commits that update the repository and,
+when needed, the `render.yaml` blueprint.
+
 ## Production Runtime
 
 The Render web service builds from the project `Dockerfile` and overrides the
