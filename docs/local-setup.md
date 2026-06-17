@@ -189,7 +189,10 @@ Trackly uses split Django settings:
 - `config.settings.test` for pytest and CI
 - `config.settings.production` for ASGI/WSGI deployment
 
-Docker Compose runs the web service with `config.settings.local`.
+Docker Compose runs the web service with `config.settings.local`. Hosted Render
+deployment is described separately by the root `render.yaml` blueprint, which
+uses `config.settings.production`, a managed PostgreSQL `DATABASE_URL`, and the
+`/health/` endpoint for service checks.
 
 ## Stopping Services
 

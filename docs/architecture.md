@@ -53,6 +53,7 @@ Settings module usage:
 - GitHub Actions CI: `config.settings.test`
 - ASGI/WSGI deployment entry points: `config.settings.production`
 - Production deploy validation: `config.settings.production`
+- Render blueprint: `render.yaml`
 
 CI enforces the settings split by running:
 
@@ -62,6 +63,11 @@ CI enforces the settings split by running:
 - `check --deploy` with `config.settings.production`
 - pytest with branch coverage for `apps`
 - Codecov upload from `coverage.xml`
+
+The root `render.yaml` blueprint defines the hosted deployment shape: a Docker
+web service, managed PostgreSQL database, `DATABASE_URL` wiring, Gunicorn
+startup, migration and static collection commands, and `/health/` as the
+operational health check path.
 
 ## Database
 
@@ -208,6 +214,6 @@ Current coverage includes:
 
 ## Later Sprint Boundaries
 
-The following remain planned:
-
-- Production deployment to Render
+Production deployment to Render is now represented by `render.yaml`. Future
+deployment work should extend that blueprint rather than reintroducing separate
+manual deployment instructions.
