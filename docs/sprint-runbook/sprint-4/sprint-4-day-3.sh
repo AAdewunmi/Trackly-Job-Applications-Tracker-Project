@@ -42,6 +42,7 @@ PRODUCTION_DATABASE_URL="${PRODUCTION_DATABASE_URL:-postgres://trackly_user:trac
 PRODUCTION_RELEASE_VERSION="${PRODUCTION_RELEASE_VERSION:-sprint-4-day-3-local}"
 POSTGRES_READINESS_USER="${POSTGRES_READINESS_USER:-trackly_user}"
 POSTGRES_READINESS_DB="${POSTGRES_READINESS_DB:-trackly}"
+STATICFILES_GENERATED=0
 
 export COMPOSE_PROJECT_NAME
 
@@ -67,6 +68,16 @@ compose() {
 compose_exec() {
   compose exec -T "$WEB_SERVICE" "$@"
 }
+
+cleanup_generated_staticfiles() {
+  if [[ "$STATICFILES_GENERATED" == "1" && -d staticfiles ]]; then
+    print_section "Clean generated collectstatic artifacts"
+    run git clean -fdX staticfiles
+    STATICFILES_GENERATED=0
+  fi
+}
+
+trap cleanup_generated_staticfiles EXIT
 
 production_exec() {
   compose exec -T \
@@ -398,11 +409,14 @@ print('PRODUCTION_SCHEMA_READY')
 
 print_section "Collect static files with production settings"
 
+STATICFILES_GENERATED=1
 run production_exec python manage.py collectstatic --noinput --settings="$PRODUCTION_SETTINGS"
 
 print_section "Verify static files were collected"
 
 run compose_exec sh -lc "test -d staticfiles && find staticfiles -type f | head -n 5"
+
+cleanup_generated_staticfiles
 
 print_section "Verify health endpoint through Django test client under production settings"
 

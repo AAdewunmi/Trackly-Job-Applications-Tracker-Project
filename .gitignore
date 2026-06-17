@@ -86,6 +86,8 @@ db.sqlite3-journal
 *.dump
 *.psql
 *.sql.gz
+staticfiles/*
+!staticfiles/.gitkeep
 
 # Flask stuff:
 instance/
