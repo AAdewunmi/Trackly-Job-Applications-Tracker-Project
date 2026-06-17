@@ -105,6 +105,31 @@ running service with:
 curl -fsS https://<your-render-service>.onrender.com/health/
 ```
 
+## Logging And Operational Review
+
+Production logs are emitted to stdout/stderr so Render can capture them in the
+service log stream. Each log line includes:
+
+- log level
+- timestamp
+- `release=<RELEASE_VERSION>`
+- logger name
+- module
+- process id
+- thread id
+- message
+
+Use `RELEASE_VERSION` to correlate logs with a deployed release. Use `LOG_LEVEL`
+for application-wide verbosity and `DJANGO_LOG_LEVEL` for Django framework logs.
+The default Render blueprint sets both log levels to `INFO`.
+
+For a release investigation:
+
+1. Confirm `/health/` returns the expected `release`.
+2. Filter Render logs for `release=<value>`.
+3. Temporarily raise `LOG_LEVEL` or `DJANGO_LOG_LEVEL` if more detail is needed.
+4. Restore log levels after the investigation.
+
 ## Pre-Deployment Checks
 
 Run the local quality gate before deploying:

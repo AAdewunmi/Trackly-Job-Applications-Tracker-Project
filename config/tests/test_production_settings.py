@@ -32,6 +32,9 @@ def test_production_settings_load_from_required_environment(monkeypatch) -> None
     """Production settings should load required runtime values from env."""
     monkeypatch.setenv("DJANGO_SECRET_KEY", "production-secret")
     monkeypatch.setenv("DJANGO_ALLOWED_HOSTS", "trackly.example.com,www.example.com")
+    monkeypatch.setenv("RELEASE_VERSION", "test-release")
+    monkeypatch.setenv("LOG_LEVEL", "WARNING")
+    monkeypatch.setenv("DJANGO_LOG_LEVEL", "ERROR")
     monkeypatch.setenv(
         "DATABASE_URL",
         "postgres://trackly_user:trackly_password@db.example.com:5432/trackly_prod",
@@ -54,6 +57,34 @@ def test_production_settings_load_from_required_environment(monkeypatch) -> None
     assert settings.STATICFILES_STORAGE == (
         "whitenoise.storage.CompressedManifestStaticFilesStorage"
     )
+    assert settings.RELEASE_VERSION == "test-release"
+    assert settings.LOGGING["root"]["level"] == "WARNING"
+    assert settings.LOGGING["loggers"]["django"]["level"] == "ERROR"
+    assert (
+        "release=%(release_version)s"
+        in settings.LOGGING["formatters"]["standard"]["format"]
+    )
+    assert settings.LOGGING["handlers"]["console"]["filters"] == ["release_version"]
+
+
+def test_release_version_filter_adds_release_metadata(monkeypatch) -> None:
+    """Production logging should attach release metadata to each record."""
+    monkeypatch.setenv("DJANGO_SECRET_KEY", "production-secret")
+    monkeypatch.setenv("DJANGO_ALLOWED_HOSTS", "trackly.example.com")
+    monkeypatch.setenv("RELEASE_VERSION", "test-release")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgres://trackly_user:trackly_password@db.example.com:5432/trackly_prod",
+    )
+
+    settings = import_production_settings()
+
+    class LogRecord:
+        pass
+
+    record = LogRecord()
+    assert settings.ReleaseVersionFilter().filter(record) is True
+    assert record.release_version == "test-release"
 
 
 def test_production_settings_require_secret_key(monkeypatch) -> None:
