@@ -233,15 +233,15 @@ or deployment-specific values.
 | `DJANGO_SETTINGS_MODULE` | `config.settings.local` | `config.settings.production` |
 | `DJANGO_SECRET_KEY` | Generated local secret | Required unique secret from the deployment secret store |
 | `DJANGO_DEBUG` | `True` | `False` |
-| `DJANGO_ALLOWED_HOSTS` | `localhost,127.0.0.1,0.0.0.0` | Comma-separated deployed hostnames |
+| `DJANGO_ALLOWED_HOSTS` | `localhost,127.0.0.1,0.0.0.0` | Required comma-separated deployed hostnames |
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | `http://localhost:8000,http://127.0.0.1:8000` | Comma-separated HTTPS origins, including scheme |
 | `WEB_PORT` | `8000` | Local Docker Compose host port |
-| `DATABASE_URL` | `postgres://trackly_user:...@db:5432/trackly` | Preferred production database setting when provided by the platform |
-| `POSTGRES_DB` | `trackly` | Local Docker Compose and fallback database name |
-| `POSTGRES_USER` | `trackly_user` | Local Docker Compose and fallback database user |
-| `POSTGRES_PASSWORD` | Local-only password | Local Docker Compose and fallback database password |
-| `POSTGRES_HOST` | `db` | Local Docker Compose and fallback database host |
-| `POSTGRES_PORT` | `5432` | Local Docker Compose host port and fallback database port |
+| `DATABASE_URL` | `postgres://trackly_user:...@db:5432/trackly` | Required production database URL from the deployment platform |
+| `POSTGRES_DB` | `trackly` | Local Docker Compose database name |
+| `POSTGRES_USER` | `trackly_user` | Local Docker Compose database user |
+| `POSTGRES_PASSWORD` | Local-only password | Local Docker Compose database password |
+| `POSTGRES_HOST` | `db` | Local Docker Compose database host |
+| `POSTGRES_PORT` | `5432` | Local Docker Compose host port |
 
 Production settings also read these hardening flags. The defaults are secure
 for an HTTPS deployment, but they remain environment-configurable for platform

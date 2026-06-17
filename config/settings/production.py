@@ -3,20 +3,29 @@
 import os
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F403
 
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 DEBUG = False
 
-if database_url := os.getenv("DATABASE_URL"):
-    DATABASES = {  # noqa: F405
-        "default": dj_database_url.config(
-            default=database_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", default=[])  # noqa: F405
+if not ALLOWED_HOSTS:
+    raise ImproperlyConfigured("DJANGO_ALLOWED_HOSTS is required in production.")
+
+CSRF_TRUSTED_ORIGINS = env_list(  # noqa: F405
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    default=[],
+)
+
+DATABASES = {  # noqa: F405
+    "default": dj_database_url.config(
+        default=os.environ["DATABASE_URL"],
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", default=True)  # noqa: F405
 SESSION_COOKIE_SECURE = env_bool(  # noqa: F405

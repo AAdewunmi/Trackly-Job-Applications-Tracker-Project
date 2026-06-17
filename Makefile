@@ -98,6 +98,7 @@ deploy-check:
 		-e DJANGO_DEBUG=False \
 		-e DJANGO_ALLOWED_HOSTS=trackly.example.com \
 		-e DJANGO_CSRF_TRUSTED_ORIGINS=https://trackly.example.com \
+		-e DATABASE_URL=postgres://trackly_user:trackly_password@db:5432/trackly \
 		web python manage.py check --deploy --settings=config.settings.production
 
 check: lint format-check migrations-check deploy-check test
