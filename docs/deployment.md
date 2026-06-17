@@ -69,6 +69,8 @@ when needed, the `render.yaml` blueprint.
 
 The Render web service builds from the project `Dockerfile` and overrides the
 local Dockerfile command with a production command from `render.yaml`.
+Local Docker Compose also overrides the Dockerfile command so development still
+runs Django's `runserver` with `config.settings.local`.
 
 The production command:
 
