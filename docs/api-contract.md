@@ -55,6 +55,7 @@ The current browser application routes remain:
 | Path | Purpose |
 | --- | --- |
 | `/` | Home page. |
+| `/health/` | Operational health response for Render and post-release smoke checks. |
 | `/accounts/` | User authentication and account routes. |
 | `/applications/` | Job application workflow. |
 | `/applications/notes/<id>/edit/` | Job application note update workflow. |

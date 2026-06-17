@@ -85,9 +85,10 @@ Trackly currently includes:
 - Deterministic showcase seed data for local review, screenshots, and manual
   QA
 
-Hosted Render deployment remains planned work. The repository already includes
-the production settings and deployment-readiness documentation needed to support
-that work.
+Hosted Render deployment is described by the root `render.yaml` blueprint. It
+provisions the Docker web service, managed PostgreSQL database, production
+environment variables, and `/health/` operational check used by Render and
+post-release smoke tests.
 
 ## Quick Start
 
@@ -216,6 +217,11 @@ hosts, CSRF trusted origins, database settings, and production security options
 are configured through environment variables. CI also runs migration checks and
 Django's production deploy check before tests.
 
+Render deployment configuration lives in `render.yaml`. The blueprint runs the
+Docker image with Gunicorn, applies migrations, collects static files, wires
+`DATABASE_URL` from the managed `trackly-db` PostgreSQL service, and exposes
+`/health/` as the service health check path.
+
 Create a local `.env` from the tracked template before running the app:
 
 ```bash
@@ -260,6 +266,10 @@ compatibility:
 | `DJANGO_REFERRER_POLICY` | `same-origin` |
 | `LOG_LEVEL` | `INFO` |
 | `DJANGO_LOG_LEVEL` | `INFO` |
+
+For the default Render blueprint, `DJANGO_ALLOWED_HOSTS` is `.onrender.com` and
+`DJANGO_CSRF_TRUSTED_ORIGINS` is `https://*.onrender.com`. Update both values
+in `render.yaml` when attaching a custom production domain.
 
 ## Repository Structure
 
@@ -308,6 +318,7 @@ compatibility:
 ├── codecov.yml
 ├── docker-compose.yml
 ├── Dockerfile
+├── render.yaml
 ├── Makefile
 ├── manage.py
 ├── pyproject.toml

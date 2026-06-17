@@ -223,18 +223,26 @@ The Docker Compose web service runs with `config.settings.local`.
 
 ## Production Configuration Checklist
 
-Set production values through the deployment environment or secret store:
+Render deployment is defined by the root `render.yaml` blueprint. It creates:
+
+- `trackly-web` Docker web service
+- `trackly-db` managed PostgreSQL database
+- `DATABASE_URL` wired from `trackly-db`
+- `/health/` as the Render health check path
+
+The blueprint also runs migrations, collects static files, and starts Gunicorn
+with `config.settings.production`.
+
+Set or confirm these production values through Render environment variables or
+the deployment secret store:
 
 - `DJANGO_SETTINGS_MODULE=config.settings.production`
 - `DJANGO_SECRET_KEY`
 - `DJANGO_DEBUG=False`
 - `DJANGO_ALLOWED_HOSTS`
 - `DJANGO_CSRF_TRUSTED_ORIGINS`
-- `POSTGRES_DB`
-- `POSTGRES_USER`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_HOST`
-- `POSTGRES_PORT`
+- `DATABASE_URL`
+- `RELEASE_VERSION`
 
 Production security defaults are controlled by:
 
@@ -247,12 +255,22 @@ Production security defaults are controlled by:
 - `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`
 - `DJANGO_X_FRAME_OPTIONS`
 - `DJANGO_REFERRER_POLICY`
+- `LOG_LEVEL`
+- `DJANGO_LOG_LEVEL`
 
 Before deployment, run:
 
 ```bash
 make check
 ```
+
+After deployment, run a smoke check against the deployed service:
+
+```bash
+curl -fsS https://<your-render-service>.onrender.com/health/
+```
+
+The response should include `status`, `service`, `release`, and `timestamp`.
 
 ## Troubleshooting
 
@@ -265,6 +283,8 @@ If the web service cannot connect to the database, verify:
   web and database services
 - `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` match the values used
   when the local PostgreSQL volume was initialized
+- In Render, `DATABASE_URL` is populated from the `trackly-db` managed database
+  declared in `render.yaml`
 
 If static files or deploy checks fail, run:
 
