@@ -89,7 +89,7 @@ Hosted Render deployment is described by the root `render.yaml` blueprint. It
 provisions the Docker web service, managed PostgreSQL database, production
 environment variables, and `/health/` operational check used by Render and
 post-release smoke tests. See [Deployment](docs/deployment.md) for the
-GitHub-to-Render Blueprint workflow.
+GitHub-to-Render Blueprint workflow and post-deploy product smoke checklist.
 
 ## Quick Start
 
@@ -222,7 +222,8 @@ Render deployment configuration lives in `render.yaml`. The blueprint runs the
 Docker image with Gunicorn, applies migrations, collects static files, wires
 `DATABASE_URL` from the managed `trackly-db` PostgreSQL service, and exposes
 `/health/` as the service health check path. The deployment guide documents the
-GitHub-backed Render Blueprint workflow.
+GitHub-backed Render Blueprint workflow and live MVP route checks to run after
+deployment.
 
 Create a local `.env` from the tracked template before running the app:
 

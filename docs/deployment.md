@@ -121,6 +121,31 @@ running service with:
 curl -fsS https://<your-render-service>.onrender.com/health/
 ```
 
+## Post-Deploy Product Smoke Checks
+
+After the first Render deployment, verify the live MVP routes manually before
+treating the release as reviewed. Replace `<service-url>` with the deployed
+Render URL.
+
+| Area | Check |
+| --- | --- |
+| Health | `curl -fsS <service-url>/health/` returns `200` and the expected `release`. |
+| Public page | `<service-url>/` renders the public landing page. |
+| Signup | `<service-url>/accounts/signup/` loads. |
+| Login | `<service-url>/accounts/login/` loads. |
+| Authenticated session | Login works with a known seeded or reviewer account, if one exists in that environment. |
+| Dashboard | `<service-url>/dashboard/` loads after login. |
+| Applications | `<service-url>/applications/` loads after login. |
+| Job CRUD | Create, update, and delete a job application. |
+| Insights | `<service-url>/insights/` loads after login. |
+| Insight generation | Generate or view an insight if target profile and job data exist. |
+| API auth | `POST <service-url>/api/v1/auth/token/` returns a token for a valid account. |
+| Static assets | `curl -fsS <service-url>/static/css/theme.css` returns `200`. |
+| Browser console | DevTools shows no obvious `500` responses or missing critical assets. |
+
+Do not add automated live Playwright checks until there is a stable deployed URL
+and test credentials managed through Render secrets.
+
 ## Logging And Operational Review
 
 Production logs are emitted to stdout/stderr so Render can capture them in the
