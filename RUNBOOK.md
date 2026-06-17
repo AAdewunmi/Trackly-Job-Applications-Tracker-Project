@@ -272,6 +272,14 @@ curl -fsS https://<your-render-service>.onrender.com/health/
 
 The response should include `status`, `service`, `release`, and `timestamp`.
 
+For operational review, use Render logs with the release marker emitted by
+production logging:
+
+- Confirm `/health/` reports the expected `release`
+- Filter service logs for `release=<release>`
+- Use `LOG_LEVEL` for application verbosity
+- Use `DJANGO_LOG_LEVEL` for Django framework verbosity
+
 ## Troubleshooting
 
 If the web service cannot connect to the database, verify:

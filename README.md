@@ -271,6 +271,12 @@ For the default Render blueprint, `DJANGO_ALLOWED_HOSTS` is `.onrender.com` and
 `DJANGO_CSRF_TRUSTED_ORIGINS` is `https://*.onrender.com`. Update both values
 in `render.yaml` when attaching a custom production domain.
 
+Production logs are written to stdout/stderr for platform log capture. Each log
+line includes timestamp, logger, module, process/thread IDs, message, and
+`release=<RELEASE_VERSION>` so Render logs can be filtered during operational
+review. Use `LOG_LEVEL` and `DJANGO_LOG_LEVEL` to temporarily increase
+verbosity while debugging a release.
+
 ## Repository Structure
 
 ```text

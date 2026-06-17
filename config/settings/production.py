@@ -52,13 +52,27 @@ SECURE_REFERRER_POLICY = env_str(  # noqa: F405
 
 RELEASE_VERSION = env_str("RELEASE_VERSION", default="production")  # noqa: F405
 
+
+class ReleaseVersionFilter:
+    """Attach release metadata to production log records."""
+
+    def filter(self, record):
+        record.release_version = RELEASE_VERSION
+        return True
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "release_version": {
+            "()": ReleaseVersionFilter,
+        },
+    },
     "formatters": {
         "standard": {
             "format": (
-                "%(levelname)s %(asctime)s %(name)s "
+                "%(levelname)s %(asctime)s release=%(release_version)s %(name)s "
                 "%(module)s %(process)d %(thread)d %(message)s"
             ),
         },
@@ -66,6 +80,7 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "filters": ["release_version"],
             "formatter": "standard",
         },
     },
