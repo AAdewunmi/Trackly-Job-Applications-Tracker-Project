@@ -10,7 +10,7 @@ services:
       - "${WEB_PORT:-8000}:8000"
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.local
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-dev-secret-key}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-trackly-local-development-secret-key-with-enough-length-for-checks}
       DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}
       POSTGRES_DB: ${POSTGRES_DB:-trackly}
@@ -19,6 +19,7 @@ services:
       POSTGRES_HOST: db
       # Container-to-container traffic uses the database container's internal port.
       POSTGRES_PORT: 5432
+      DATABASE_URL: ${DATABASE_URL:-postgres://trackly_user:trackly_password@db:5432/trackly}
       NLTK_DATA: ${NLTK_DATA:-/usr/local/share/nltk_data}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
     depends_on:
