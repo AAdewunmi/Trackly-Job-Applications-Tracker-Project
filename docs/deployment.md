@@ -16,6 +16,39 @@ uses that file to create:
 Local Docker Compose remains a development runtime. Render deployment should use
 `render.yaml` and `config.settings.production`.
 
+## Deployment Choices And Growth Path
+
+Render Blueprint is used because it keeps the web service, managed database,
+environment variables, and health check in one reviewable file. That makes the
+deployment shape repeatable from GitHub instead of relying on undocumented
+dashboard-only configuration.
+
+Docker is used so local development, CI, and Render build from the same runtime
+definition. The container installs the system and Python dependencies needed by
+Django, the NLP pipeline, Gunicorn, and static-file collection.
+
+Managed PostgreSQL is used because the MVP needs a durable relational database
+without adding database operations work to the first production deployment.
+Render provides the database URL directly to the web service through
+`DATABASE_URL`.
+
+WhiteNoise is enough for MVP static assets because Trackly serves a small set of
+versioned CSS, images, admin assets, and DRF browsable API assets from the
+Django container. It avoids a separate object store or CDN until asset volume,
+traffic, or cache-control needs justify that extra infrastructure.
+
+As the product grows, revisit:
+
+- custom domain settings for `DJANGO_ALLOWED_HOSTS` and
+  `DJANGO_CSRF_TRUSTED_ORIGINS`
+- background workers for slow NLP, email, import, or scheduled tasks
+- object storage for user uploads and generated files
+- CDN-backed static and media delivery
+- automated live smoke tests once a stable URL and Render-managed test
+  credentials exist
+- production seed or reviewer account strategy
+- stronger monitoring, alerting, metrics, and error reporting
+
 ## Render GitHub Deployment Workflow
 
 Use Render's Blueprint flow for deployment:
