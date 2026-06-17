@@ -1,8 +1,22 @@
 """Production settings for Trackly."""
 
+import os
+
+import dj_database_url
+
 from .base import *  # noqa: F403
 
-DEBUG = env_bool("DJANGO_DEBUG", default=False)  # noqa: F405
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+DEBUG = False
+
+if database_url := os.getenv("DATABASE_URL"):
+    DATABASES = {  # noqa: F405
+        "default": dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
 
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", default=True)  # noqa: F405
 SESSION_COOKIE_SECURE = env_bool(  # noqa: F405
@@ -22,7 +36,12 @@ SECURE_CONTENT_TYPE_NOSNIFF = env_bool(  # noqa: F405
     default=True,
 )
 X_FRAME_OPTIONS = env_str("DJANGO_X_FRAME_OPTIONS", default="DENY")  # noqa: F405
-REFERRER_POLICY = env_str("DJANGO_REFERRER_POLICY", default="same-origin")  # noqa: F405
+SECURE_REFERRER_POLICY = env_str(  # noqa: F405
+    "DJANGO_REFERRER_POLICY",
+    default="same-origin",
+)
+
+RELEASE_VERSION = env_str("RELEASE_VERSION", default="production")  # noqa: F405
 
 LOGGING = {
     "version": 1,
@@ -43,6 +62,13 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": env_str("LOG_LEVEL", default="INFO"),  # noqa: F405
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": env_str("DJANGO_LOG_LEVEL", default="INFO"),  # noqa: F405
+            "propagate": False,
+        },
     },
 }
