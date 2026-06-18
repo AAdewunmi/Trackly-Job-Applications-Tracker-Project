@@ -12,16 +12,32 @@ store target-role profiles, and generate explainable job-fit insights using
 NLTK preprocessing, scikit-learn TF-IDF vectorisation, cosine similarity, and
 weighted overlapping or missing target terms.
 
+## Architecture Principles
+
+The architecture follows these principles:
+
+- Keep the core workflow server-rendered and simple.
+- Use DRF for API contracts where programmatic access is useful.
+- Keep user ownership checks close to query logic.
+- Keep business calculations outside templates.
+- Keep AI/NLP deterministic, explainable, and persisted.
+- Use PostgreSQL from the start.
+- Use Docker Compose as the default local runtime.
+- Use CI as the repository quality gate.
+
 ## Architectural Style
 
 Trackly uses a modular Django architecture:
 
 - `config/` contains project-level settings, URLs, ASGI, and WSGI entry points.
-- `apps/users/` owns identity, account forms, and authentication views.
-- `apps/roles/` owns product roles and permission helpers.
+- `apps/users/` owns identity, account forms, authentication views, profile
+  views, and the custom user model.
+- `apps/roles/` owns baseline role records, product roles, and permission
+  helpers.
 - `apps/jobs/` owns job applications, notes, forms, selectors, services, and
-  workflow views. It also contains the deterministic showcase seed command used
-  for local demos and reviewer walkthroughs.
+  workflow views. It also contains API serializers, API views, workflow tests,
+  and the deterministic showcase seed command used for local demos and reviewer
+  walkthroughs.
 - `apps/dashboard/` owns user and admin dashboard service contexts and
   dashboard surfaces.
 - `apps/insights/` owns target role profiles, persisted job insights, NLP
@@ -69,6 +85,14 @@ web service, managed PostgreSQL database, `DATABASE_URL` wiring, Gunicorn
 startup, migration and static collection commands, and `/health/` as the
 operational health check path.
 
+## Request Surfaces
+
+Trackly has three main request surfaces:
+
+1. Browser UI through Django templates.
+2. Secured API under `/api/v1/`.
+3. Operational health endpoint at `/health/`.
+
 ## Database
 
 Trackly uses PostgreSQL from the first sprint. Local Docker Compose and CI use
@@ -106,6 +130,17 @@ Job application list, detail, update, delete, and note creation flows require
 authentication. Detail-level operations fetch applications through an
 owner-scoped selector, so a user attempting to access another user's record
 receives a 404 response.
+
+## Data Ownership Model
+
+Most product records are user-owned. Application, note, target-profile, and
+insight access must be scoped to the authenticated user.
+
+The central ownership rule is:
+
+```text
+Users can only access their own product data.
+```
 
 ## Job Tracking Domain
 
