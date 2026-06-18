@@ -99,6 +99,14 @@ jobs:
           DJANGO_CSRF_TRUSTED_ORIGINS: https://trackly.example.com
         run: python manage.py check --deploy --settings=config.settings.production
 
+      - name: Check production static collection
+        env:
+          DJANGO_SECRET_KEY: ci-production-secret-key-with-enough-length-for-deploy-checks
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: trackly.example.com
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://trackly.example.com
+        run: python manage.py collectstatic --noinput --settings=config.settings.production
+
       - name: Run tests
         run: >
           python -m pytest

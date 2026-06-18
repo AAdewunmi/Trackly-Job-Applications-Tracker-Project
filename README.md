@@ -204,6 +204,9 @@ After the MVP is complete, Trackly could be extended with:
   Trackly from external job listings.
 - Subscription, billing, and account-plan features if Trackly evolves from MVP
   into a multi-tenant SaaS product.
+- Deployment-hardening tasks such as CI Docker image builds and lightweight
+  browser smoke/E2E checks for signup, login, dashboard, applications, and
+  insights before an active production launch.
 
 ## Environment Settings
 
