@@ -111,21 +111,84 @@ container ever reports missing NLTK data, refresh it with:
 make nltk-data
 ```
 
-Use these docs for the full reviewer path:
+## How To Use The Repo
+
+Use this repository as a reproducible Django SaaS MVP build:
+
+1. Start with [Local setup](docs/local-setup.md) to configure `.env`, build the
+   Docker services, run migrations, seed deterministic demo data, and execute
+   local checks.
+2. Use the Makefile for normal development commands: `make build`, `make up`,
+   `make migrate`, `make seed`, `make test`, `make lint`, `make format-check`,
+   `make migrations-check`, `make deploy-check`, and `make check`.
+3. Use [CI pipeline](docs/ci.md) to understand the GitHub Actions quality gate,
+   PostgreSQL setup, startup checks, migration checks, formatting, linting,
+   tests, coverage, and production deploy checks.
+4. Use [Final verification](docs/final-verification.md) before treating a
+   branch, PR, or deployment as reviewed.
+5. Use [Demo script](docs/demo-script.md) when presenting the MVP to a
+   technical reviewer.
+
+## How To Use Trackly
+
+Use Trackly as a job-search workspace:
+
+1. Sign up or log in.
+2. Review the user dashboard at `/dashboard/`.
+3. Create and manage job applications at `/applications/`.
+4. Add notes to application detail pages to preserve workflow context.
+5. Create or use a target role profile from the insights workspace.
+6. Generate deterministic job-fit insights at `/insights/` or from an
+   application detail page.
+7. Review extracted terms, overlapping terms, missing target terms, similarity
+   score, score label, weighted evidence, and explanation.
+8. Use `/api/v1/` endpoints for authenticated programmatic access where useful.
+
+The seeded `user.demo@trackly.local` account gives reviewers a populated
+workspace. The seeded `empty.demo@trackly.local` account shows the empty-state
+experience.
+
+## Documentation Coverage
+
+These docs are part of the reviewer-facing documentation set:
 
 - [Local setup](docs/local-setup.md) for environment setup, Docker Compose,
-  migrations, and quality checks.
+  migrations, seeded data, and local reproducibility.
 - [Runbook](RUNBOOK.md) for operational commands and troubleshooting.
 - [Architecture](docs/architecture.md) for settings modules, app boundaries,
-  database choices, and CI expectations.
+  request surfaces, ownership model, database choices, and CI expectations.
+- [API contract](docs/api-contract.md) for authenticated API routes, JWT
+  access, payloads, response semantics, and ownership rules.
+- [AI/NLP contract](docs/ai-nlp-contract.md) for feature inputs, non-goals,
+  deterministic pipeline behaviour, score labels, explanation output, and
+  known AI/NLP boundaries.
+- [Deployment](docs/deployment.md) for Render Blueprint configuration,
+  production settings, static-file collection, health checks, smoke checks,
+  logging, troubleshooting, and deployment growth limits.
 - [CI pipeline](docs/ci.md) for GitHub Actions triggers, PostgreSQL setup,
   Django startup checks, migrations, linting, formatting, tests, and coverage.
 - [Domain model](docs/domain-model.md) for applications, notes, selectors,
   services, metrics, insights, and ownership rules.
 - [Design system](docs/design-system.md) for the Trackly template and CSS
   standard.
+- [Demo script](docs/demo-script.md) for a concise product walkthrough that
+  connects the browser flow, API, AI/NLP feature, CI, and deployment story.
+- [Final verification](docs/final-verification.md) for release-readiness checks
+  across local setup, product behaviour, API, AI/NLP, CI, deployment, and docs.
 - [Sprint runbooks](docs/sprint-runbook/README.md) for historical checkpoint
   scripts and the current Sprint 3 completion check.
+
+Coverage map:
+
+| Area | Documentation |
+| --- | --- |
+| Setup | `README.md`, `docs/local-setup.md`, `RUNBOOK.md` |
+| Testing | `README.md`, `docs/ci.md`, `docs/final-verification.md` |
+| Deployment | `docs/deployment.md`, `docs/final-verification.md`, `render.yaml` |
+| Architecture | `docs/architecture.md`, `docs/domain-model.md` |
+| API | `docs/api-contract.md`, `docs/domain-model.md` |
+| AI/NLP | `docs/ai-nlp-contract.md`, `docs/demo-script.md` |
+| Limitations and non-goals | `docs/ai-nlp-contract.md`, `docs/deployment.md`, README Future Extensions |
 
 ## Demo Data
 
