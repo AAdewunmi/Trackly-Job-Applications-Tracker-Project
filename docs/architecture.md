@@ -78,6 +78,7 @@ CI enforces the settings split by running:
 - Black formatting checks
 - `makemigrations --check --dry-run` with `config.settings.test`
 - `check --deploy` with `config.settings.production`
+- `collectstatic --noinput` with `config.settings.production`
 - pytest with branch coverage for `apps`
 - Codecov upload from `coverage.xml`
 

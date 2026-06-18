@@ -231,8 +231,8 @@ is `CI Pipeline / Lint, format, and test`.
 The pipeline installs dependencies, provisions PostgreSQL 16, verifies Django
 startup settings and database connectivity, runs Ruff and Black checks, validates
 and applies migrations, verifies the prepared schema, runs production deploy
-checks, executes pytest against `config.settings.test`, and uploads coverage to
-Codecov.
+checks, verifies production static-file collection, executes pytest against
+`config.settings.test`, and uploads coverage to Codecov.
 
 Reviewers should expect a passing pipeline to prove that the project can install
 from a clean checkout, boot Django with test settings, prepare the PostgreSQL
@@ -281,8 +281,9 @@ Trackly keeps environment behaviour isolated through dedicated settings modules:
 
 Shared behaviour lives in `config.settings.base`. Secrets, debug mode, allowed
 hosts, CSRF trusted origins, database settings, and production security options
-are configured through environment variables. CI also runs migration checks and
-Django's production deploy check before tests.
+are configured through environment variables. CI also runs migration checks,
+Django's production deploy check, and production static-file collection before
+tests.
 
 Render deployment configuration lives in `render.yaml`. The blueprint runs the
 Docker image with Gunicorn, applies migrations, collects static files, wires
