@@ -172,10 +172,10 @@ make check
 The `check` target runs Ruff, Black format checks, migration checks, Django's
 production deploy check, and pytest.
 
-To run the current Sprint 3 insights verification script:
+To run the current final MVP verification script:
 
 ```bash
-./docs/sprint-runbook/sprint-3/sprint-3-day-5.sh
+./docs/sprint-runbook/sprint-4/sprint-4-day-5.sh
 ```
 
 Earlier sprint scripts are incremental checkpoint runbooks. See

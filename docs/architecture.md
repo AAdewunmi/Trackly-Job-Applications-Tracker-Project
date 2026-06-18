@@ -163,7 +163,7 @@ See `docs/domain-model.md` for the complete contract.
 
 ## Insights Domain
 
-Sprint 3 implements:
+The insights domain implements:
 
 - User-owned `TargetRoleProfile` records with normalised keyword lists.
 - Persisted `JobInsight` records linked to a job application and target role
@@ -249,7 +249,7 @@ Current coverage includes:
 - Insight browser views, secured insight API endpoints, API ownership
   boundaries, idempotent API generation, and custom error templates
 
-## Later Sprint Boundaries
+## Deployment Boundaries
 
 Production deployment to Render is now represented by `render.yaml`. Future
 deployment work should extend that blueprint rather than reintroducing separate
