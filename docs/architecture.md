@@ -5,12 +5,13 @@
 Trackly is a Django SaaS MVP for tracking job applications and matching job
 descriptions against target-role profiles using explainable NLP.
 
-Sprint 3 extends the completed core job-tracking workflow with a
-retrieval-style insights app. Authenticated users can own applications, manage
-statuses and notes, review recent activity, see user-scoped dashboard metrics,
-store target-role profiles, and generate explainable job-fit insights using
-NLTK preprocessing, scikit-learn TF-IDF vectorisation, cosine similarity, and
-weighted overlapping or missing target terms.
+The current product combines the completed core job-tracking workflow with a
+retrieval-style insights app and a production deployment baseline.
+Authenticated users can own applications, manage statuses and notes, review
+recent activity, see user-scoped dashboard metrics, store target-role profiles,
+and generate explainable job-fit insights using NLTK preprocessing,
+scikit-learn TF-IDF vectorisation, cosine similarity, and weighted overlapping
+or missing target terms.
 
 ## Architecture Principles
 
