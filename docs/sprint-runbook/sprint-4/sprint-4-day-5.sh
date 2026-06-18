@@ -316,7 +316,7 @@ verify_or_create_release_tag() {
     exit 1
   fi
 
-  printf 'Release tag verification recorded as pending.\n'
+  printf 'Release tag creation skipped because CREATE_RELEASE_TAG=1 was not set.\n'
 }
 
 print_section "Verify repository root"
@@ -655,7 +655,7 @@ fi
 if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1; then
   printf 'Verified MVP release tag: %s\n' "$RELEASE_TAG"
 else
-  printf 'MVP release tag pending: %s\n' "$RELEASE_TAG"
+  printf 'MVP release tag not created by this run because CREATE_RELEASE_TAG=1 was not set: %s\n' "$RELEASE_TAG"
 fi
 
 printf 'Sprint 4 Day 5 final documentation, demo narrative, and MVP release baseline passed.\n'
