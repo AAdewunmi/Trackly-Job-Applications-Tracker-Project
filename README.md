@@ -142,6 +142,13 @@ profiles, and persisted retrieval-style insights generated through the current
 NLP service. It is idempotent, so repeated runs update the same deterministic
 records instead of duplicating them.
 
+If you need to load a Django fixture instead of the deterministic showcase
+dataset, use the Makefile wrapper around Django's `loaddata` command:
+
+```bash
+make loaddata FIXTURE=path/to/fixture.json
+```
+
 Demo accounts use the password `TracklyDemoPass123`:
 
 | Account | Purpose |
@@ -291,28 +298,6 @@ line includes timestamp, logger, module, process/thread IDs, message, and
 `release=<RELEASE_VERSION>` so deployment logs can be filtered during
 operational review.
 
-## Potential Extensions
-
-The MVP intentionally keeps the product focused. Natural next steps include:
-
-- LLM-assisted CV and cover letter tailoring based on a selected job
-  application, target profile, and stored job-fit insight.
-- LLM-generated interview preparation packs.
-- Semantic search across job descriptions, notes, target profiles, and
-  generated insights.
-- Hybrid matching that combines deterministic TF-IDF evidence with optional
-  embedding similarity or LLM reasoning.
-- Contact and recruiter tracking.
-- Calendar and email integrations for interview scheduling and reminders.
-- Analytics for conversion rates, time in pipeline stages, company response
-  patterns, and target-role fit over time.
-- Team or mentor review workflows for selected applications and insights.
-- Browser extension or job-board import flow.
-- Subscription, billing, and account-plan features for a multi-tenant SaaS
-  product.
-- Deployment-hardening tasks such as CI Docker image builds and lightweight
-  browser smoke/E2E checks before an active production launch.
-
 ## Repository Structure
 
 ```text
@@ -385,3 +370,25 @@ The MVP intentionally keeps the product focused. Natural next steps include:
 ├── requirements.txt
 └── RUNBOOK.md
 ```
+
+## Potential Extensions
+
+The MVP intentionally keeps the product focused. Natural next steps include:
+
+- LLM-assisted CV and cover letter tailoring based on a selected job
+  application, target profile, and stored job-fit insight.
+- LLM-generated interview preparation packs.
+- Semantic search across job descriptions, notes, target profiles, and
+  generated insights.
+- Hybrid matching that combines deterministic TF-IDF evidence with optional
+  embedding similarity or LLM reasoning.
+- Contact and recruiter tracking.
+- Calendar and email integrations for interview scheduling and reminders.
+- Analytics for conversion rates, time in pipeline stages, company response
+  patterns, and target-role fit over time.
+- Team or mentor review workflows for selected applications and insights.
+- Browser extension or job-board import flow.
+- Subscription, billing, and account-plan features for a multi-tenant SaaS
+  product.
+- Deployment-hardening tasks such as CI Docker image builds and lightweight
+  browser smoke/E2E checks before an active production launch.
