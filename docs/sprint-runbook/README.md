@@ -7,21 +7,22 @@ specific sprint day.
 
 ## Current Completion Check
 
-Sprint 3 Day 5 is the current completed Sprint 3 checkpoint. Run the Sprint 3
-Day 5 script for the current end-to-end verification path:
+Sprint 4 Day 5 is the current final MVP verification checkpoint. Run the Sprint
+4 Day 5 script for the current end-to-end verification path:
 
 ```bash
-./docs/sprint-runbook/sprint-3/sprint-3-day-5.sh
+./docs/sprint-runbook/sprint-4/sprint-4-day-5.sh
 ```
 
 The script uses the Docker Compose project name
 `trackly-job-applications-tracker-project`, expects the web container prefix
 `trackly-job-applications-tracker-project-web`, and verifies the
-`postgres:16-alpine` database image. It also verifies the insight browser
-workspace, secured insights API endpoints, authentication and ownership
-boundaries, NLTK preprocessing, TF-IDF cosine scoring, explainability terms,
-weighted evidence, idempotent generation, style checks, and the full regression
-suite.
+`postgres:16-alpine` database image. It also verifies documentation coverage,
+deterministic seed data, deployment configuration, collectstatic, the health
+endpoint, browser and API smoke paths, authentication and ownership boundaries,
+NLP preprocessing, TF-IDF cosine scoring, explainability terms, weighted
+evidence, idempotent generation, style checks, focused release tests, and the
+full regression suite.
 
 For local demos, screenshots, or manual reviewer walkthroughs, run the
 deterministic showcase seed command after migrations:
@@ -52,6 +53,11 @@ The earlier scripts remain executable delivery receipts:
   pipeline checkpoint.
 - `sprint-3/sprint-3-day-4.sh` records the browser insight generation workflow
   and dashboard/admin verification checkpoint.
+- `sprint-3/sprint-3-day-5.sh` records the completed insights API, dashboard,
+  and deterministic NLP checkpoint.
+- `sprint-4/sprint-4-day-1.sh` through `sprint-4/sprint-4-day-4.sh` record the
+  Docker, CI, production deployment, health check, logging, and release
+  preparation checkpoints.
 
 Use those scripts when reviewing the corresponding historical checkpoint. Use
-Sprint 3 Day 5 when validating the current completed Sprint 3 state.
+Sprint 4 Day 5 when validating the current final MVP state.

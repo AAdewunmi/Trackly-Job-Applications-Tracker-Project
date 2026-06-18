@@ -31,6 +31,7 @@ help:
 	@echo "  make format        Format with Black and Ruff"
 	@echo "  make format-check  Check formatting"
 	@echo "  make migrations-check Check for missing migrations"
+	@echo "  make deploy-check  Run Django production deploy check"
 	@echo "  make check         Run lint, format-check, migrations check, deploy check, and tests"
 	@echo "  make clean         Remove Python and test cache files"
 

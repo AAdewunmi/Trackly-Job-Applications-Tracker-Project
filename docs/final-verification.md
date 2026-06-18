@@ -184,6 +184,7 @@ The current workflow runs:
 - Migrations.
 - Prepared schema verification.
 - Production settings check with `check --deploy`.
+- Production static-file collection with `collectstatic --noinput`.
 - Pytest with branch coverage for `apps`.
 - Codecov upload from `coverage.xml`.
 
@@ -192,6 +193,7 @@ Expected outcome:
 - Required check `CI Pipeline / Lint, format, and test` passes.
 - No migration drift is reported.
 - Production settings load with deploy-check environment values.
+- Static files collect under production settings.
 - Coverage XML is generated and uploaded.
 
 ## Deployment Verification

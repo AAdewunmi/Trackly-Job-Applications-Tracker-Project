@@ -1,3 +1,5 @@
+"""Add weighted evidence storage to generated job insights."""
+
 from django.db import migrations, models
 
 

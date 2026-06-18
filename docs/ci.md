@@ -51,6 +51,7 @@ The CI job verifies:
 - Migrations apply with `migrate --noinput`
 - The prepared database schema contains the expected application table
 - Production deploy checks pass with `config.settings.production`
+- Static files collect with `config.settings.production`
 - The production settings contract required by `render.yaml` stays valid
 - Pytest passes against the PostgreSQL-backed test settings
 
@@ -67,6 +68,7 @@ change can:
 - Pass linting and formatting checks
 - Pass the regression test suite with the configured coverage gate
 - Satisfy the production deploy check for required security settings
+- Verify production static-file collection before deployment
 - Preserve the Render blueprint contract for required environment values,
   `DATABASE_URL`, and the `/health/` operational endpoint
 
@@ -111,5 +113,6 @@ database connectivity problems, and production configuration regressions before
 merge.
 
 Hosted deployment is configured by the root `render.yaml` blueprint. CI does
-not deploy to Render, but its production deploy check and health endpoint tests
+not deploy to Render, but its production deploy check, production static-file
+collection check, Render blueprint contract tests, and health endpoint tests
 guard the same settings contract Render uses at runtime.
