@@ -12,10 +12,13 @@
 ![PostgreSQL](https://img.shields.io/badge/database-postgresql-336791)
 
 Trackly is a production-minded Django SaaS MVP for tracking job applications
-and generating deterministic, explainable NLP job-fit insights against stored
+and generating deterministic, explainable Natural Language Processing (NLP) job-fit insights against stored
 target-role profiles.
 
-GitHub repository: <https://github.com/AAdewunmi/Trackly-Job-Applications-Tracker-Project>
+<img width="800" height="376" alt="Image" src="https://github.com/user-attachments/assets/8da31e4d-7d46-47b2-9b5b-787cdb5e3d4e" />
+
+### Trackly landing page and product entry point 
+*** GIF showing the Trackly landing page with the headline “Track every application and understand which roles fit best”, navigation links for preview, features, insights, and plans, and calls to action for starting tracking or viewing the product preview.
 
 The product helps users manage a job-search pipeline, maintain notes, review
 dashboard metrics, compare job descriptions with target role profiles, and
@@ -23,6 +26,11 @@ understand why a role appears to be a stronger or weaker fit. The implementation
 uses server-rendered Django views for the core workflow, Django REST Framework
 for secured API access, PostgreSQL for persistence, Docker Compose for local
 runtime, GitHub Actions for CI, and a Render blueprint for deployment readiness.
+
+<img width="800" height="376" alt="Image" src="https://github.com/user-attachments/assets/58589eea-64d4-4af1-895b-b8be19cff006" />
+
+### Trackly deterministic job insight generation
+*** GIF showing a user opening Trackly application, generating a job-fit insight, and reviewing extracted terms, overlapping terms, missing terms, weighted evidence, a score label, and explanation text.
 
 ## MVP Scope
 
